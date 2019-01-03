@@ -4,8 +4,8 @@
 \alias{init_num}
 \title{Initialize basic numeric variables.}
 \usage{
-init_num(prev = num.def$prev, sens = num.def$sens, spec = num.def$spec,
-  fart = num.def$fart, N = num.def$N)
+init_num(prev = num.def$prev, sens = num.def$sens,
+  spec = num.def$spec, fart = num.def$fart, N = num.def$N)
 }
 \arguments{
 \item{prev}{The condition's prevalence value \code{\link{prev}}
@@ -65,7 +65,6 @@ init_num(prev =  1, sens = NA)                       # => NAs + warning (NA)
 init_num(prev =  1, sens = 1, spec = NA, fart = NA)  # => NAs + warning (NAs)
 init_num(1, 1, .52, .50, 100)   # => NAs + warning (complements beyond range)
 
-
 }
 \seealso{
 \code{\link{num}} contains basic numeric parameters;
@@ -80,5 +79,6 @@ init_num(1, 1, .52, .50, 100)   # => NAs + warning (complements beyond range)
 \code{\link{comp_min_N}} computes a suitable minimum population size \code{\link{N}}.
 
 Other functions initializing scenario information: \code{\link{init_pal}},
-  \code{\link{init_txt}}
+  \code{\link{init_txt}}, \code{\link{riskyr}}
 }
+\concept{functions initializing scenario information}

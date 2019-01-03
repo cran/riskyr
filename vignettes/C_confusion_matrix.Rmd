@@ -1,7 +1,7 @@
 ---
-title: "Confusion Matrix and `riskyr` Metrics"
+title: "Confusion Matrix and Metrics"
 author: "Hansjörg Neth, SPDS, uni.kn"
-date: "2018 02 08"
+date: "2018 02 12"
 output: 
   rmarkdown::html_vignette: 
     fig_caption: yes
@@ -11,7 +11,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
+```{r setup, include = FALSE, message = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -23,23 +23,36 @@ library("riskyr")  # load the "riskyr" package
 
 Behold the aptly named "confusion matrix":
 
-|              | Condition |          |       |          |            
-| ----------:  |:--------:|:--------:|:----------:|:--------:|              
-| **Decision** | present (`TRUE`):      | absent (`FALSE`):     |     Sum:  |  (b) by decision:      |  
-| positive (`TRUE`):   | `hi`         | `fa`         | `dec.pos` | `PPV` = `hi`/`dec.pos` |
-| negative (`FALSE`):  | `mi`         | `cr`         | `dec.neg` | `NPV` = `cr`/`dec.neg` |
-|      Sum:    | `cond.true`  | `cond.false` |       `N` |                        |
-| (a) by condition  | `sens` = `hi`/`cond.true` | `spec` = `cr`/`cond.false` | |  `acc` = `dec.cor`/`N` = (`hi`+`cr`)/`N`     |
+|              | Condition |         |          |          |            
+| ----------:  |:--------:|:--------:|:--------:|:--------:|              
+| **Decision** | present (`TRUE`):    | absent (`FALSE`):     |     Sum:  |  (b) by decision: |  
+| positive (`TRUE`):   | `hi`         | `fa`         | `dec_pos` | `PPV` = `hi`/`dec_pos` |
+| negative (`FALSE`):  | `mi`         | `cr`         | `dec_neg` | `NPV` = `cr`/`dec_neg` |
+|      Sum:    | `cond_true`  | `cond_false` |       `N` |         `prev` =  `cond_true`/`N`     |
+| (a) by condition  | `sens` = `hi`/`cond_true` | `spec` = `cr`/`cond_false` | `ppod` = `dec_pos`/`N` |  `acc` = `dec_cor`/`N` = (`hi`+`cr`)/`N` |
 
 Most people, including medical experts and social scientists, struggle to understand the implications of this matrix. 
 This is no surprise when considering explanations like the corresponding article on [Wikipedia](https://en.wikipedia.org/wiki/Confusion_matrix), which squeezes more than a dozen metrics out of four essential frequencies (`hi`, `mi`, `fa`, and `cr`). While each particular metric is quite simple, their abundance and inter-dependence can be overwhelming.
 
-Fortunately, the basic matrix is actually quite simple and its implications rather straightforward. In the following, we aim to disentangle the profusion of measures and summarize those parts of the confusion matrix that a risk-literate person really needs to know.
+Fortunately, the basic matrix is also known as 2-by-2 contingency table, actually quite simple, and its implications rather straightforward. In the following, we aim to disentangle the profusion of measures and summarize those parts of the confusion matrix that a risk-literate person really needs to know.
 
+<!-- 
+
+## Terminology
+
+|              | 'cols' |          |       |          |            
+| ----------:  |:--------:|:--------:|:--------:|:--------:|              
+| `rows` | left (`TRUE`):      | right (`FALSE`):     |     Sum:  |  (b) by decision: |  
+| top (`TRUE`):   | `tl`         | `tr`         | `t` | `ptl` = `tl`/`t`  `ptr` = `tr`/`t` |
+| bottom (`FALSE`):  | `bl`       | `br`      | `b` | `NPV` = `cr`/`dec_neg` |
+|      Sum:    | `l`  | `r` |       `N` |         `pl` =  `nl`/`N`     |
+| (a) by condition  | `ptl` = `tl`/`l` `pbl` = `bl`/`l`   | `spec` = `cr`/`cond_false` | `pt` = `nt`/`N` |  `acc` = `dec_cor`/`N` = (`hi`+`cr`)/`N` |
+
+-->
 
 ## Basics
 
-Condensed to its core, the confusion matrix looks like this:
+Condensed to its core, the confusion matrix cross-tabulates two binary dimensions and classifies each individual case into one of 4 possible categories that result from combining the two binary variables (e.g., the condition and decision of each case) with each other. This may still sound complicated, but looks like this:
 
 |              | Condition | |
 | ------:      |:----:|:----:|      
@@ -48,8 +61,7 @@ Condensed to its core, the confusion matrix looks like this:
 | negative (`FALSE`):    |  `mi`   |  `cr`    | 
 
 
-This is not so confusing any more. And, perhaps surprisingly, all other metrics follow from this simple core in a straightforward way.
-
+Fortunately, this is not so confusing any more. And, perhaps surprisingly, all other metrics follow from this simple core in a straightforward way. In the following, we illustrate how the other metrics can be constructed from the 4 essential frequencies in the core of the matrix.
 
 ### Adopting 2 perspectives on a population
 
@@ -71,7 +83,7 @@ Importantly, all frequencies required to understand and compute various metrics 
 
 $$ 
 \begin{aligned}
-\texttt{N} \ &= \ \texttt{cond.true} & +\ \ \ \ \ &\texttt{cond.false}   & \textrm{(a)}      \\
+\texttt{N} \ &= \ \texttt{cond_true} & +\ \ \ \ \ &\texttt{cond_false}   & \textrm{(a)}      \\
            \ &= \ (\texttt{hi} + \texttt{mi}) & +\ \ \ \ \ &(\texttt{fa} + \texttt{cr}) \\
 \end{aligned}
 $$ 
@@ -80,7 +92,7 @@ $$
 
 $$ 
 \begin{aligned}
-\texttt{N} \ &= \ \texttt{dec.pos} & +\ \ \ \ \ &\texttt{dec.neg}   & \ \ \ \ \textrm{(b)}      \\
+\texttt{N} \ &= \ \texttt{dec_pos} & +\ \ \ \ \ &\texttt{dec_neg}   & \ \ \ \ \textrm{(b)}      \\
            \ &= \ (\texttt{hi} + \texttt{fa}) & +\ \ \ \ \ &(\texttt{mi} + \texttt{cr})         \\
 \end{aligned}
 $$ 
@@ -90,20 +102,45 @@ To reflect these two perspectives in the confusion matrix, we only need to add t
 |              | Condition |          |      |     
 | ------:      |:----:|:----:|:------:|:----:|              
 | **Decision** | present (`TRUE`): | absent (`FALSE`): |   Sum:  |   
-| positive (`TRUE`):   | `hi`         | `fa`         | `dec.pos` | 
-| negative (`FALSE`):  | `mi`         | `cr`         | `dec.neg` | 
-|      Sum:            | `cond.true`  | `cond.false` |       `N` |
+| positive (`TRUE`):   | `hi`         | `fa`         | `dec_pos` | 
+| negative (`FALSE`):  | `mi`         | `cr`         | `dec_neg` | 
+|      Sum:            | `cond_true`  | `cond_false` |       `N` |
 
 
-**ToDo:** 
+#### Example
+
+To view a 2x2 confusion table in `riskyr`, use the `plot_tab` function or plot an existing scenario as `type = "tab"`: 
+
+```{r plot_tab_demo, eval = TRUE, fig.width = 7, fig.height = 5, fig.show = 'hold', fig.cap = "Example of a 2x2 confusion table in `riskyr`."}
+# Plot table from basic input parameters: ----- 
+plot_tab(prev = .05, sens = .75, spec = .66, N = 1000,
+         p_lbl = "def", title_lbl = "Scenario 1")
+
+## Plot an existing riskyr scenario: ----- 
+# s <- scenarios$n1
+# plot(s, type = "tab", p_lbl = "def")
+```
+
+<!-- (The plots are not shown here, but please go ahead and generate them for yourself.) --> 
+
+<!-- 
+
+#### ToDo
 
 - Provide a numeric example.
-- Show corresponding mosaic plot and/or network diagram. 
 
+- Show corresponding table, mosaic plot, and/or prism plot/network diagram. 
+
+- Distinguish between different scenario types and causal models: 
+    - detection (e.g., in clinical diagnostics), 
+    - treatment (e.g., RCTs), 
+    - prevention (e.g., vaccination). 
+
+-->
 
 ### Accuracy as a 3rd perspective
 
-A third way of grouping the four essential frequencies results from asking the question: Which of the four essential frequencies are _correct_ decisions and which are _erroneous_ decisions? Crucially, this question about decision _accuracy_ can neither be answered by only considering each individual's condition (i.e., the columns of the matrix), nor can it be answered by only considering each individual's decision (i.e., the rows of the matrix). Instead, the question requires considering the _correspondence_ between condition and decision. Checking the correspondence between rows and columns for the four essential frequencies yields an important insight: The confusion matrix contains _two_ types of correct decisions and _two_ types of errors:
+A 3rd way of grouping the four essential frequencies results from asking the question: Which of the four essential frequencies are _correct_ decisions and which are _erroneous_ decisions? Crucially, this question about decision _accuracy_ can neither be answered by only considering each individual's condition (i.e., the columns of the matrix), nor can it be answered by only considering each individual's decision (i.e., the rows of the matrix). Instead, answering the question about accuracy requires that the other dimensions have been determined and then considering the _correspondence_ between condition and decision. Checking the correspondence between rows and columns for the four essential frequencies yields an important insight: The confusion matrix contains _two_ types of correct decisions and _two_ types of errors:
 
 - A decision is _correct_, when it corresponds to the condition. This is the case for two cells in (or the "\" diagonal of) the confusion matrix:
 
@@ -121,61 +158,70 @@ Splitting all `N` individuals into two subgroups of those with correct vs. those
 
 $$ 
 \begin{aligned}
-\texttt{N} \ &= \ \texttt{dec.cor} & +\ \ \ \ \ &\texttt{dec.err}   & \ \ \textrm{(c)}  \\
+\texttt{N} \ &= \ \texttt{dec_cor} & +\ \ \ \ \ &\texttt{dec_err}   & \ \ \textrm{(c)}  \\
            \ &= \ (\texttt{hi} + \texttt{cr}) & +\ \ \ \ \ &(\texttt{mi} + \texttt{fa}) \\
 \end{aligned}
 $$ 
 
+#### Example
 
-### Avoiding common sources of confusion
+Re-arranging the cells of the 2x2 confusion table allows illustrating accuracy as a 3rd perspective (e.g., by specifying the perspective `by = "cdac"`): 
+
+```{r plot_tab_cdac, eval = TRUE, fig.width = 7, fig.height = 5, fig.show = 'hold', fig.cap = "Arranging a 2x2 confusion table by condition and by accuracy."}
+plot_tab(prev = .05, sens = .75, spec = .66, N = 1000,
+         by = "cdac", p_split = "h", 
+         p_lbl = "def", title_lbl = "Scenario 2")
+```
+
+<!-- (Note that the plot is not shown here, but please go ahead and generate it for yourself.) --> 
+
+#### Avoiding common sources of confusion
 
 It may be instructive to point out two possible sources of confusion, so that they can be deliberately avoided:
 
 1. Beware of alternative terms for `mi` and `cr`:  
 
-    - Misses `mi` are often called "false negatives", but are nevertheless cases for which the condition is `TRUE` 
-    (i.e., in the `cond.true` column of the confusion table).
+    - Misses `mi` are often called "false negatives" (FN), but are nevertheless cases for which the condition is `TRUE` 
+    (i.e., in the `cond_true` column of the confusion table).
 
-    - Correct rejections `cr`are often called "true negatives", are nevertheless cases for which the condition is `FALSE` 
-    (i.e., in the `cond.false` column of the confusion table).
+    - Correct rejections `cr` are often called "true negatives" (TN), but are nevertheless cases for which the condition is `FALSE` 
+    (i.e., in the `cond_false` column of the confusion table).
 
-Thus, the terms "true" and "false" are ambiguous by switching their referents. When used to denote the four essential frequencies (e.g., describing `mi` as "false negatives" and `cr` as "true negatives") the terms refer to the correspondence of a decision to the condition, rather than to their condition. To avoid this source of confusion, we prefer the terms `mi` and `cr`, rather than "false negatives" and "true negatives".
+Thus, the terms "true" and "false" are sometimes ambiguous by switching their referents. When used to denote the four essential frequencies (e.g., describing `mi` as "false negatives" and `cr` as "true negatives") the terms refer to the correspondence of a decision to the condition, rather than to their condition. To avoid this source of confusion, we prefer the terms `mi` and `cr` over "false negatives" (FN) and "true negatives" (TN), respectively, but offer both options as pre-defined lists of text labels (see `txt_org` and `txt_TF`).  
 
-
-2. Beware of alternative terms for `dec.cor` and `dec.err`:  
-Similarly, it may be tempting to refer to instances of `dec.cor` and `dec.err` as "true decisions" and "false decisions". However, this would also invite conceptual confusion, as "true decisions" would include `cond.false` cases (`cr`) and "false decisions" would include `cond.true` cases (`mi`). Again, we prefer the less ambiguous terms "correct decisions" vs. "erroneous decisions".
-
+2. Beware of alternative terms for `dec_cor` and `dec_err`:  
+Similarly, it may be tempting to refer to instances of `dec_cor` and `dec_err` as "true decisions" and "false decisions". However, this would also invite conceptual confusion, as "true decisions" would include `cond_false` cases (`cr` or TN cases) and "false decisions" would include `cond_true` cases (`mi` or FN cases). Again, we prefer the less ambiguous terms "correct decisions" vs. "erroneous decisions". 
 
 
-## Accuracy Metrics
+## Accuracy metrics
 
-The perspective of accuracy raises an important question: How good is a given decision (e.g., a clinical judgment or some diagnostic test) in capturing the true state of the condition? Different accuracy metrics provide different answers to this question, but share a common goal --- measuring decision performance by capturing the correspondence of decisions to conditions in some quantitative fashion.^[It is convenient to think of accuracy metrics as _outcomes_ of the confusion table. However, when designing tests or decision algorithms, accuracy measures also serve as inputs that are to be maximized by some process (see Phillips et al., 2017, for examples).]
+The perspective of accuracy raises an important question: How good is some decision process (e.g., a clinical judgment or some diagnostic test) in capturing the true state of the condition? Different accuracy metrics provide different answers to this question, but share a common goal --- measuring decision performance by capturing the correspondence of decisions to conditions in some quantitative fashion.^[It is convenient to think of accuracy metrics as _outcomes_ of the confusion table. However, when designing tests or decision algorithms, accuracy measures also serve as inputs that are to be maximized by some process (see Phillips et al., 2017, for examples).]
 
-While all accuracy metrics quantify the relationship between correct and erroneous decisions, different metrics emphasize different aspects or have different purposes. We distinguish between specific and general metrics.
+While all accuracy metrics quantify the relationship between correct and erroneous decisions, different metrics emphasize different aspects or serve different purposes. We distinguish between specific and general metrics.
 
 ### A. Specific metrics: Conditional probabilities
 
-The goal of a specific accuracy metric is to quantify some particular aspect of decision performance. For instance, how accurate is our decision or diagnostic test in correctly detecting `cond.true` cases?  How accurate is it in detecting `cond.false` cases? 
+The goal of a specific accuracy metric is to quantify some particular aspect of decision performance. For instance, how accurate is our decision or diagnostic test in correctly detecting `cond_true` cases?  How accurate is it in detecting `cond_false` cases? 
 
 As we are dealing with two types of correct decisions (`hi` and `cr`) and two perspectives (by columns vs. by rows), we can provide 4 answers to these questions. To obtain a numeric quantity, we divide the frequency of correct cases (either `hi` or `cr`) by
 
-(a) column sums (`cond.true` vs. `cond.false`): This yields the decision's _sensitivity_ (`sens`) and _specificity_ (`spec`):
+(a) column sums (`cond_true` vs. `cond_false`): This yields the decision's _sensitivity_ (`sens`) and _specificity_ (`spec`):
 
 $$
 \begin{aligned}
-\texttt{sens} \ &= \frac{\texttt{hi}}{\texttt{cond.true}} & \ \ \textrm{(a1)}   \\
+\texttt{sens} \ &= \frac{\texttt{hi}}{\texttt{cond_true}} & \ \ \textrm{(a1)}   \\
 \ \\ 
-\texttt{spec} \ &= \frac{\texttt{cr}}{\texttt{cond.false}} & \ \ \textrm{(a2)}  \\
+\texttt{spec} \ &= \frac{\texttt{cr}}{\texttt{cond_false}} & \ \ \textrm{(a2)}  \\
 \end{aligned}
 $$
 
-(b) row sums (`dec.pos` vs. `dec.neg`): This yields the decision's _positive predictive value_ (`PPV`) and _negative predictive value_ (`NPV`): 
+(b) row sums (`dec_pos` vs. `dec_neg`): This yields the decision's _positive predictive value_ (`PPV`) and _negative predictive value_ (`NPV`): 
 
 $$
 \begin{aligned}
-\texttt{PPV} \ &= \frac{\texttt{hi}}{\texttt{dec.pos}} & \ \ \ \textrm{(b1)}   \\
+\texttt{PPV} \ &= \frac{\texttt{hi}}{\texttt{dec_pos}} & \ \ \ \textrm{(b1)}   \\
 \ \\ 
-\texttt{NPV} \ &= \frac{\texttt{cr}}{\texttt{dec.neg}} & \ \ \ \textrm{(b2)}   \\
+\texttt{NPV} \ &= \frac{\texttt{cr}}{\texttt{dec_neg}} & \ \ \ \textrm{(b2)}   \\
 \end{aligned}
 $$
 
@@ -186,7 +232,7 @@ In contrast to these specific metrics, general metrics of accuracy aim to captur
 
 #### 1. Overall accuracy `acc` 
 
-Overall accuracy (`acc`) divides the number of correct decisions (i.e., all `dec.cor` cases or the "\" diagonal of the confusion table) by the number `N` of all decisions (or individuals for which decisions have been made). Thus, 
+Overall accuracy (`acc`) divides the number of correct decisions (i.e., all `dec_cor` cases or the "\" diagonal of the confusion table) by the number `N` of all decisions (or individuals for which decisions have been made). Thus, 
 
 > Accuracy `acc` := Proportion or percentage of cases correctly classified.
 
@@ -195,10 +241,9 @@ Numerically, overall accuracy `acc` is computed as:
 $$
 \begin{aligned}
 \texttt{acc} &= \frac{\texttt{hi} + \texttt{cr}}{\texttt{hi} + \texttt{mi} + \texttt{fa} + \texttt{cr}} 
-             = \frac{\texttt{dec.cor}}{\texttt{dec.cor} + \texttt{dec.err}} = \frac{\texttt{dec.cor}}{\texttt{N}}  
+             = \frac{\texttt{dec_cor}}{\texttt{dec_cor} + \texttt{dec_err}} = \frac{\texttt{dec_cor}}{\texttt{N}}  
 \end{aligned}
 $$
-
 
 #### 2. Weighted accuracy `wacc`
 
@@ -220,7 +265,6 @@ Three cases can be distinguished, based on the value of the weighting parameter 
 
 3. If `.5 < w <= 1`, `sens` is more important than `spec` (i.e., instances of `mi` are considered more serious errors than instances of `fa`).
 
-
 #### 3. Matthews correlation coefficient `mcc`
 
 The Matthews correlation coefficient (with values ranging from $-1$ to $+1$) is computed as: 
@@ -234,7 +278,6 @@ $$
 The `mcc` is a correlation coefficient specifying the correspondence between the actual and the predicted binary categories. A value of $0$ represents chance performance, a value of $+1$ represents perfect performance, and a value of $−1$ indicates complete disagreement between truth and predictions. 
 
 See [Wikipedia: Matthews correlation coefficient](https://en.wikipedia.org/wiki/Matthews_correlation_coefficient) for details. 
-
 
 #### 4. F1 score
 
@@ -254,7 +297,7 @@ See [Wikipedia: F1 score](https://en.wikipedia.org/wiki/F1_score) for details.
 - Phillips, N. D., Neth, H., Woike, J. K., & Gaissmaier, W. (2017). 
 FFTrees: A toolbox to create, visualize, and evaluate fast-and-frugal decision trees. 
 _Judgment and Decision Making_, _12_, 344--368. 
-[ [pdf](http://journal.sjdm.org/17/17217/jdm17217.pdf) | [html](http://journal.sjdm.org/17/17217/jdm17217.html) | [R package](https://CRAN.R-project.org/package=FFTrees) ]
+[Available online: [pdf](http://journal.sjdm.org/17/17217/jdm17217.pdf) | [html](http://journal.sjdm.org/17/17217/jdm17217.html) | [R package](https://CRAN.R-project.org/package=FFTrees) ]
 
 
 Links to related Wikipedia articles:
@@ -264,16 +307,35 @@ Links to related Wikipedia articles:
 - [F1 score](https://en.wikipedia.org/wiki/F1_score) 
 
 
+### Resources
+
+The following resources and versions are currently available:
+
+Type:                    | Version:           | URL:                           |        
+:------------------------|:-------------------|:-------------------------------|
+A. `riskyr` (R package): | [Release version](https://CRAN.R-project.org/package=riskyr) | <https://CRAN.R-project.org/package=riskyr> |
+\                        | [Development version](https://github.com/hneth/riskyr)       | <https://github.com/hneth/riskyr> | 
+B. `riskyrApp` (R Shiny code): | [Online version](http://riskyr.org)                    | <http://riskyr.org> | 
+\                        | [Development version](https://github.com/hneth/riskyrApp)    | <https://github.com/hneth/riskyrApp> | 
+C. Online documentation: | [Release version](https://hneth.github.io/riskyr)            | <https://hneth.github.io/riskyr> | 
+\                        | [Development version](https://hneth.github.io/riskyr/dev)    | <https://hneth.github.io/riskyr/dev> | 
+
+
 ## Contact
+
+<!-- uni.kn logo and link to SPDS: -->  
+<a href="https://www.spds.uni-konstanz.de/">
+<img src = "../inst/pix/uniKn_logo.png" alt = "spds.uni.kn" style = "width: 280px; float: right; border:10;"/> 
+</a>
 
 We appreciate your feedback, comments, or questions. 
 
-- Please report any `riskyr`-related issues at <https://github.com/hneth/riskyr/issues>.
+- Please report any `riskyr`-related issues at <https://github.com/hneth/riskyr/issues>. 
 
-- For general inquiries, please email us at <contact.riskyr@gmail.com>. 
+- Email us at <contact.riskyr@gmail.com> if you want to modify or share this software. 
 
 
-## All `riskyr` Vignettes
+## All riskyr vignettes
 
 <!-- riskyr logo: -->
 <a href="https://github.com/hneth/riskyr">

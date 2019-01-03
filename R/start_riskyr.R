@@ -1,10 +1,9 @@
 ## start_riskyr.R | riskyr
-## 2018 02 15
+## 2018 12 20
+## Final functions and start-up settings:
 ## -----------------------------------------------
-## Final settings:
 
 ## (1) Open package guide: -----------------------
-
 
 #' Opens the riskyr package guides
 #'
@@ -15,11 +14,10 @@
 
 riskyr.guide <- function() {
 
- # utils::vignette(topic = "User Guide", package = "riskyr")
- utils::browseVignettes(package = "riskyr")
+  # utils::vignette(topic = "User Guide", package = "riskyr")
+  utils::browseVignettes(package = "riskyr")
 
 }
-
 
 ## (2) Run some code when starting riskyr: -------
 
@@ -51,7 +49,7 @@ start_riskyr <- function(...) {
   ## (4) Compute derived data structures and variables:
   prob <- comp_prob()
   freq <- comp_freq()
-  accu <- comp_accu()
+  accu <- comp_accu_prob()  # was: comp_accu() which used to call comp_accu_freq()
 
   ## (5) Insert computed values into riskyr.lst:
   riskyr.lst <- list(txt = txt,
@@ -69,29 +67,89 @@ start_riskyr <- function(...) {
 
 }
 
-## (3) Initialize package: -----------------------
+## (3) Initialize package: ------
 
 .onAttach <- function(libname, pkgname) {
 
-  ## Welcome message:
-  packageStartupMessage("Welcome to riskyr!")
+  ## Welcome message: ------
 
-  # packageStartupMessage("              ")
-  # packageStartupMessage("      N       ")
-  # packageStartupMessage("    /  \\     ")
-  # packageStartupMessage("  T      F    ")
-  # packageStartupMessage(" / \\    / \\ ")
-  # packageStartupMessage("hi mi fa  cr  ")
-  # packageStartupMessage("              ")
-  # packageStartupMessage("Running riskyr v0.0.x.")
-  # packageStartupMessage("Ready to riskyr it...")
+  pkg_version <- utils::packageVersion("riskyr", lib.loc = NULL)
+  # welcome_message <- paste0("Welcome to riskyr (v", pkg_version, ")!")
+  welcome_message <- paste0("Welcome to riskyr!")
 
-  ## User guidance:
-  packageStartupMessage("riskyr.guide() opens user guides.")
+  packageStartupMessage(welcome_message)
+
+  ## User guidance: ------
+
+  # packageStartupMessage("riskyr.guide() opens user guides.")
   # packageStartupMessage("citation('riskyr') provides citation info.")
+
+  ## Roll riskyr dice: ------
+  ## (to illustrate the underlying notion of "risk")
+  dice <- sample(1:6, 1)
+
+  # if (dice == 0) {packageStartupMessage("citation('riskyr') provides citation info.")}
+
+  if (dice == 1) {
+    pkg_version <- utils::packageVersion("riskyr", lib.loc = NULL)
+    pkg_message <- paste0("Running riskyr (v", pkg_version, ")...")
+
+    packageStartupMessage(" ")
+    packageStartupMessage(pkg_message)
+    packageStartupMessage(" ")
+  }
+
+  if (dice == 2) {
+    packageStartupMessage(" ")
+    packageStartupMessage("Ready to roll riskyr...")
+    packageStartupMessage(" ")
+  }
+
+  if (dice == 3) {
+    packageStartupMessage(" ")
+    packageStartupMessage("Ready to riskyr it...")
+    packageStartupMessage(" ")
+  }
+
+  if (dice == 4) {
+    packageStartupMessage("             ")
+    packageStartupMessage("   _____     ")
+    packageStartupMessage("  /\\ r  \\  ")
+    packageStartupMessage(" /y \\__i_\\ ")
+    packageStartupMessage(" \\ r/s   /  ")
+    packageStartupMessage("  \\/___k/   ")
+    packageStartupMessage("             ")
+  }
+
+  if (dice == 5) {
+    packageStartupMessage("       ")
+    packageStartupMessage(" hi fa ")
+    packageStartupMessage("   +   ")
+    packageStartupMessage(" mi cr ")
+    packageStartupMessage("       ")
+  }
+
+  if (dice == 6) {
+    packageStartupMessage("              ")
+    packageStartupMessage("      N       ")
+    packageStartupMessage("    /  \\     ")
+    packageStartupMessage("  T      F    ")
+    packageStartupMessage(" / \\    / \\ ")
+    packageStartupMessage("hi  mi fa  cr ")
+    packageStartupMessage("              ")
+  }
+
+  packageStartupMessage("riskyr.guide() opens user guides.")
+
 }
 
-## (+) ToDo: -------------------------------------
+
+## (*) Done: ----------
+
+## - Clean up code.  [2018 08 22].
+
+## (+) ToDo: ----------
+
 ## - ...
-## -----------------------------------------------
-## eof.
+
+## eof. ------------------------------------------

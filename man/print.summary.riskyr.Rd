@@ -2,7 +2,7 @@
 % Please edit documentation in R/riskyr_class.R
 \name{print.summary.riskyr}
 \alias{print.summary.riskyr}
-\title{Printing summarized risk information.}
+\title{Print summary information of a riskyr scenario.}
 \format{Printed output of a "summary.riskyr" object.}
 \usage{
 \method{print}{summary.riskyr}(x = NULL, ...)
@@ -10,8 +10,7 @@
 \arguments{
 \item{x}{An object of class "summary.riskyr", usually a result of a call to \code{summary.riskyr}.}
 
-\item{...}{Additional parameters to be passed to the
-generic print function.}
+\item{...}{Additional parameters (to be passed to generic print function).}
 }
 \description{
 \code{print.summary.riskyr} provides a \code{print} method for objects of class "summary.riskyr".
@@ -20,3 +19,7 @@ generic print function.}
 summary(scenarios$n4)
 
 }
+\seealso{
+\code{\link{riskyr}} initializes a \code{riskyr} scenario.
+}
+\concept{print functions}

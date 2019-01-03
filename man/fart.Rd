@@ -32,8 +32,8 @@ or the probability of a false alarm.
 
 \item Perspective:
   \code{fart} further classifies
-  the subset of \code{\link{cond.false}} individuals
-  by decision (\code{fart = fa/cond.false}).
+  the subset of \code{\link{cond_false}} individuals
+  by decision (\code{fart = fa/cond_false}).
 
 \item Alternative names:
   false positive rate (\code{FPR}),
@@ -57,10 +57,10 @@ b. \code{fart} is the opposite conditional probability
 
 \item In terms of frequencies,
   \code{fart} is the ratio of
-  \code{\link{fa}} divided by \code{\link{cond.false}}
+  \code{\link{fa}} divided by \code{\link{cond_false}}
   (i.e., \code{\link{fa} + \link{cr}}):
 
-\code{fart = fa/cond.false = fa/(fa + cr)}
+\code{fart = fa/cond_false = fa/(fa + cr)}
 
 \item Dependencies:
   \code{fart} is a feature of a decision process
@@ -75,9 +75,10 @@ However, due to being a conditional probability,
 }
 }
 \examples{
-fart <- .25     # => sets a false alarm rate of 25\%
-fart <- 25/100  # => (decision = positive) for 25 out of 100 people with (condition = FALSE)
-is_prob(fart)   # => TRUE (as fart is a probability)
+fart <- .25     # sets a false alarm rate of 25\%
+fart <- 25/100  # (decision = positive) for 25 out of 100 people with (condition = FALSE)
+is_prob(fart)   # TRUE
+
 }
 \references{
 Consult \href{https://en.wikipedia.org/wiki/Sensitivity_and_specificity}{Wikipedia} for additional information.
@@ -89,11 +90,13 @@ Consult \href{https://en.wikipedia.org/wiki/Sensitivity_and_specificity}{Wikiped
 \code{\link{num}} contains basic numeric parameters;
 \code{\link{init_num}} initializes basic numeric parameters;
 \code{\link{comp_freq}} computes current frequency information;
-\code{\link{is_prob}} verifies probability inputs.
+\code{\link{is_prob}} verifies probabilities.
 
 Other probabilities: \code{\link{FDR}}, \code{\link{FOR}},
-  \code{\link{NPV}}, \code{\link{PPV}}, \code{\link{mirt}},
+  \code{\link{NPV}}, \code{\link{PPV}}, \code{\link{acc}},
+  \code{\link{err}}, \code{\link{mirt}},
   \code{\link{ppod}}, \code{\link{prev}},
   \code{\link{sens}}, \code{\link{spec}}
 }
+\concept{probabilities}
 \keyword{datasets}

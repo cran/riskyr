@@ -28,8 +28,8 @@ or false discovery rate (\code{FDR}):
 
 \item Perspective:
   \code{FDR} further classifies
-  the subset of \code{\link{dec.pos}} individuals
-  by condition (\code{FDR = fa/dec.pos = fa/(hi + fa)}).
+  the subset of \code{\link{dec_pos}} individuals
+  by condition (\code{FDR = fa/dec_pos = fa/(hi + fa)}).
 
 \item Alternative names:
   false discovery rate
@@ -49,10 +49,10 @@ b. \code{FDR} is the opposite conditional probability
 
 \item In terms of frequencies,
   \code{FDR} is the ratio of
-  \code{\link{fa}} divided by \code{\link{dec.pos}}
+  \code{\link{fa}} divided by \code{\link{dec_pos}}
   (i.e., \code{\link{hi} + \link{fa}}):
 
-\code{FDR = fa/dec.pos = fa/(hi + fa)}
+\code{FDR = fa/dec_pos = fa/(hi + fa)}
 
 \item Dependencies:
   \code{FDR} is a feature of a decision process
@@ -68,26 +68,28 @@ However, due to being a conditional probability,
 }
 }
 \examples{
-FDR <- .45     # => sets a false discovery rate (FDR) of 45\%
-FDR <- 45/100  # => (condition = FALSE) for 45 out of 100 people with (decision = positive)
-is_prob(FDR)   # => TRUE (as FDR is a probability)
+FDR <- .45     # sets a false detection rate (FDR) of 45\%
+FDR <- 45/100  # (condition = FALSE) for 45 out of 100 people with (decision = positive)
+is_prob(FDR)   # TRUE
+
 }
 \references{
 Consult \href{https://en.wikipedia.org/wiki/Positive_and_negative_predictive_values}{Wikipedia} for additional information.
 }
 \seealso{
-\code{\link{comp_FDR}} computes \code{FDR} as the complement of \code{\link{PPV}};
 \code{\link{prob}} contains current probability information;
 \code{\link{comp_prob}} computes current probability information;
 \code{\link{num}} contains basic numeric parameters;
 \code{\link{init_num}} initializes basic numeric parameters;
+\code{\link{freq}} contains current frequency information;
 \code{\link{comp_freq}} computes current frequency information;
-\code{\link{is_prob}} verifies probability inputs.
+\code{\link{is_prob}} verifies probabilities.
 
 Other probabilities: \code{\link{FOR}}, \code{\link{NPV}},
-  \code{\link{PPV}}, \code{\link{fart}},
-  \code{\link{mirt}}, \code{\link{ppod}},
-  \code{\link{prev}}, \code{\link{sens}},
-  \code{\link{spec}}
+  \code{\link{PPV}}, \code{\link{acc}}, \code{\link{err}},
+  \code{\link{fart}}, \code{\link{mirt}},
+  \code{\link{ppod}}, \code{\link{prev}},
+  \code{\link{sens}}, \code{\link{spec}}
 }
+\concept{probabilities}
 \keyword{datasets}

@@ -24,7 +24,8 @@ otherwise \code{FALSE}.
 \description{
 \code{is_complement} is a function that
 takes 2 numeric arguments (typically probabilities) as inputs and
-verifies that they are \emph{complements} (i.e., add up to 1).
+verifies that they are \emph{complements} (i.e., add up to 1,
+within some tolerance range \code{tol}).
 }
 \details{
 Both \code{p1} and \code{p2} are necessary arguments.
@@ -54,11 +55,10 @@ is_complement(8, -7)             # => TRUE + warnings (p1 and p2 beyond range)
 is_complement(.3, .6)            # => FALSE + warning (beyond tolerance)
 is_complement(.3, .6, tol = .1)  # => TRUE (due to increased tolerance)
 
-## ways to fail:
+# ways to fail:
 # is_complement(0, 0)            # => FALSE + warning (beyond tolerance)
 # is_complement(1, 1)            # => FALSE + warning (beyond tolerance)
 # is_complement(8, 8)            # => FALSE + warning (beyond tolerance)
-
 
 }
 \seealso{
@@ -81,3 +81,4 @@ Other verification functions: \code{\link{is_extreme_prob_set}},
   \code{\link{is_valid_prob_set}},
   \code{\link{is_valid_prob_triple}}
 }
+\concept{verification functions}

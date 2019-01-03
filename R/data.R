@@ -1,123 +1,41 @@
 ## data.R | riskyr
-## 2018 02 14
-## -----------------------------------------------
-## Document scenarios in ./data
+## 2018 12 20
+## Document the scenarios of ./data
 ## -----------------------------------------------
 
-#' A collection of riskyr scenarios from various sources.
+#' A collection of riskyr scenarios from various sources (as df).
 #'
-#' \code{df.scenarios} is an R data frame that
+#' \code{df_scenarios} is an R data frame that
 #' contains a collection of scenarios from the
 #' scientific literature and other sources.
 #'
 #' When loading \code{riskyr}, all scenarios contained in
-#' \code{df.scenarios} are also converted into a list of
+#' \code{df_scenarios} are converted into a list of
 #' \code{riskyr} objects \code{\link{scenarios}}.
 #'
-#'
-#' @format A data frame with currently 26 rows (i.e., scenarios)
+#' @format A data frame with currently 25 rows (i.e., scenarios)
 #' and 21 columns (variables describing each scenario):
 #'
-#' Scenarios:
-#'
-#' \enumerate{
-#'
-#'   \item Mammografie 1
-#'
-#'   \item Nackenfaltentest (NFT)
-#'
-#'   \item HIV 1 (f)
-#'
-#'   \item HIV 2 (f)
-#'
-#'   \item Mammography 2
-#'
-#'   \item Sepsis
-#'
-#'   \item Cab problem
-#'
-#'   \item Sigmoidoskopie 1
-#'
-#'   \item Sigmoidoskopie 1
-#'
-#'   \item Brustkrebs 1
-#'
-#'   \item Brustkrebs 2 (BRCA1)
-#'
-#'   \item Brustkrebs 3 (BRCA1+pos. Mam.)
-#'
-#'   \item HIV 3 (m)
-#'
-#'   \item HIV 4 (m)
-#'
-#'   \item Nackenfaltentest 2 (NFT)
-#'
-#'   \item Amniozentese (pos. NFT)
-#'
-#'   \item Musical town
-#'
-#'   \item Mushrooms
-#'
-#'   \item Bowel cancer (FOB screening)
-#'
-#'   \item PSA test 1 (high prev)
-#'
-#'   \item PSA test 2 (low prev)
-#'
-#'   \item Colorectal cancer
-#'
-#'   \item Psylicraptis screening
-#'
-#'   \item Mammography 6 (prob)
-#'
-#'   \item Mammography 6 (freq)
-#'
-#' }
-#'
-#' Describing variables:
-#'
-#' \enumerate{
-#'
-#'   \item \code{scen.lbl} Text label for current scenario.
-#'   \item \code{scen.lng} Language of current scenario.
-#'   \item \code{scen.txt} Description text of current scenario.
-#'
-#'   \item \code{popu.lbl} Text label for current population.
-#'
-#'   \item \code{cond.lbl} Text label for current condition.
-#'   \item \code{cond.true.lbl} Text label for \code{\link{cond.true}} cases.
-#'   \item \code{cond.false.lbl} Text label for \code{\link{cond.false}} cases.
-#'
-#'   \item \code{dec.lbl} Text label for current decision.
-#'   \item \code{dec.pos.lbl} Text label for \code{\link{dec.pos}} cases.
-#'   \item \code{dec.neg.lbl} Text label for \code{\link{dec.neg}} cases.
-#'
-#'   \item \code{hi.lbl} Text label for cases of hits \code{\link{hi}}.
-#'   \item \code{mi.lbl} Text label for cases of misses \code{\link{mi}}.
-#'   \item \code{fa.lbl} Text label for cases of false alarms \code{\link{fa}}.
-#'   \item \code{cr.lbl} Text label for cases of correct rejections \code{\link{cr}}.
-#'
-#'   \item \code{prev} Value of current prevalence \code{\link{prev}}.
-#'   \item \code{sens} Value of current sensitivity \code{\link{sens}}.
-#'   \item \code{spec} Value of current specificity \code{\link{spec}}.
-#'   \item \code{fart} Value of current false alarm rate \code{\link{fart}}.
-#'
-#'   \item \code{N} Current population size \code{\link{N}}.
-#'
-#'   \item \code{scen.src} Source information for current scenario.
-#'   \item \code{scen.apa} Source information in APA format.
-#'
-#' }
+#' See \code{\link{scenarios}} for a list of scenarios
+#' and the variables currently contained in \code{df_scenarios}.
 #'
 #' Note that names of variables (columns)
-#' correspond to \code{\link{init_txt}} (to initialize \code{\link{txt}})
+#' correspond to a subset of \code{\link{init_txt}} (to initialize \code{\link{txt}})
 #' and \code{\link{init_num}} (to initialize \code{\link{num}}).
 #'
+#' The variables \code{scen_src} and \code{scen_apa}
+#' provide a scenario's source information.
 #'
-#' @source See columns \code{scen.src} and \code{scen.apa}
-#' for a scenario's source information.
+#' @seealso
+#' \code{\link{scenarios}} contains all scenarios as \code{riskyr} objects;
+#' \code{\link{riskyr}} initializes a \code{riskyr} scenario;
+#' \code{\link{txt}} contains basic text information;
+#' \code{\link{init_txt}} initializes text information;
+#' \code{\link{num}} contains basic numeric parameters;
+#' \code{\link{init_num}} initializes basic numeric parameters;
+#' \code{\link{pal}} contains current color information;
+#' \code{\link{init_pal}} initializes color information.
 
-"df.scenarios"
+"df_scenarios"
 
-## -----------------------------------------------
-## eof.
+## eof. ------------------------------------------

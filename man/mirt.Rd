@@ -31,8 +31,8 @@ or the probability of failing to detect true cases
 
 \item Perspective:
   \code{mirt} further classifies
-  the subset of \code{\link{cond.true}} individuals
-  by decision (\code{mirt = mi/cond.true}).
+  the subset of \code{\link{cond_true}} individuals
+  by decision (\code{mirt = mi/cond_true}).
 
 \item Alternative names:
   false negative rate (\code{FNR}),
@@ -53,10 +53,10 @@ b. \code{mirt} is the _opposite_ conditional probability
 
 \item In terms of frequencies,
   \code{mirt} is the ratio of
-  \code{\link{mi}} divided by \code{\link{cond.true}}
+  \code{\link{mi}} divided by \code{\link{cond_true}}
   (i.e., \code{\link{hi} + \link{mi}}):
 
-\code{mirt = mi/cond.true = mi/(hi + mi)}
+\code{mirt = mi/cond_true = mi/(hi + mi)}
 
 \item Dependencies:
   \code{mirt} is a feature of a decision process
@@ -73,7 +73,6 @@ However, due to being a conditional probability,
 \examples{
 mirt <- .15     # => sets a miss rate of 15\%
 mirt <- 15/100  # => (decision = negative) for 15 out of 100 people with (condition = TRUE)
-is_prob(mirt)   # => TRUE (as mirt is a probability)
 }
 \references{
 Consult \href{https://en.wikipedia.org/wiki/Sensitivity_and_specificity}{Wikipedia} for additional information.
@@ -85,11 +84,13 @@ Consult \href{https://en.wikipedia.org/wiki/Sensitivity_and_specificity}{Wikiped
 \code{\link{num}} contains basic numeric parameters;
 \code{\link{init_num}} initializes basic numeric parameters;
 \code{\link{comp_freq}} computes current frequency information;
-\code{\link{is_prob}} verifies probability inputs.
+\code{\link{is_prob}} verifies probabilities.
 
 Other probabilities: \code{\link{FDR}}, \code{\link{FOR}},
-  \code{\link{NPV}}, \code{\link{PPV}}, \code{\link{fart}},
+  \code{\link{NPV}}, \code{\link{PPV}}, \code{\link{acc}},
+  \code{\link{err}}, \code{\link{fart}},
   \code{\link{ppod}}, \code{\link{prev}},
   \code{\link{sens}}, \code{\link{spec}}
 }
+\concept{probabilities}
 \keyword{datasets}

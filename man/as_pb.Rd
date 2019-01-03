@@ -2,22 +2,22 @@
 % Please edit documentation in R/comp_util.R
 \name{as_pb}
 \alias{as_pb}
-\title{Display a percentage as a (rounded) probability.}
+\title{Display a percentage as a (numeric and rounded) probability.}
 \usage{
-as_pb(perc, n.digits = 4)
+as_pb(perc, n_digits = 4)
 }
 \arguments{
 \item{perc}{A percentage (as a scalar or vector of numeric values from 0 to 100).}
 
-\item{n.digits}{Number of decimal places to which percentage is rounded.
-Default: \code{n.digits = 4}.}
+\item{n_digits}{Number of decimal places to which percentage is rounded.
+Default: \code{n_digits = 4}.}
 }
 \value{
 A probability (as a numeric value).
 }
 \description{
 \code{as_pb} is a function that displays a percentage \code{perc}
-as a probability (rounded to \code{n.digits} decimals).
+as a probability (rounded to \code{n_digits} decimals).
 }
 \details{
 \code{as_pb} and its complement function \code{\link{as_pc}} allow
@@ -26,16 +26,6 @@ toggling the display of numeric values between percentages and probabilities.
 \examples{
 as_pb(1/3)          # => 0.0033
 as_pb(as_pc(2/3))   # => 0.6667 (rounded to 4 decimals)
-
-prob.seq <- seq(0, 1, by = 1/10)
-perc.seq <- seq(0, 100, by = 10)
-
-as_pc(prob.seq)  # =>   0  10  20  30  40  50  60  70  80  90 100
-as_pb(perc.seq)  # => 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
-
-perc.seq == as_pc(as_pb(perc.seq))            # => all TRUE
-prob.seq == as_pb(as_pc(prob.seq))            # => some FALSE due to rounding errors!
-round(prob.seq, 4) == as_pb(as_pc(prob.seq))  # => all TRUE (both rounded to 4 decimals)
 
 }
 \seealso{
@@ -51,7 +41,10 @@ round(prob.seq, 4) == as_pb(as_pc(prob.seq))  # => all TRUE (both rounded to 4 d
 \code{\link{comp_complement}} computes a probability's complement;
 \code{\link{comp_comp_pair}} computes pairs of complements.
 
-Other utility functions: \code{\link{as_pc}}
+Other utility functions: \code{\link{as_pc}},
+  \code{\link{plot.box}}
 
 Other display functions: \code{\link{as_pc}}
 }
+\concept{display functions}
+\concept{utility functions}

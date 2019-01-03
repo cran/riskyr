@@ -2,9 +2,8 @@
 % Please edit documentation in R/riskyr_class.R
 \name{summary.riskyr}
 \alias{summary.riskyr}
-\title{Summarizing a riskyr scenario.}
-\format{An object of class \code{summary.riskyr}
-with up to 9 entries.}
+\title{Summarize a riskyr scenario.}
+\format{An object of class \code{summary.riskyr} with up to 9 entries.}
 \usage{
 \method{summary}{riskyr}(object = NULL, summarize = "all", ...)
 }
@@ -16,8 +15,7 @@ Inbuilt \code{scenarios} are also of type "riskyr".}
 for frequencies, probabilities, and accuracy respectively.
 The default "all" is an alias to all three.}
 
-\item{...}{Additional parameters to be passed to the
-underlying summary functions.}
+\item{...}{Additional parameters (to be passed to summary functions).}
 }
 \value{
 A summary list \code{obj.sum}
@@ -33,3 +31,11 @@ are summarized by default.
 summary(scenarios$n4)
 
 }
+\seealso{
+\code{\link{riskyr}} initializes a \code{riskyr} scenario.
+
+Other riskyr scenario functions: \code{\link{plot.riskyr}},
+  \code{\link{read_popu}}, \code{\link{riskyr}}
+}
+\concept{riskyr scenario functions}
+\concept{summary functions}

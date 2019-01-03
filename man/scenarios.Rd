@@ -3,108 +3,98 @@
 \docType{data}
 \name{scenarios}
 \alias{scenarios}
-\title{A collection of riskyr scenarios from various sources.}
-\format{A list with currently 26 objects of class "riskyr" (i.e., scenarios)
-which are each described by 21 variables:}
+\title{A collection of riskyr scenarios from various sources (as list).}
+\format{A list with currently 25 scenarios of class \code{riskyr}
+which are each described by 21 variables.}
 \usage{
 scenarios
 }
 \description{
-\code{scenarios} is a list  that
-contains a collection of scenarios of class "riskyr" from the
-scientific literature and other sources that can be used directly
-in the visualization and summary functions.
+\code{scenarios} is a list of scenarios of class \code{riskyr}
+collected from the scientific literature and other sources
+and to be used by visualization and summary functions.
 }
 \details{
-\code{scenarios} currently contains the following scenarios:
+\code{scenarios} currently contains the following scenarios
+(n1 to n12 in English language, n13 to n25 in German language):
 
 \enumerate{
 
-\item Mammografie 1
-
-\item Nackenfaltentest (NFT)
-
-\item HIV 1 (f)
-  \item HIV 2 (f)
-
-\item Mammography 2
-
-\item Sepsis
-
-\item Cab problem
-
-\item Sigmoidoskopie 1
-  \item Sigmoidoskopie 2
-
-\item Brustkrebs 1
-  \item Brustkrebs 2 (BRCA1)
-  \item Brustkrebs 3 (BRCA1 + pos. Mam.)
-  \item HIV 3 (m)
-  \item HIV 4 (m)
-  \item Nackenfaltentest 2 (NFT)
-  \item Amniozentese (pos. NFT)
-
-\item Musical town
+\item Bowel cancer screening
+  \item Cab problem
+  \item Hemoccult test
+  \item Mammography screening
+  \item Mammography (freq)
+  \item Mammography (prob)
   \item Mushrooms
+  \item Musical town
+  \item PSA test (baseline)
+  \item PSA test (patients)
+  \item Psylicraptis screening
+  \item Sepsis
 
-\item Bowel cancer (FOB screening)
-
-\item PSA test 1 (high prev)
-  \item PSA test 2 (low prev)
-
-\item Colorectal cancer
-
-\item Psylicraptis screening
-
-\item Mammography 6 (prob)
-  \item Mammography 6 (freq)
-
+\item Amniozentese (in German language)
+  \item HIV-Test 1
+  \item HIV-Test 2
+  \item HIV-Test 3
+  \item HIV-Test 4
+  \item Mammografie 1
+  \item Mammografie 2
+  \item Mammografie 3
+  \item Mammografie 4
+  \item Nackenfaltentest (NFT) 1
+  \item Nackenfaltentest (NFT) 2
+  \item Sigmoidoskopie 1
+  \item Sigmoidoskopie 2
 }
 
-Variables describing each scenario:
+Variables describing a scenario:
 
 \enumerate{
 
-\item \code{scen.lbl} Text label for current scenario.
-  \item \code{scen.lng} Language of current scenario.
-  \item \code{scen.txt} Description text of current scenario.
+\item \code{scen_lbl}: Text label for current scenario.
+  \item \code{scen_lng}: Language of current scenario (en/de).
+  \item \code{scen_txt}: Description text of current scenario.
 
-\item \code{popu.lbl} Text label for current population.
+\item \code{popu_lbl}: Text label for current population.
 
-\item \code{cond.lbl} Text label for current condition.
-  \item \code{cond.true.lbl} Text label for \code{\link{cond.true}} cases.
-  \item \code{cond.false.lbl} Text label for \code{\link{cond.false}} cases.
+\item \code{cond_lbl}: Text label for current condition.
+  \item \code{cond_true_lbl}: Text label for \code{\link{cond_true}} cases.
+  \item \code{cond_false_lbl}: Text label for \code{\link{cond_false}} cases.
 
-\item \code{dec.lbl} Text label for current decision.
-  \item \code{dec.pos.lbl} Text label for \code{\link{dec.pos}} cases.
-  \item \code{dec.neg.lbl} Text label for \code{\link{dec.neg}} cases.
+\item \code{dec_lbl}: Text label for current decision.
+  \item \code{dec_pos_lbl}: Text label for \code{\link{dec_pos}} cases.
+  \item \code{dec_neg_lbl}: Text label for \code{\link{dec_neg}} cases.
 
-\item \code{hi.lbl} Text label for cases of hits \code{\link{hi}}.
-  \item \code{mi.lbl} Text label for cases of misses \code{\link{mi}}.
-  \item \code{fa.lbl} Text label for cases of false alarms \code{\link{fa}}.
-  \item \code{cr.lbl} Text label for cases of correct rejections \code{\link{cr}}.
+\item \code{hi_lbl}: Text label for cases of hits \code{\link{hi}}.
+  \item \code{mi_lbl}: Text label for cases of misses \code{\link{mi}}.
+  \item \code{fa_lbl}: Text label for cases of false alarms \code{\link{fa}}.
+  \item \code{cr_lbl}: Text label for cases of correct rejections \code{\link{cr}}.
 
-\item \code{prev} Value of current prevalence \code{\link{prev}}.
-  \item \code{sens} Value of current sensitivity \code{\link{sens}}.
-  \item \code{spec} Value of current specificity \code{\link{spec}}.
-  \item \code{fart} Value of current false alarm rate \code{\link{fart}}.
+\item \code{prev}: Value of current prevalence \code{\link{prev}}.
+  \item \code{sens}: Value of current sensitivity \code{\link{sens}}.
+  \item \code{spec}: Value of current specificity \code{\link{spec}}.
+  \item \code{fart}: Value of current false alarm rate \code{\link{fart}}.
 
-\item \code{N} Current population size \code{\link{N}}.
+\item \code{N}: Current population size \code{\link{N}}.
 
-\item \code{scen.src} Source information for current scenario.
-  \item \code{scen.apa} Source information in APA format.
+\item \code{scen_src}: Source information for current scenario.
+  \item \code{scen_apa}: Source information in APA format.
 
 }
 
 Note that names of variables (columns)
-correspond to \code{\link{init_txt}} (to initialize \code{\link{txt}})
+correspond to a subset of \code{\link{init_txt}} (to initialize \code{\link{txt}})
 and \code{\link{init_num}} (to initialize \code{\link{num}}).
 
-See columns \code{scen.src} and \code{scen.apa}
-for a scenario's source information.
+The variables \code{scen_src} and \code{scen_apa}
+provide a scenario's source information.
 
 The information of \code{scenarios} is also contained in an
-R data frame \code{\link{df.scenarios}} (and generated from
+R data frame \code{\link{df_scenarios}} (and generated from
 the corresponding \code{.rda} file in \code{/data/}).
+}
+\seealso{
+\code{\link{riskyr}} initializes a \code{riskyr} scenario.
 }
 \keyword{datasets}

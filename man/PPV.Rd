@@ -30,8 +30,8 @@ or the probability of a positive decision being correct.
 
 \item Perspective:
   \code{PPV} further classifies
-  the subset of \code{\link{dec.pos}} individuals
-  by condition (\code{PPV = hi/dec.pos = hi/(hi + fa)}).
+  the subset of \code{\link{dec_pos}} individuals
+  by condition (\code{PPV = hi/dec_pos = hi/(hi + fa)}).
 
 \item Alternative names:
   \code{precision}
@@ -51,10 +51,10 @@ b. \code{PPV} is the opposite conditional probability
 
 \item In terms of frequencies,
   \code{PPV} is the ratio of
-  \code{\link{hi}} divided by \code{\link{dec.pos}}
+  \code{\link{hi}} divided by \code{\link{dec_pos}}
   (i.e., \code{\link{hi} + \link{fa}}):
 
-\code{PPV = hi/dec.pos = hi/(hi + fa)}
+\code{PPV = hi/dec_pos = hi/(hi + fa)}
 
 \item Dependencies:
   \code{PPV} is a feature of a decision process
@@ -71,9 +71,9 @@ However, due to being a conditional probability,
 }
 }
 \examples{
-PPV <- .55     # => sets a positive predictive value of 55\%
-PPV <- 55/100  # => (condition = TRUE) for 55 out of 100 people with (decision = positive)
-is_prob(PPV)   # => TRUE (as PPV is a probability)
+PPV <- .55     # sets a positive predictive value of 55\%
+PPV <- 55/100  # (condition = TRUE) for 55 out of 100 people with (decision = positive)
+is_prob(PPV)   # TRUE
 
 }
 \references{
@@ -86,12 +86,13 @@ Consult \href{https://en.wikipedia.org/wiki/Positive_and_negative_predictive_val
 \code{\link{num}} contains basic numeric parameters;
 \code{\link{init_num}} initializes basic numeric parameters;
 \code{\link{comp_freq}} computes current frequency information;
-\code{\link{is_prob}} verifies probability inputs.
+\code{\link{is_prob}} verifies probabilities.
 
 Other probabilities: \code{\link{FDR}}, \code{\link{FOR}},
-  \code{\link{NPV}}, \code{\link{fart}},
-  \code{\link{mirt}}, \code{\link{ppod}},
-  \code{\link{prev}}, \code{\link{sens}},
-  \code{\link{spec}}
+  \code{\link{NPV}}, \code{\link{acc}}, \code{\link{err}},
+  \code{\link{fart}}, \code{\link{mirt}},
+  \code{\link{ppod}}, \code{\link{prev}},
+  \code{\link{sens}}, \code{\link{spec}}
 }
+\concept{probabilities}
 \keyword{datasets}

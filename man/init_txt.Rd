@@ -4,84 +4,105 @@
 \alias{init_txt}
 \title{Initialize basic text elements.}
 \usage{
-init_txt(scen.lbl = txt.def$scen.lbl, scen.txt = txt.def$scen.txt,
-  scen.src = txt.def$scen.src, scen.apa = txt.def$scen.apa,
-  scen.lng = txt.def$scen.lng, popu.lbl = txt.def$popu.lbl,
-  cond.lbl = txt.def$cond.lbl, cond.true.lbl = txt.def$cond.true.lbl,
-  cond.false.lbl = txt.def$cond.false.lbl, dec.lbl = txt.def$dec.lbl,
-  dec.pos.lbl = txt.def$dec.pos.lbl, dec.neg.lbl = txt.def$dec.neg.lbl,
-  hi.lbl = txt.def$hi.lbl, mi.lbl = txt.def$mi.lbl,
-  fa.lbl = txt.def$fa.lbl, cr.lbl = txt.def$cr.lbl)
+init_txt(scen_lbl = txt_lbl_def$scen_lbl,
+  scen_txt = txt_lbl_def$scen_txt, scen_src = txt_lbl_def$scen_src,
+  scen_apa = txt_lbl_def$scen_apa, scen_lng = txt_lbl_def$scen_lng,
+  popu_lbl = txt_lbl_def$popu_lbl, N_lbl = txt_lbl_def$N_lbl,
+  cond_lbl = txt_lbl_def$cond_lbl,
+  cond_true_lbl = txt_lbl_def$cond_true_lbl,
+  cond_false_lbl = txt_lbl_def$cond_false_lbl,
+  dec_lbl = txt_lbl_def$dec_lbl, dec_pos_lbl = txt_lbl_def$dec_pos_lbl,
+  dec_neg_lbl = txt_lbl_def$dec_neg_lbl, acc_lbl = txt_lbl_def$acc_lbl,
+  dec_cor_lbl = txt_lbl_def$dec_cor_lbl,
+  dec_err_lbl = txt_lbl_def$dec_err_lbl, sdt_lbl = txt_lbl_def$sdt_lbl,
+  hi_lbl = txt_lbl_def$hi_lbl, mi_lbl = txt_lbl_def$mi_lbl,
+  fa_lbl = txt_lbl_def$fa_lbl, cr_lbl = txt_lbl_def$cr_lbl)
 }
 \arguments{
-\item{scen.lbl}{The current scenario title (sometimes in Title Caps).}
+\item{scen_lbl}{The current scenario title (sometimes in Title Caps).}
 
-\item{scen.txt}{A longer text description of the current scenario
+\item{scen_txt}{A longer text description of the current scenario
 (which may extend over several lines).}
 
-\item{scen.src}{The source information for the current scenario.}
+\item{scen_src}{The source information for the current scenario.}
 
-\item{scen.apa}{Source information in APA format.}
+\item{scen_apa}{Source information in APA format.}
 
-\item{scen.lng}{Language of the current scenario (as character code).
-Options: \code{"en"}...English, \code{"de"}... German.}
+\item{scen_lng}{Language of the current scenario (as character code).
+Options: \code{"en"}: English, \code{"de"}: German.}
 
-\item{popu.lbl}{A brief description of the current target population \code{\link{popu}} or sample.}
+\item{popu_lbl}{A general name describing the current \emph{population}.}
 
-\item{cond.lbl}{A name for the \emph{condition} or feature (e.g., some disease) currently considered.}
+\item{N_lbl}{A brief label for the current population \code{\link{popu}} or sample.}
 
-\item{cond.true.lbl}{A label for the \emph{presence} of the current condition
-or \code{\link{cond.true}} cases (the condition's true state of TRUE).}
+\item{cond_lbl}{A general name for the \emph{condition} dimension currently considered (e.g., some clinical condition).}
 
-\item{cond.false.lbl}{A label for the \emph{absence} of the current condition
-or \code{\link{cond.false}} cases (the condition's true state of FALSE).}
+\item{cond_true_lbl}{A short label for the \emph{presence} of the current condition
+or \code{\link{cond_true}} cases (the condition's true state of TRUE).}
 
-\item{dec.lbl}{A name for the \emph{decision} or judgment (e.g., some diagnostic test) currently made.}
+\item{cond_false_lbl}{A short label for the \emph{absence} of the current condition
+or \code{\link{cond_false}} cases (the condition's true state of FALSE).}
 
-\item{dec.pos.lbl}{A label for \emph{positive} decisions
-or \code{\link{dec.pos}} cases (e.g., predicting the presence of the condition).}
+\item{dec_lbl}{A general name for the \emph{decision} dimension (e.g., some diagnostic test) currently made.}
 
-\item{dec.neg.lbl}{A label for \emph{negative} decisions
-or \code{\link{dec.neg}} cases (e.g., predicting the absence of the condition).}
+\item{dec_pos_lbl}{A short label for \emph{positive} decisions
+or \code{\link{dec_pos}} cases (e.g., predicting the presence of the condition).}
 
-\item{hi.lbl}{A label for \emph{hits} or \emph{true positives} \code{\link{hi}}
+\item{dec_neg_lbl}{A short label for \emph{negative} decisions
+or \code{\link{dec_neg}} cases (e.g., predicting the absence of the condition).}
+
+\item{acc_lbl}{A general name for the \emph{accuracy} dimension (e.g., correspondence of decision to condition).}
+
+\item{dec_cor_lbl}{A short label for \emph{correct} decisions
+or \code{\link{dec_cor}} cases (e.g., accurately predicting the condition).}
+
+\item{dec_err_lbl}{A short label for \emph{erroneous} decisions
+or \code{\link{dec_err}} cases (e.g., inaccurately predicting the condition).}
+
+\item{sdt_lbl}{A name for the case/category/cell dimension in the 2x2 contingency table (SDT: condition x decision).}
+
+\item{hi_lbl}{A short label for \emph{hits} or \emph{true positives} \code{\link{hi}}
 (i.e., correct decisions of the presence of the condition, when the condition is actually present).}
 
-\item{mi.lbl}{A label for \emph{misses} or \emph{false negatives} \code{\link{mi}}
+\item{mi_lbl}{A short label for \emph{misses} or \emph{false negatives} \code{\link{mi}}
 (i.e., incorrect decisions of the absence of the condition when the condition is actually present).}
 
-\item{fa.lbl}{A label for \emph{false alarms} or \emph{false positives} \code{\link{fa}}
+\item{fa_lbl}{A short label for \emph{false alarms} or \emph{false positives} \code{\link{fa}}
 (i.e., incorrect decisions of the presence of the condition when the condition is actually absent).}
 
-\item{cr.lbl}{A label for \emph{correct rejections} or \emph{true negatives} \code{\link{cr}}
+\item{cr_lbl}{A short label for \emph{correct rejections} or \emph{true negatives} \code{\link{cr}}
 (i.e., a correct decision of the absence of the condition, when the condition is actually absent).}
 }
 \description{
-\code{init_txt} initializes basic text elements
-(i.e., all titles and labels corresponding to the current scenario
-and used throughout the \code{riskyr} package).
+\code{init_txt} initializes basic text elements \code{\link{txt}}
+(i.e., all titles and labels corresponding to the current scenario)
+that are used throughout the \code{riskyr} package.
 }
 \details{
 All textual elements that specify titles and details of the current scenario
-are stored as named elements (of type character) in a list \code{txt}.
+are stored as named elements (of type character) in a list \code{\link{txt}}.
 \code{\link{init_txt}} allows changing elements by assigning new character
 objects to existing names.
+
+However, you can directly specify scenario-specific text elements
+when defining a scenario with the \code{\link{riskyr}} function.
 }
 \examples{
-init_txt()          # => defines a list of (default) text elements
-length(init_txt())  # => 16
+init_txt()          # defines a list of (default) text elements
+length(init_txt())  # 21
 
 # Customizing current text elements:
-txt <- init_txt(scen.lbl = "US or Them",
-                scen.src = "Some stable genius",
-                popu.lbl = "We, the people")
+txt <- init_txt(scen_lbl = "My scenario",
+                scen_src = "My source",
+                N_lbl = "My population")
 
 }
 \seealso{
 \code{\link{txt}} for current text settings;
 \code{\link{pal}} for current color settings;
-\code{\link{num}} for basic numeric parameters
+\code{\link{num}} for basic numeric parameters.
 
 Other functions initializing scenario information: \code{\link{init_num}},
-  \code{\link{init_pal}}
+  \code{\link{init_pal}}, \code{\link{riskyr}}
 }
+\concept{functions initializing scenario information}

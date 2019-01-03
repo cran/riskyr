@@ -27,8 +27,8 @@ Understanding or obtaining the false omission rate \code{FOR}:
 
 \item Perspective:
   \code{FOR} further classifies
-  the subset of \code{\link{dec.neg}} individuals
-  by condition (\code{FOR = mi/dec.neg = mi/(mi + cr)}).
+  the subset of \code{\link{dec_neg}} individuals
+  by condition (\code{FOR = mi/dec_neg = mi/(mi + cr)}).
 
 \item Alternative names:
   none?
@@ -49,10 +49,10 @@ b. \code{FOR} is the opposite conditional probability
 
 \item In terms of frequencies,
   \code{FOR} is the ratio of
-  \code{\link{mi}} divided by \code{\link{dec.neg}}
+  \code{\link{mi}} divided by \code{\link{dec_neg}}
   (i.e., \code{\link{mi} + \link{cr}}):
 
-\code{NPV = mi/dec.neg = mi/(mi + cr)}
+\code{NPV = mi/dec_neg = mi/(mi + cr)}
 
 \item Dependencies:
   \code{FOR} is a feature of a decision process
@@ -67,9 +67,10 @@ However, due to being a conditional probability,
 }
 }
 \examples{
-FOR <- .05     # => sets a false omission rate of 5\%
-FOR <- 5/100   # => (condition = TRUE) for 5 out of 100 people with (decision = negative)
-is_prob(FOR)   # => TRUE (as FOR is a probability)
+FOR <- .05     # sets a false omission rate of 5\%
+FOR <- 5/100   # (condition = TRUE) for 5 out of 100 people with (decision = negative)
+is_prob(FOR)   # TRUE
+
 }
 \references{
 Consult \href{https://en.wikipedia.org/wiki/Positive_and_negative_predictive_values}{Wikipedia} for additional information.
@@ -81,12 +82,13 @@ Consult \href{https://en.wikipedia.org/wiki/Positive_and_negative_predictive_val
 \code{\link{num}} contains basic numeric parameters;
 \code{\link{init_num}} initializes basic numeric parameters;
 \code{\link{comp_freq}} computes current frequency information;
-\code{\link{is_prob}} verifies probability inputs.
+\code{\link{is_prob}} verifies probabilities.
 
 Other probabilities: \code{\link{FDR}}, \code{\link{NPV}},
-  \code{\link{PPV}}, \code{\link{fart}},
-  \code{\link{mirt}}, \code{\link{ppod}},
-  \code{\link{prev}}, \code{\link{sens}},
-  \code{\link{spec}}
+  \code{\link{PPV}}, \code{\link{acc}}, \code{\link{err}},
+  \code{\link{fart}}, \code{\link{mirt}},
+  \code{\link{ppod}}, \code{\link{prev}},
+  \code{\link{sens}}, \code{\link{spec}}
 }
+\concept{probabilities}
 \keyword{datasets}

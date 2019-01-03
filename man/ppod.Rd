@@ -3,7 +3,7 @@
 \docType{data}
 \name{ppod}
 \alias{ppod}
-\alias{baserate_dec.pos}
+\alias{baserate_dec_pos}
 \alias{PR}
 \title{The proportion (or baseline) of a positive decision.}
 \format{An object of class \code{numeric} of length 1.}
@@ -11,8 +11,8 @@
 ppod
 }
 \description{
-\code{ppod} defines the proportion (baseline probability or rate):
-a decision being \code{positive} (but not necessarily true).
+\code{ppod} defines the proportion (baseline probability or rate) of
+a decision being \code{positive} (but not necessarily accurate/correct).
 }
 \details{
 Understanding or obtaining the proportion of positive decisions \code{ppod}:
@@ -25,11 +25,11 @@ Understanding or obtaining the proportion of positive decisions \code{ppod}:
 \code{ppod = p(decision = positive)}
 
 or the base rate (or baseline probability)
-  of a decision being positive (but not necessarily true).
+  of a decision being positive (but not necessarily accurate/correct).
 
 \item Perspective:
   \code{ppod} classifies a population of \code{\link{N}} individuals
-  by decision (\code{ppod = dec.pos/N}).
+  by decision (\code{ppod = dec_pos/N}).
 
 \code{ppod} is the "by decision" counterpart to \code{\link{prev}}
   (which adopts a "by condition" perspective).
@@ -41,11 +41,11 @@ or the base rate (or baseline probability)
 
 \item In terms of frequencies,
   \code{ppod} is the ratio of
-  \code{\link{dec.pos}} (i.e., \code{\link{hi} + \link{fa}})
+  \code{\link{dec_pos}} (i.e., \code{\link{hi} + \link{fa}})
   divided by \code{\link{N}} (i.e.,
   \code{\link{hi} + \link{mi}} + \code{\link{fa} + \link{cr}}):
 
-\code{ppod = dec.pos/N = (hi + fa)/(hi + mi + fa + cr)}
+\code{ppod = dec_pos/N = (hi + fa)/(hi + mi + fa + cr)}
 
 \item Dependencies:
   \code{ppod} is a feature of the decision process
@@ -60,9 +60,9 @@ However, the conditional probabilities
 }
 }
 \examples{
-ppod <- .50     # => sets a rate of positive decisions of 50\%
-ppod <- 50/100  # => (decision = TRUE) for 50 out of 100 individuals
-is_prob(ppod)   # => TRUE (as ppod is a probability)
+ppod <- .50     # sets a rate of positive decisions of 50\%
+ppod <- 50/100  # (decision = TRUE) for 50 out of 100 individuals
+is_prob(ppod)   # TRUE
 
 }
 \references{
@@ -75,11 +75,13 @@ Consult \href{https://en.wikipedia.org/wiki/Positive_and_negative_predictive_val
 \code{\link{init_num}} initializes basic numeric parameters;
 \code{\link{freq}} contains current frequency information;
 \code{\link{comp_freq}} computes current frequency information;
-\code{\link{is_prob}} verifies probability inputs.
+\code{\link{is_prob}} verifies probabilities.
 
 Other probabilities: \code{\link{FDR}}, \code{\link{FOR}},
-  \code{\link{NPV}}, \code{\link{PPV}}, \code{\link{fart}},
+  \code{\link{NPV}}, \code{\link{PPV}}, \code{\link{acc}},
+  \code{\link{err}}, \code{\link{fart}},
   \code{\link{mirt}}, \code{\link{prev}},
   \code{\link{sens}}, \code{\link{spec}}
 }
+\concept{probabilities}
 \keyword{datasets}

@@ -17,14 +17,14 @@ containing 11 frequencies:
 
 \item the population size \code{\link{N}}
 
-\item the number of cases for which \code{\link{cond.true}}
- \item the number of cases for which \code{\link{cond.false}}
+\item the number of cases for which \code{\link{cond_true}}
+ \item the number of cases for which \code{\link{cond_false}}
 
-\item the number of cases for which \code{\link{dec.pos}}
- \item the number of cases for which \code{\link{dec.neg}}
+\item the number of cases for which \code{\link{dec_pos}}
+ \item the number of cases for which \code{\link{dec_neg}}
 
-\item the number of cases for which \code{\link{dec.cor}}
- \item the number of cases for which \code{\link{dec.err}}
+\item the number of cases for which \code{\link{dec_cor}}
+ \item the number of cases for which \code{\link{dec_err}}
 
 \item the number of true positives, or hits \code{\link{hi}}
  \item the number of false negatives, or misses \code{\link{mi}}
@@ -44,58 +44,35 @@ Natural frequencies are always expressed in
 relation to the current population of
 size \code{\link{N}}.
 
-Key relationships:
-
-\enumerate{
-
-\item to probabilities:
-A population of \code{\link{N}} individuals can be split into 2 subsets
-in 2 different ways:
-
-\enumerate{
-  \item by condition:
-  The frequency \code{\link{cond.true}} depends on the prevalence \code{\link{prev}}
-  and
-  the frequency \code{\link{cond.false}} depends on the prevalence's complement \code{(1 - \link{prev})}.
-
-\item by decision:
-  The frequency \code{\link{dec.pos}} depends on the proportion of positive decisions \code{\link{ppod}}
-  and
-  the frequency \code{\link{dec.neg}} depends on the proportion of negative decisions \code{(1 - \link{ppod})}.
-
-}
-
-The population size \code{\link{N}} is a free parameter (independent of the
-essential probabilities \code{\link{prev}}, \code{\link{sens}}, and \code{\link{spec}}).
-
-If \code{\link{N}} is unknown, a suitable minimum value can be computed by \code{\link{comp_min_N}}.
-
-\item to other frequencies:
-  In a population of size \code{\link{N}}
-  the following relationships hold:
+Key relationships between frequencies and probabilities
+(see documentation of \code{\link{comp_freq}} or \code{\link{comp_prob}} for details):
 
 \itemize{
 
-\item \code{\link{N} = \link{cond.true} + \link{cond.false}} (by condition)
+\item Three perspectives on a population:
 
-\item \code{\link{N} = \link{dec.pos} + \link{dec.neg}} (by decision)
+by condition / by decision / by accuracy.
 
-\item \code{\link{N} = \link{dec.cor} + \link{dec.err}} (by correspondence of decision to condition)
+\item Defining probabilities in terms of frequencies:
 
-\item \code{\link{N} = \link{hi} + \link{mi} + \link{fa} + \link{cr}} (by condition x decision)
-  }
+Probabilities can be computed as ratios between frequencies, but beware of rounding issues.
 
 }
 
-Visualizations of the current frequency information
-are provided by \code{\link{plot_tree}} and
-\code{\link{plot_mosaic}}.
+Functions translating between representational formats:
+\code{\link{comp_prob_prob}}, \code{\link{comp_prob_freq}},
+\code{\link{comp_freq_prob}}, \code{\link{comp_freq_freq}}
+(see documentation of \code{\link{comp_prob_prob}} for details).
+
+Visualizations of current frequency information
+are provided by \code{\link{plot_prism}} and
+\code{\link{plot_icons}}.
 }
 \examples{
 freq <- comp_freq()  # => initialize freq to default parameters
 freq                 # => show current values
-length(freq)         # => 11
-
+length(freq)         # => 11 known frequencies
+names(freq)          # => show names of known frequencies
 
 }
 \seealso{
@@ -111,7 +88,13 @@ length(freq)         # => 11
 \code{\link{init_pal}} initializes color information.
 
 Other lists containing current scenario information: \code{\link{accu}},
-  \code{\link{num}}, \code{\link{pal}}, \code{\link{prob}},
+  \code{\link{num}}, \code{\link{pal_bw}},
+  \code{\link{pal_kn}}, \code{\link{pal_mbw}},
+  \code{\link{pal_mod}}, \code{\link{pal_org}},
+  \code{\link{pal_rgb}}, \code{\link{pal_vir}},
+  \code{\link{pal}}, \code{\link{prob}},
+  \code{\link{txt_TF}}, \code{\link{txt_org}},
   \code{\link{txt}}
 }
+\concept{lists containing current scenario information}
 \keyword{datasets}

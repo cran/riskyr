@@ -35,13 +35,13 @@ without rounding.
 Definition: \code{ppod} is
 proportion (or probability) of positive decisions:
 
-\code{ppod = dec.pos/N = (hi + fa)/(hi + mi + fa + cr)}
+\code{ppod = dec_pos/N = (hi + fa)/(hi + mi + fa + cr)}
 
 Values range from 0 (only negative decisions)
 to 1 (only positive decisions).
 
-Importantly, positive decisions \code{\link{dec.pos}}
-are not necessariliy correct decisions \code{\link{dec.cor}}.
+Importantly, positive decisions \code{\link{dec_pos}}
+are not necessarily correct decisions \code{\link{dec_cor}}.
 }
 \examples{
 # (1) ways to work:
@@ -66,7 +66,6 @@ comp_ppod(0, 1, 0)  #  => 1
 comp_ppod(0, 0, 1)  #  => 0
 comp_ppod(0, 0, 0)  #  => 1
 
-
 }
 \seealso{
 \code{\link{comp_sens}} and \code{\link{comp_NPV}} compute related probabilities;
@@ -79,11 +78,14 @@ comp_ppod(0, 0, 0)  #  => 1
 
 Other functions computing probabilities: \code{\link{comp_FDR}},
   \code{\link{comp_FOR}}, \code{\link{comp_NPV}},
-  \code{\link{comp_PPV}}, \code{\link{comp_accu}},
-  \code{\link{comp_acc}}, \code{\link{comp_comp_pair}},
+  \code{\link{comp_PPV}}, \code{\link{comp_accu_freq}},
+  \code{\link{comp_accu_prob}}, \code{\link{comp_acc}},
+  \code{\link{comp_comp_pair}},
   \code{\link{comp_complement}},
   \code{\link{comp_complete_prob_set}},
-  \code{\link{comp_fart}}, \code{\link{comp_mirt}},
-  \code{\link{comp_prob_freq}}, \code{\link{comp_prob}},
-  \code{\link{comp_sens}}, \code{\link{comp_spec}}
+  \code{\link{comp_err}}, \code{\link{comp_fart}},
+  \code{\link{comp_mirt}}, \code{\link{comp_prob_freq}},
+  \code{\link{comp_prob}}, \code{\link{comp_sens}},
+  \code{\link{comp_spec}}
 }
+\concept{functions computing probabilities}

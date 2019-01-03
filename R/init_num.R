@@ -1,19 +1,17 @@
-## init_num.R | riskyR
-## 2018 02 16
-## -----------------------------------------------
-## Define and initialize a list of basic input parameters (num)
-## that contains numeric user inputs:
+## init_num.R | riskyr
+## 2018 12 20
+## Define and initialize a list of basic parameters (num)
+## that collects and contains numeric user inputs:
 ## -----------------------------------------------
 
-## -----------------------------------------------
-## Table of current terminology:
+## Table of current terminology: -----------------
 
-# Probabilities (10):               Frequencies (9):
+# Probabilities (13+):              Frequencies (11):
 # -------------------               ------------------
 # (A) by condition:
 
 # non-conditional:                          N
-# prev*                           cond.true | cond.false
+# prev*                           cond_true | cond_false (columns)
 
 # conditional:
 # sens* = hit rate = TPR                hi* = TP
@@ -27,7 +25,8 @@
 # (B) by decision:                 Combined frequencies:
 
 # non-conditional:
-# ppod = proportion of dec.pos     dec.pos | dec.neg
+# ppod = proportion of dec_pos     dec_pos | dec_neg (rows)
+#                                  dec_cor | dec_err (diagonal)
 
 # conditional:
 # PPV = precision
@@ -35,34 +34,47 @@
 # FOR = false omission rate
 # NPV = neg. pred. value
 
+# (C) by accuracy/correspondence of decision to condition (see accu):
 
-## -----------------------------------------------
-## Data flow: Two basic directions:
+# acc  = overall accuracy (probability/proportion correct decision)
+# p_acc_hi = p(hi|acc)  # aka. acc-hi  "p(hi | dec_cor)"
+# p_err_fa = p(fa|err)  # aka. err-fa  "p(fa | dec_err)"
 
-## 1: Bayesian: starting with 3 basic probabilities:
-## - given:   prev;  sens, spec
-## - derived: all other values
+# Other measures of accuracy (in accu):
+# wacc = weighted accuracy
+# mcc  = Matthews correlation coefficient
+# f1s  = harmonic mean of PPV and sens
 
-## 2: Natural frequencies:
-## - given:   N = hi, mi, fa, cr
-## - derived: all other values
-
-## -----------------------------------------------
+# err = error rate = (1 - acc)
 
 
-## -----------------------------------------------
-## (1) Define and initialize num:
-## -----------------------------------------------
+## Data flow: Two basic directions: --------------
+
+## (1) Probabilities ==> frequencies:
+##     Bayesian: based on 3 essential probabilities:
+##   - given:   prev;  sens, spec
+##   - derived: all other values
+
+## (2) Frequencies ==> probabilities:
+##     Frequentist: based on 4 essential natural frequencies:
+##   - given:   N = hi, mi, fa, cr
+##   - derived: all other values
+
+
+## (1) Define and initialize num: ----------------
+
 ## The minimal set of numeric input parameters num
 ## consists of 3 probabilities (+ 1 complement):
 
-## Define defaults for num:     # Description:                                                             # Type of input:
-num.def <- list("prev" = .5, # round(runif(1, .01, .99), 2),  # prevalence in target population = p(condition TRUE)     [basic p]
-                "sens" = .5, # round(runif(1, .01, .99), 2),  # sensitivity = p(decision POS | condition TRUE)    [conditional p]
-                "spec" = .5, # round(runif(1, .01, .99), 2),  # specificity = p(decision NEG | condition FALSE)   [conditional p]
-                "fart" = NA,                            # false alarm rate = 1 - spec        [optional, complement of spec]
-                "N"    = 100 # round(runif(1, 10, 100), 0)    # population size N                                 [optional freq]
-                )
+## Define defaults for num:   # random:                  # fix: # Description:                                                              # Type of input:
+num.def <- list("prev" = .25, # round(runif(1, .01, .50), 2),  # .5   # prevalence in target population = p(condition TRUE)     [basic p]
+                "sens" = .85, # round(runif(1, .50, .99), 2),  # .5   # sensitivity = p(decision POS | condition TRUE)    [conditional p]
+                "spec" = .75, # round(runif(1, .50, .99), 2),  # .5   # specificity = p(decision NEG | condition FALSE)   [conditional p]
+                "fart" = NA,  # NA  # false alarm rate = 1 - spec        [optional, complement of spec]
+                "N"    = 1000 # round(runif(1, 10, 99), 0)    # 100  # population size N                                 [optional freq]
+)
+
+## init_num: ----------
 
 #' Initialize basic numeric variables.
 #'
@@ -95,12 +107,10 @@ num.def <- list("prev" = .5, # round(runif(1, .01, .99), 2),  # prevalence in ta
 #'
 #' @param N The population size \code{\link{N}}.
 #'
-#'
 #' @return A list containing a valid quadruple of probabilities
 #' (\code{\link{prev}}, \code{\link{sens}},
 #' \code{\link{spec}}, and \code{\link{fart}})
 #' and one frequency (population size \code{\link{N}}).
-#'
 #'
 #' @examples
 #' # ways to succeed:
@@ -122,9 +132,7 @@ num.def <- list("prev" = .5, # round(runif(1, .01, .99), 2),  # prevalence in ta
 #' init_num(prev =  1, sens = 1, spec = NA, fart = NA)  # => NAs + warning (NAs)
 #' init_num(1, 1, .52, .50, 100)   # => NAs + warning (complements beyond range)
 #'
-#'
 #' @family functions initializing scenario information
-#'
 #'
 #' @seealso
 #' \code{\link{num}} contains basic numeric parameters;
@@ -142,7 +150,6 @@ num.def <- list("prev" = .5, # round(runif(1, .01, .99), 2),  # prevalence in ta
 #' @importFrom stats setNames
 #'
 #' @export
-#'
 
 init_num <- function(prev = num.def$prev, sens = num.def$sens, # no mirt (yet)
                      spec = num.def$spec, fart = num.def$fart,
@@ -171,11 +178,11 @@ init_num <- function(prev = num.def$prev, sens = num.def$sens, # no mirt (yet)
     ## (4) Compute a missing value for N (5th argument) value (if applicable):
     if (is.na(N)) {
 
-      N <- comp_min_N(prev = prev, sens = sens, spec = spec, min.freq = 1)
+      N <- comp_min_N(prev = prev, sens = sens, spec = spec, min_freq = 1)
 
       warning(paste0("Unknown population size N. A suitable minimum value of N = ", N, " was computed."))
 
-      }
+    }
 
     ## (5) Initialize num with current arguments:
     num$prev <- prev
@@ -192,29 +199,28 @@ init_num <- function(prev = num.def$prev, sens = num.def$sens, # no mirt (yet)
 }
 
 ## Check:
-{
-  # # ways to succeed:
-  # init_num(1, 1, 1, 0, 100)  # => succeeds
-  # init_num(1, 1, 0, 1, 100)  # => succeeds
-  #
-  # # watch out for:
-  # init_num(1, 1, 0, 1)           # => succeeds (with N computed)
-  # init_num(1, 1, NA, 1, 100)     # => succeeds (with spec computed)
-  # init_num(1, 1, 0, NA, 100)     # => succeeds (with fart computed)
-  # init_num(1, 1, NA, 1)          # => succeeds (with spec and N computed)
-  # init_num(1, 1, 0, NA)          # => succeeds (with fart and N computed)
-  # init_num(1, 1, .51, .50, 100)  # => succeeds (as spec and fart are within tolarated range)
-  #
-  # # ways to fail:
-  # init_num(prev = NA)                                  # => NAs + warning (NA)
-  # init_num(prev = 88)                                  # => NAs + warning (beyond range)
-  # init_num(prev =  1, sens = NA)                       # => NAs + warning (NA)
-  # init_num(prev =  1, sens = 1, spec = NA, fart = NA)  # => NAs + warning (NAs)
-  # init_num(1, 1, .52, .50, 100)                        # => NAs + warning (complements beyond tolerated range)
-}
+# # ways to succeed:
+# init_num(1, 1, 1, 0, 100)  # => succeeds
+# init_num(1, 1, 0, 1, 100)  # => succeeds
+#
+# # watch out for:
+# init_num(1, 1, 0, 1)           # => succeeds (with N computed)
+# init_num(1, 1, NA, 1, 100)     # => succeeds (with spec computed)
+# init_num(1, 1, 0, NA, 100)     # => succeeds (with fart computed)
+# init_num(1, 1, NA, 1)          # => succeeds (with spec and N computed)
+# init_num(1, 1, 0, NA)          # => succeeds (with fart and N computed)
+# init_num(1, 1, .51, .50, 100)  # => succeeds (as spec and fart are within tolarated range)
+#
+# # ways to fail:
+# init_num(prev = NA)                                  # => NAs + warning (NA)
+# init_num(prev = 88)                                  # => NAs + warning (beyond range)
+# init_num(prev =  1, sens = NA)                       # => NAs + warning (NA)
+# init_num(prev =  1, sens = 1, spec = NA, fart = NA)  # => NAs + warning (NAs)
+# init_num(1, 1, .52, .50, 100)                        # => NAs + warning (complements beyond tolerated range)
 
-## -----------------------------------------------
-## (4) Apply to initialize num:
+
+
+## (4) Apply to initialize num: ------------------
 
 #' List current values of basic numeric variables.
 #'
@@ -244,26 +250,26 @@ init_num <- function(prev = num.def$prev, sens = num.def$sens, # no mirt (yet)
 #' \code{\link{comp_prob}} computes current probability information.
 #'
 #' @export
-#'
 
 num <- init_num()  # => initialize num to default parameters
 # num              # => show current values
 # length(num)      # => 5
 
+## (*) Done: ----------
 
-## -----------------------------------------------
-## (+) ToDo:
+## - Clean up + add randomness to num_def  [2018 08 21].
+
+## (+) ToDo: ----------
 
 ## 1. Re-organize "scenarios.xls" according to data structure of num.
 ##    and read in pre-defined datasets ("scenarios.csv") from "/data".
-
+##
 ## 2. Use either spec as basic probability (and compute fart from it)
 ##            OR fart as basic probability (and compute spec from it).
 ##    num should always contain both (with is_complement = TRUE).
-
+##
 ## - [init_num]: Verify that input parameters are in the correct range [0; 1].
 ## - [init_num]: If both spec and fart values are provided,
 ##       make sure that they are complements of each other.
 
-## -----------------------------------------------
-## eof.
+## eof. ------------------------------------------

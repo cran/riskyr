@@ -8,10 +8,11 @@ with \code{\link{N}} rows
 and 3 columns (\code{"Truth", "Decision", "SDT"}).}
 \usage{
 comp_popu(hi = freq$hi, mi = freq$mi, fa = freq$fa, cr = freq$cr,
-  cond.true.lbl = txt$cond.true.lbl, cond.false.lbl = txt$cond.false.lbl,
-  dec.pos.lbl = txt$dec.pos.lbl, dec.neg.lbl = txt$dec.neg.lbl,
-  hi.lbl = txt$hi.lbl, mi.lbl = txt$mi.lbl, fa.lbl = txt$fa.lbl,
-  cr.lbl = txt$cr.lbl)
+  cond_lbl = txt$cond_lbl, cond_true_lbl = txt$cond_true_lbl,
+  cond_false_lbl = txt$cond_false_lbl, dec_lbl = txt$dec_lbl,
+  dec_pos_lbl = txt$dec_pos_lbl, dec_neg_lbl = txt$dec_neg_lbl,
+  sdt_lbl = txt$sdt_lbl, hi_lbl = txt$hi_lbl, mi_lbl = txt$mi_lbl,
+  fa_lbl = txt$fa_lbl, cr_lbl = txt$cr_lbl)
 }
 \arguments{
 \item{hi}{The number of hits \code{\link{hi}} (or true positives).}
@@ -22,21 +23,27 @@ comp_popu(hi = freq$hi, mi = freq$mi, fa = freq$fa, cr = freq$cr,
 
 \item{cr}{The number of correct rejections \code{\link{cr}} (or true negatives).}
 
-\item{cond.true.lbl}{Text label for \code{\link{cond.true}} cases.}
+\item{cond_lbl}{Text label for condition dimension ("by cd" perspective).}
 
-\item{cond.false.lbl}{Text label for \code{\link{cond.false}} cases.}
+\item{cond_true_lbl}{Text label for \code{\link{cond_true}} cases.}
 
-\item{dec.pos.lbl}{Text label for \code{\link{dec.pos}} cases.}
+\item{cond_false_lbl}{Text label for \code{\link{cond_false}} cases.}
 
-\item{dec.neg.lbl}{Text label for \code{\link{dec.neg}} cases.}
+\item{dec_lbl}{Text label for decision dimension ("by dc" perspective).}
 
-\item{hi.lbl}{Text label for \code{\link{hi}} cases.}
+\item{dec_pos_lbl}{Text label for \code{\link{dec_pos}} cases.}
 
-\item{mi.lbl}{Text label for \code{\link{mi}} cases.}
+\item{dec_neg_lbl}{Text label for \code{\link{dec_neg}} cases.}
 
-\item{fa.lbl}{Text label for \code{\link{fa}} cases.}
+\item{sdt_lbl}{Text label for 4 cases/combinations (SDT classifications).}
 
-\item{cr.lbl}{Text label for \code{\link{cr}} cases.}
+\item{hi_lbl}{Text label for \code{\link{hi}} cases.}
+
+\item{mi_lbl}{Text label for \code{\link{mi}} cases.}
+
+\item{fa_lbl}{Text label for \code{\link{fa}} cases.}
+
+\item{cr_lbl}{Text label for \code{\link{cr}} cases.}
 }
 \value{
 A data frame \code{popu}
@@ -60,16 +67,27 @@ contained in \code{\link{popu}}
 is provided by \code{plot_icon}.
 }
 \examples{
-comp_popu(hi = 4, mi = 1, fa = 2, cr = 3)  # => computes a table of N = 10 cases
-
 popu <- comp_popu()  # => initializes popu (with current values of freq and txt)
 dim(popu)            # => N x 3
-head(popu)           # => shows head of data frame
+head(popu)
 
+# (A) Diagnostic/screening scenario (using default labels):
+comp_popu(hi = 4, mi = 1, fa = 2, cr = 3)  # => computes a table of N = 10 cases.
+
+# (B) Intervention/treatment scenario:
+comp_popu(hi = 3, mi = 2, fa = 1, cr = 4,
+          cond_lbl = "Treatment", cond_true_lbl = "pill", cond_false_lbl = "placebo",
+          dec_lbl = "Health status", dec_pos_lbl = "healthy", dec_neg_lbl = "sick")
+
+# (C) Prevention scenario (e.g., vaccination):
+comp_popu(hi = 3, mi = 2, fa = 1, cr = 4,
+          cond_lbl = "Vaccination", cond_true_lbl = "yes", cond_false_lbl = "no",
+          dec_lbl = "Disease", dec_pos_lbl = "no flu", dec_neg_lbl = "flu")
 
 }
 \seealso{
-The corresponding data frame \code{\link{popu}};
+the corresponding data frame \code{\link{popu}};
+\code{\link{read_popu}} interprets a data frame as a riskyr scenario;
 \code{\link{num}} for basic numeric parameters;
 \code{\link{freq}} for current frequency information;
 \code{\link{txt}} for current text settings;
@@ -79,3 +97,4 @@ Other functions computing frequencies: \code{\link{comp_freq_freq}},
   \code{\link{comp_freq_prob}}, \code{\link{comp_freq}},
   \code{\link{comp_min_N}}, \code{\link{comp_prob_prob}}
 }
+\concept{functions computing frequencies}

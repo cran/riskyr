@@ -3,14 +3,14 @@
 \docType{data}
 \name{pal}
 \alias{pal}
-\title{List current values of basic color information.}
-\format{An object of class \code{character} of length 11.}
+\title{List current values of scenario color palette.}
+\format{An object of class \code{character} of length 15.}
 \usage{
 pal
 }
 \description{
 \code{pal} is initialized to a vector of named elements (colors)
-to define the color scheme for the current scenario that is
+to define the scenario color scheme that is
 used throughout the \code{riskyr} package.
 }
 \details{
@@ -24,13 +24,17 @@ To change a color, assign a new color to an existing element name.
 
 \item \code{N} Color representing the \emph{population} of \code{\link{N}} cases or individuals.
 
-\item \code{true} Color representing cases of \code{\link{cond.true}}, for which the current condition is \code{TRUE}.
+\item \code{cond_true} Color representing cases of \code{\link{cond_true}}, for which the current condition is \code{TRUE}.
 
-\item \code{false} Color representing cases of in \code{\link{cond.false}}, for which the current condition is \code{FALSE}.
+\item \code{cond_false} Color representing cases of in \code{\link{cond_false}}, for which the current condition is \code{FALSE}.
 
-\item \code{pos} Color representing cases of \code{\link{dec.pos}}, for which the current decision is \code{positive}.
+\item \code{dec_pos} Color representing cases of \code{\link{dec_pos}}, for which the current decision is \code{positive}.
 
-\item \code{neg} Color representing cases in \code{\link{dec.neg}}, for which the current decision is \code{negative}.
+\item \code{dec_neg} Color representing cases in \code{\link{dec_neg}}, for which the current decision is \code{negative}.
+
+\item \code{dec_cor} Color representing cases of correct decisions \code{\link{dec_cor}}, for which the current decision is \code{accurate}.
+
+\item \code{dec_err} Color representing cases of erroneous decisions \code{\link{dec_err}}, for which the current decision is \code{inaccurate}.
 
 \item \code{hi} Color representing \emph{hits} or true positives in \code{\link{hi}}
 (i.e., correct cases for which the current condition is TRUE and the decision is positive).
@@ -50,13 +54,20 @@ the condition is TRUE, provided that the decision is positive).
 \item \code{npv} Color representing \emph{negative predictive values} \code{\link{NPV}} (i.e., the conditional probability that
 the condition is FALSE, provided that the decision is negative).
 
+\item \code{txt} Color used for text labels.
+
+\item \code{brd} Color used for borders.
+
 }
+
+Note that color names for frequencies correspond to frequency names,
+but are different for probabilities (which are written in lowercase
+and only \code{\link{PPV}} and \code{\link{NPV}} have assigned colors).
 }
 \examples{
-pal       # displays the vector of all current color names and values
-pal["hi"] # displays the current color for hits (true positives)
-pal["hi"] <- "green3" # defines a new color for hits (true positives)
-
+pal        # shows all current color names and values
+pal["hi"]  # shows the current color for hits (true positives)
+pal["hi"] <- "gold"  # defines a new color for hits (true positives, TP)
 
 }
 \seealso{
@@ -72,6 +83,12 @@ pal["hi"] <- "green3" # defines a new color for hits (true positives)
 
 Other lists containing current scenario information: \code{\link{accu}},
   \code{\link{freq}}, \code{\link{num}},
-  \code{\link{prob}}, \code{\link{txt}}
+  \code{\link{pal_bw}}, \code{\link{pal_kn}},
+  \code{\link{pal_mbw}}, \code{\link{pal_mod}},
+  \code{\link{pal_org}}, \code{\link{pal_rgb}},
+  \code{\link{pal_vir}}, \code{\link{prob}},
+  \code{\link{txt_TF}}, \code{\link{txt_org}},
+  \code{\link{txt}}
 }
+\concept{lists containing current scenario information}
 \keyword{datasets}

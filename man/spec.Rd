@@ -31,8 +31,8 @@ or the probability of correctly detecting false cases
 
 \item Perspective:
   \code{spec} further classifies
-  the subset of \code{\link{cond.false}} individuals
-  by decision (\code{spec = cr/cond.false}).
+  the subset of \code{\link{cond_false}} individuals
+  by decision (\code{spec = cr/cond_false}).
 
 \item Alternative names:
   true negative rate (\code{TNR}),
@@ -54,10 +54,10 @@ b. \code{spec} is the opposite conditional probability
 
 \item In terms of frequencies,
   \code{spec} is the ratio of
-  \code{\link{cr}} divided by \code{\link{cond.false}}
+  \code{\link{cr}} divided by \code{\link{cond_false}}
   (i.e., \code{\link{fa} + \link{cr}}):
 
-\code{spec = cr/cond.false = cr/(fa + cr)}
+\code{spec = cr/cond_false = cr/(fa + cr)}
 
 \item Dependencies:
   \code{spec} is a feature of a decision process
@@ -72,9 +72,10 @@ However, due to being a conditional probability,
 }
 }
 \examples{
-spec <- .75     # => sets a specificity value of 75\%
-spec <- 75/100  # => (decision = negative) for 75 out of 100 people with (condition = FALSE)
-is_prob(spec)   # => TRUE (as spec is a probability)
+spec <- .75     # sets a specificity value of 75\%
+spec <- 75/100  # (decision = negative) for 75 out of 100 people with (condition = FALSE)
+is_prob(spec)   # TRUE
+
 }
 \references{
 Consult \href{https://en.wikipedia.org/wiki/Sensitivity_and_specificity}{Wikipedia} for additional information.
@@ -86,10 +87,11 @@ Consult \href{https://en.wikipedia.org/wiki/Sensitivity_and_specificity}{Wikiped
 \code{\link{num}} contains basic numeric parameters;
 \code{\link{init_num}} initializes basic numeric parameters;
 \code{\link{comp_freq}} computes current frequency information;
-\code{\link{is_prob}} verifies probability inputs.
+\code{\link{is_prob}} verifies probabilities.
 
 Other probabilities: \code{\link{FDR}}, \code{\link{FOR}},
-  \code{\link{NPV}}, \code{\link{PPV}}, \code{\link{fart}},
+  \code{\link{NPV}}, \code{\link{PPV}}, \code{\link{acc}},
+  \code{\link{err}}, \code{\link{fart}},
   \code{\link{mirt}}, \code{\link{ppod}},
   \code{\link{prev}}, \code{\link{sens}}
 
@@ -97,4 +99,6 @@ Other essential parameters: \code{\link{cr}},
   \code{\link{fa}}, \code{\link{hi}}, \code{\link{mi}},
   \code{\link{prev}}, \code{\link{sens}}
 }
+\concept{essential parameters}
+\concept{probabilities}
 \keyword{datasets}

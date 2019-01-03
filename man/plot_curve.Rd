@@ -5,10 +5,11 @@
 \title{Plot curves of selected values (e.g., PPV or NPV)
 as a function of prevalence.}
 \usage{
-plot_curve(prev = num$prev, sens = num$sens, mirt = NA, spec = num$spec,
-  fart = NA, what = c("prev", "PPV", "NPV"), what.col = pal,
-  show.points = TRUE, log.scale = FALSE, title.lbl = txt$scen.lbl,
-  cex.lbl = 0.85)
+plot_curve(prev = num$prev, sens = num$sens, mirt = NA,
+  spec = num$spec, fart = NA, what = c("prev", "PPV", "NPV"),
+  what_col = pal, uc = 0, show_points = TRUE, log_scale = FALSE,
+  lbl_txt = txt, title_lbl = NA, p_lbl = "def", cex_lbl = 0.85,
+  col_pal = pal, mar_notes = TRUE, ...)
 }
 \arguments{
 \item{prev}{The condition's prevalence \code{\link{prev}}
@@ -34,31 +35,59 @@ of a negative decision provided that the condition is \code{FALSE}).
 of a positive decision provided that the condition is \code{FALSE}).
 \code{fart} is optional when its complement \code{spec} is provided.}
 
-\item{what}{A vector of character codes that specify the
+\item{what}{Vector of character codes that specify the
 selection of curves to be plotted. Currently available
 options are \code{c("prev", "PPV", "NPV", "ppod", "acc")}
 (shortcut: \code{what = "all"}).
 Default: \code{what = c("prev", "PPV", "NPV")}.}
 
-\item{what.col}{A vector of colors corresponding to the elements
+\item{what_col}{Vector of colors corresponding to the elements
 specified in \code{what}.
-Default: \code{what.col = pal}.}
+Default: \code{what_col = \link{pal}}.}
 
-\item{show.points}{Boolean option for showing the point of
+\item{uc}{Uncertainty range, given as a percentage of the current
+\code{\link{prev}}, \code{\link{sens}}, and \code{\link{spec}} values
+(added in both directions).
+Default: \code{uc = .00} (i.e., no uncertainty).
+Plausible ranges are \code{0 < uc < .25}.}
+
+\item{show_points}{Boolean value for showing the point of
 intersection with the current prevalence \code{\link{prev}}
 in all selected curves.
-Default: \code{show.points = TRUE}.}
+Default: \code{show_points = TRUE}.}
 
-\item{log.scale}{Boolean value for switching from a linear
+\item{log_scale}{Boolean value for switching from a linear
 to a logarithmic x-axis.
-Default: \code{log.scale = FALSE}.}
+Default: \code{log_scale = FALSE}.}
 
-\item{title.lbl}{The title of the current plot.
-Default: \code{title.lbl = txt$scen.lbl}.}
+\item{lbl_txt}{Labels and text elements.
+Default: \code{lbl_txt = \link{txt}}.}
 
-\item{cex.lbl}{Scaling factor for the size of text labels
+\item{title_lbl}{Main plot title.
+Default: \code{title_lbl = NA} (using \code{lbl_txt$scen_lbl}).}
+
+\item{p_lbl}{Type of label for shown probability values,
+with the following options:
+  \enumerate{
+  \item \code{"abb"}: show abbreviated probability names;
+  \item \code{"def"}: show abbreviated probability names and values (default);
+  \item \code{"nam"}: show only probability names (as specified in code);
+  \item \code{"num"}: show only numeric probability values;
+  \item \code{"namnum"}: show names and numeric probability values;
+  \item \code{"no"}: hide labels (same for \code{p_lbl = NA} or \code{NULL}).
+  }}
+
+\item{cex_lbl}{Scaling factor for the size of text labels
 (e.g., on axes, legend, margin text).
-Default: \code{cex.lbl = .85}.}
+Default: \code{cex_lbl = .85}.}
+
+\item{col_pal}{Color palette (if what_col is unspecified).
+Default: \code{col_pal = \link{pal}}.}
+
+\item{mar_notes}{Boolean value for showing margin notes.
+Default: \code{mar_notes = TRUE}.}
+
+\item{...}{Other (graphical) parameters.}
 }
 \description{
 \code{plot_curve} draws curves of selected values
@@ -77,29 +106,50 @@ that allows for additional dependent values.
 }
 \examples{
 # Basics:
-plot_curve()                     # => default: what = ("prev", "PPV", "NPV")
-plot_curve(show.points = FALSE)  # => default without points
+# (1) Plot current freq and prob values:
+plot_curve()  # default curve plot,
+# same as:
+# plot_curve(what = c("prev", "PPV", "NPV"))
 
-# all curves:
-plot_curve(what = "all") # => all curves: what = ("prev", "PPV", "NPV", "ppod", "acc")
-plot_curve(what = "all", show.points = FALSE)  # => all curves, no points
+# hide points and show uncertainty:
+plot_curve(show_points = FALSE, uc = .10) # default w/o points, 10\% uncertainty range
 
-# selected curves:
-plot_curve(what = c("PPV", "NPV"))                  # => PPV and NPV
-plot_curve(what = c("prev", "PPV", "NPV", "acc"))   # => prev, PPV, NPV, and acc
-plot_curve(what = c("prev", "PPV", "NPV", "ppod"))  # => prev, PPV, NPV, and acc
+# (2) Provide local parameters and select curves:
+plot_curve(prev = .2, sens = .8, spec = .6, what = c("PPV", "NPV", "acc"), uc = .2)
+
+# All curves: what = ("prev", "PPV", "NPV", "ppod", "acc")
+plot_curve(prev = .3, sens = .9, spec = .8, what = "all", col_pal = pal_org) # all curves.
+
+# Selected curves:
+plot_curve(what = c("PPV", "NPV"))                  # PPV and NPV
+plot_curve(what = c("prev", "PPV", "NPV", "acc"))   # prev, PPV, NPV, and acc
+plot_curve(what = c("prev", "PPV", "NPV", "ppod"))  # prev, PPV, NPV, and ppod
+
+# Visualizing uncertainty (uc as percentage range):
+plot_curve(prev = .3, sens = .9, spec = .8, what = c("prev", "PPV", "NPV"),
+           uc = .05)  # => prev, PPV and NPV with a 5\% uncertainty range
+plot_curve(prev = .2, sens = .8, spec = .7, what = "all",
+           uc = .10)  # => all with a 10\% uncertainty range
 
 # X-axis as linear vs. log scale:
-plot_curve(prev = .01, sens = .9, spec = .8)                     # => linear scale
-plot_curve(prev = .01, sens = .9, spec = .8, log.scale = TRUE)   # => log scale
+plot_curve(prev = .01, sens = .9, spec = .8)                     # linear scale
+plot_curve(prev = .01, sens = .9, spec = .8, log_scale = TRUE)   # log scale
 
-plot_curve(prev = .0001, sens = .7, spec = .6)                   # => linear scale
-plot_curve(prev = .0001, sens = .7, spec = .6, log.scale = TRUE) # => log scale
+plot_curve(prev = .0001, sens = .7, spec = .6)                   # linear scale
+plot_curve(prev = .0001, sens = .7, spec = .6, log_scale = TRUE) # log scale
 
-# Other options:
-plot_curve(title.lbl = "Testing smaller text labels", cex.lbl = .60)
-plot_curve(what = "all", what.col = c("grey", "red3", "green3", "blue3", "gold"))
+# Probability labels:
+plot_curve(p_lbl = "abb", what = "all")     # abbreviated names
+plot_curve(p_lbl = "nam", what = "all")     # names only
+plot_curve(p_lbl = "num", what = "all")     # numeric values only
+plot_curve(p_lbl = "namnum", what = "all")  # names and values
 
+# Text and color settings:
+plot_curve(title_lbl = "Testing tiny text labels", cex_lbl = .60)
+plot_curve(title_lbl = "Testing specific colors", uc = .05,
+           what = "all", what_col = c("grey", "red3", "green3", "blue3", "gold"))
+plot_curve(title_lbl = "Testing color palette", uc = .05,
+           what = "all", col_pal = pal_org)
 
 }
 \seealso{
@@ -112,7 +162,10 @@ plot_curve(what = "all", what.col = c("grey", "red3", "green3", "blue3", "gold")
 \code{\link{pal}} for current color settings.
 
 Other visualization functions: \code{\link{plot.riskyr}},
+  \code{\link{plot_area}}, \code{\link{plot_bar}},
   \code{\link{plot_fnet}}, \code{\link{plot_icons}},
   \code{\link{plot_mosaic}}, \code{\link{plot_plane}},
+  \code{\link{plot_prism}}, \code{\link{plot_tab}},
   \code{\link{plot_tree}}
 }
+\concept{visualization functions}
