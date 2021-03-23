@@ -4,14 +4,16 @@
 \name{pal}
 \alias{pal}
 \title{List current values of scenario color palette.}
-\format{An object of class \code{character} of length 15.}
+\format{
+An object of class \code{character} of length 16.
+}
 \usage{
 pal
 }
 \description{
 \code{pal} is initialized to a vector of named elements (colors)
 to define the scenario color scheme that is
-used throughout the \code{riskyr} package.
+used throughout the \bold{riskyr} package.
 }
 \details{
 All color information corresponding to the current scenario
@@ -58,6 +60,8 @@ the condition is FALSE, provided that the decision is negative).
 
 \item \code{brd} Color used for borders.
 
+\item \code{bg} Color used for plot background (used to set \code{par(bg = bg_col)}).
+
 }
 
 Note that color names for frequencies correspond to frequency names,
@@ -65,8 +69,8 @@ but are different for probabilities (which are written in lowercase
 and only \code{\link{PPV}} and \code{\link{NPV}} have assigned colors).
 }
 \examples{
-pal        # shows all current color names and values
-pal["hi"]  # shows the current color for hits (true positives)
+pal        # shows all color names and current values
+pal["hi"]  # shows the current color for hits (true positives, TP)
 pal["hi"] <- "gold"  # defines a new color for hits (true positives, TP)
 
 }
@@ -81,14 +85,23 @@ pal["hi"] <- "gold"  # defines a new color for hits (true positives, TP)
 \code{\link{prob}} contains current probability information;
 \code{\link{comp_prob}} computes current probability information.
 
-Other lists containing current scenario information: \code{\link{accu}},
-  \code{\link{freq}}, \code{\link{num}},
-  \code{\link{pal_bw}}, \code{\link{pal_kn}},
-  \code{\link{pal_mbw}}, \code{\link{pal_mod}},
-  \code{\link{pal_org}}, \code{\link{pal_rgb}},
-  \code{\link{pal_vir}}, \code{\link{prob}},
-  \code{\link{txt_TF}}, \code{\link{txt_org}},
-  \code{\link{txt}}
+Other lists containing current scenario information: 
+\code{\link{accu}},
+\code{\link{freq}},
+\code{\link{num}},
+\code{\link{pal_bwp}},
+\code{\link{pal_bw}},
+\code{\link{pal_kn}},
+\code{\link{pal_mbw}},
+\code{\link{pal_mod}},
+\code{\link{pal_org}},
+\code{\link{pal_rgb}},
+\code{\link{pal_unikn}},
+\code{\link{pal_vir}},
+\code{\link{prob}},
+\code{\link{txt_TF}},
+\code{\link{txt_org}},
+\code{\link{txt}}
 }
 \concept{lists containing current scenario information}
 \keyword{datasets}

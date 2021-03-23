@@ -5,12 +5,30 @@
 \title{Plot a plane of selected values (e.g., PPV or NPV)
 as a function of sensitivity and specificity.}
 \usage{
-plot_plane(prev = num$prev, sens = num$sens, mirt = NA,
-  spec = num$spec, fart = NA, what = "PPV", what_col = pal,
-  line_col = "grey85", point_col = "yellow", show_point = TRUE,
-  step_size = 0.05, theta = -45, phi = 0, lbl_txt = txt,
-  title_lbl = NA, p_lbl = "def", cex_lbl = 0.85, col_pal = pal,
-  mar_notes = TRUE, ...)
+plot_plane(
+  prev = num$prev,
+  sens = num$sens,
+  mirt = NA,
+  spec = num$spec,
+  fart = NA,
+  what = "PPV",
+  what_col = pal,
+  line_col = "grey85",
+  sens_range = c(0, 1),
+  spec_range = c(0, 1),
+  step_size = 0.05,
+  show_points = TRUE,
+  point_col = "yellow",
+  theta = -45,
+  phi = 0,
+  lbl_txt = txt,
+  title_lbl = NA,
+  p_lbl = "def",
+  cex_lbl = 0.85,
+  col_pal = pal,
+  mar_notes = FALSE,
+  ...
+)
 }
 \arguments{
 \item{prev}{The condition's prevalence \code{\link{prev}}
@@ -19,7 +37,8 @@ plot_plane(prev = num$prev, sens = num$sens, mirt = NA,
 \item{sens}{The decision's sensitivity \code{\link{sens}}
 (i.e., the conditional probability of a positive decision
 provided that the condition is \code{TRUE}).
-\code{sens} is optional when its complement \code{mirt} is provided.}
+\code{sens} is optional when its complement \code{mirt} is provided.
+If \code{sens = NA}, then \code{show_points = FALSE}.}
 
 \item{mirt}{The decision's miss rate \code{\link{mirt}}
 (i.e., the conditional probability of a negative decision
@@ -29,7 +48,8 @@ provided that the condition is \code{TRUE}).
 \item{spec}{The decision's specificity value \code{\link{spec}}
 (i.e., the conditional probability
 of a negative decision provided that the condition is \code{FALSE}).
-\code{spec} is optional when its complement \code{fart} is provided.}
+\code{spec} is optional when its complement \code{fart} is provided.
+If \code{spec = NA}, then \code{show_points = FALSE}.}
 
 \item{fart}{The decision's false alarm rate \code{\link{fart}}
 (i.e., the conditional probability
@@ -49,19 +69,27 @@ in current \code{col_pal}.}
 \item{line_col}{Color for lines between surface facets.
 Default: \code{line_col = "grey85"}.}
 
-\item{point_col}{Fill color for showing current value on plane.
-Default: \code{point_col = "yellow"}.}
+\item{sens_range}{Range (minimum and maximum) of \code{\link{sens}} values
+on x-axis (i.e., values in \code{c(0, 1)} range).
+Default: \code{sens_range = c(0, 1)}.}
 
-\item{show_point}{Boolean option for showing the current value
-of the selected metric for the current conditions
-(\code{\link{prev}}, \code{\link{sens}}, \code{\link{spec}})
-as a point on the plane.
-Default: \code{show_point = TRUE}.}
+\item{spec_range}{Range (minimum and maximum) of \code{\link{spec}} values
+on y-axis (i.e., values in \code{c(0, 1)} range).
+Default: \code{spec_range = c(0, 1)}.}
 
 \item{step_size}{Sets the granularity of the
 \code{\link{sens}}-by-\code{\link{spec}} grid.
 (in range \code{.01 <= step_size <= 1}).
 Default: \code{step_size = .05}.}
+
+\item{show_points}{Boolean option for showing the current value
+of the selected metric for the current conditions
+(\code{\link{prev}}, \code{\link{sens}}, \code{\link{spec}})
+as a point on the plane.
+Default: \code{show_points = TRUE}.}
+
+\item{point_col}{Fill color for showing current value on plane.
+Default: \code{point_col = "yellow"}.}
 
 \item{theta}{Horizontal rotation angle (used by \code{\link{persp}}).
 Default: \code{theta = -45}.}
@@ -94,7 +122,7 @@ Default: \code{cex_lbl = .85}.}
 Default: \code{col_pal = \link{pal}}.}
 
 \item{mar_notes}{Boolean value for showing margin notes.
-Default: \code{mar_notes = TRUE}.}
+Default: \code{mar_notes = FALSE}.}
 
 \item{...}{Other (graphical) parameters.}
 }
@@ -121,16 +149,25 @@ plot_plane(what = "NPV")  # => plane of NPV
 plot_plane(what = "ppod") # => plane of ppod
 plot_plane(what = "acc")  # => plane of acc
 
-# Plot options:
-plot_plane(title_lbl = "Testing smaller text labels", cex_lbl = .60)
-plot_plane(show_point = FALSE)  # => no point shown on plane
+# Plane with/out points:
+# plot_plane(prev = .5, sens = NA, spec = NA, what = "ppv")           # plane with 0 points
+plot_plane(prev = .5, sens = c(.2, .5, .8), spec = .6, what = "npv")  # plane with 3 points
+
+# Zooming into sens and spec ranges:
+# plot_plane(prev = .02, sens = c(.8, .9), spec = c(.8, .8, .9, .9))  # default ranges
+plot_plane(prev = .02, sens = c(.8, .9), spec = c(.8, .8, .9, .9),
+           sens_range = c(.7, 1), spec_range = c(.7, 1), step_size = .02)  # zooming in
+
+# Options:
+# plot_plane(title_lbl = "No point and smaller labels", show_points = FALSE, cex_lbl = .60)
 
 plot_plane(title_lbl = "Testing plot colors", what_col = "royalblue4", line_col = "sienna2")
-plot_plane(title_lbl = "Testing plot in b/w", what_col = "white", line_col = "black")
+plot_plane(title_lbl = "Testing b/w plot", what = "npv", what_col = "white", line_col = "black")
+plot_plane(title_lbl = "Testing color pal_bwp", col_pal = pal_bwp)
 
 plot_plane(step_size = .333, what_col = "firebrick")    # => coarser granularity + color
 plot_plane(step_size = .025, what_col = "chartreuse4")  # => finer granularity + color
-plot_plane(what_col = "steelblue4", theta = -90, phi = 45)   # => rotated, from above
+plot_plane(what_col = "steelblue4", theta = -90, phi = 50)  # => rotated, from above
 
 }
 \seealso{
@@ -142,11 +179,16 @@ plot_plane(what_col = "steelblue4", theta = -90, phi = 45)   # => rotated, from 
 \code{\link{txt}} for current text settings;
 \code{\link{pal}} for current color settings
 
-Other visualization functions: \code{\link{plot.riskyr}},
-  \code{\link{plot_area}}, \code{\link{plot_bar}},
-  \code{\link{plot_curve}}, \code{\link{plot_fnet}},
-  \code{\link{plot_icons}}, \code{\link{plot_mosaic}},
-  \code{\link{plot_prism}}, \code{\link{plot_tab}},
-  \code{\link{plot_tree}}
+Other visualization functions: 
+\code{\link{plot.riskyr}()},
+\code{\link{plot_area}()},
+\code{\link{plot_bar}()},
+\code{\link{plot_curve}()},
+\code{\link{plot_fnet}()},
+\code{\link{plot_icons}()},
+\code{\link{plot_mosaic}()},
+\code{\link{plot_prism}()},
+\code{\link{plot_tab}()},
+\code{\link{plot_tree}()}
 }
 \concept{visualization functions}

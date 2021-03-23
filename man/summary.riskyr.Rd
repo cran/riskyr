@@ -3,7 +3,9 @@
 \name{summary.riskyr}
 \alias{summary.riskyr}
 \title{Summarize a riskyr scenario.}
-\format{An object of class \code{summary.riskyr} with up to 9 entries.}
+\format{
+An object of class \code{summary.riskyr} with up to 9 entries.
+}
 \usage{
 \method{summary}{riskyr}(object = NULL, summarize = "all", ...)
 }
@@ -34,8 +36,10 @@ summary(scenarios$n4)
 \seealso{
 \code{\link{riskyr}} initializes a \code{riskyr} scenario.
 
-Other riskyr scenario functions: \code{\link{plot.riskyr}},
-  \code{\link{read_popu}}, \code{\link{riskyr}}
+Other riskyr scenario functions: 
+\code{\link{plot.riskyr}()},
+\code{\link{read_popu}()},
+\code{\link{riskyr}()}
 }
 \concept{riskyr scenario functions}
 \concept{summary functions}

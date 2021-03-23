@@ -1,5 +1,5 @@
 ## plot_tab.R | riskyr
-## 2018 12 20
+## 2021 01 04
 ## Plot contingency/frequency table
 ## (based on plot_area.R).
 ## -----------------------------------------------
@@ -127,7 +127,7 @@
 #'
 #' @param f_lbl_hd  Type of label for showing frequency values in header,
 #' with same 6 options as \code{f_lbl} (above).
-#' Default: \code{f_lbl_hd = "abb"}: abbreviated names only.
+#' Default: \code{f_lbl_hd = "nam"}: names only (as specified in \code{lbl_txt = txt}).
 #'
 #' @param f_lwd  Line width of areas.
 #' Default: \code{f_lwd = 1}.
@@ -179,13 +179,11 @@
 #' Default: \code{col_pal = \link{pal}}.
 #'
 #' @param mar_notes Boolean option for showing margin notes.
-#' Default: \code{mar_notes = TRUE}.
+#' Default: \code{mar_notes = FALSE}.
 #'
 #' @param ...  Other (graphical) parameters.
 #'
-#'
 #' @return Nothing (NULL).
-#'
 #'
 #' @examples
 #' ## Basics:
@@ -204,45 +202,41 @@
 #' plot_tab(by = "cddc", p_split = "h", p_lbl = "def")  # v03 (see v05)
 #' plot_tab(by = "cdac", p_split = "h", p_lbl = "def")  # v04 (see v09)
 #'
-#' plot_tab(by = "dccd", p_split = "v", p_lbl = "def")  # v05 (is v03 rotated)
-#' plot_tab(by = "dcac", p_split = "v", p_lbl = "def")  # v06 (see v12)
-#' plot_tab(by = "dccd", p_split = "h", p_lbl = "def")  # v07 (is v01 rotated)
-#' plot_tab(by = "dcac", p_split = "h", p_lbl = "def")  # v08 (see v10)
+#' # plot_tab(by = "dccd", p_split = "h", p_lbl = "def")  # v07 (v01 rotated)
+#' # plot_tab(by = "dccd", p_split = "v", p_lbl = "def")  # v05 (v03 rotated)
+#' plot_tab(by = "dcac", p_split = "v", p_lbl = "def")    # v06 (see v12)
+#' plot_tab(by = "dcac", p_split = "h", p_lbl = "def")    # v08 (see v10)
 #'
-#' plot_tab(by = "accd", p_split = "v", p_lbl = "def")  # v09 (is v04 rotated)
-#' plot_tab(by = "acdc", p_split = "v", p_lbl = "def")  # v10 (is v08 rotated)
-#' plot_tab(by = "accd", p_split = "h", p_lbl = "def")  # v11 (is v02 rotated)
-#' plot_tab(by = "acdc", p_split = "h", p_lbl = "def")  # v12 (is v06 rotated)
+#' # plot_tab(by = "accd", p_split = "v", p_lbl = "def")  # v09 (v04 rotated)
+#' # plot_tab(by = "acdc", p_split = "v", p_lbl = "def")  # v10 (v08 rotated)
+#' # plot_tab(by = "accd", p_split = "h", p_lbl = "def")  # v11 (v02 rotated)
+#' # plot_tab(by = "acdc", p_split = "h", p_lbl = "def")  # v12 (v06 rotated)
 #'
 #' ## Explore labels and links:
-#' plot_tab(f_lbl = "abb", p_lbl = NA)  # abbreviated labels, no probability links
-#' plot_tab(f_lbl = "num", f_lbl_sum = "abb", p_lbl = "num", f_lbl_hd = "abb")
-#' plot_tab(f_lbl = "abb", f_lbl_sum = "abb", p_lbl = "nam", f_lbl_hd = "nam")
-#' plot_tab(f_lbl = "namnum", f_lbl_sep = ":\n",
-#'          f_lbl_sum = "namnum", f_lbl_hd = "nam", p_lbl = "namnum")
+#' # plot_tab(f_lbl = "abb", p_lbl = NA)  # abbr. labels, no probability links
+#' # plot_tab(f_lbl = "num", f_lbl_sum = "abb", p_lbl = "num", f_lbl_hd = "abb")
+#' plot_tab(f_lbl = "def", f_lbl_sum = "def", p_lbl = "def", f_lbl_hd = "nam")
+#' plot_tab(f_lbl = "namnum", f_lbl_sep = " = ",
+#'          f_lbl_sum = "namnum", f_lbl_hd = "num", p_lbl = "namnum")
 #'
 #' ## Misc. options:
 #' plot_tab(area = "sq")        # area: square
-#' plot_tab(title_lbl = "")     # no titles
-#' plot_tab(mar_notes = FALSE)  # no margin notes
-#'
-#' plot_tab(by = "cddc", gaps = c(.08, .00), area = "sq")    # gaps
-#' plot_tab(by = "cddc", gaps = c(.02, .08), p_split = "h")  # gaps
+#' # plot_tab(title_lbl = "")     # no titles
+#' # plot_tab(mar_notes = TRUE)   # show margin notes
+#' plot_tab(by = "cddc", gaps = c(.08, .00), area = "sq")      # gaps
+#' # plot_tab(by = "cddc", gaps = c(.02, .08), p_split = "h")  # gaps
 #'
 #' # Showing prob as lines:
 #' plot_tab(prev = 1/4, sens = 6/7, spec = 3/5, N = 100,
 #'          by = "cddc", p_split = "v", col_pal = pal_rgb,
-#'          p_lbl = "def", brd_dis = .25, arr_c = -3)
-#' plot_tab(prev = 1/3, sens = 6/7, spec = 3/4, N = 100, scale = "f",
-#'          by = "cddc", p_split = "h", col_pal = pal_mod,
-#'          p_lbl = "namnum", brd_dis = .15, arr_c = +3)
+#'          p_lbl = "def", brd_dis = .25, arr_c = +3, lwd = 2)
 #'
-#' ## Custom text labels and colors:
+#' # Custom text labels and colors:
 #' plot_tab(prev = .5, sens = 4/5, spec = 3/5, N = 10,
-#'          by = "cddc", p_split = "v", area = "sq",
-#'          lbl_txt = txt_org,  # custom text
+#'          by = "cddc", p_split = "v", area = "no",
+#'          lbl_txt = txt_TF,  # custom text
 #'          f_lbl = "namnum", f_lbl_sep = ":\n", f_lbl_sum = "num", f_lbl_hd  = "nam",
-#'          col_pal = pal_mod, f_lwd = 3)  # custom colors
+#'          col_pal = pal_vir, f_lwd = 3)  # custom colors
 #' plot_tab(prev = .5, sens = 3/5, spec = 4/5, N = 10,
 #'          by = "cddc", p_split = "h", area = "sq",
 #'          lbl_txt = txt_org,  # custom text
@@ -250,9 +244,7 @@
 #'          col_pal = pal_kn, f_lwd = 1)  # custom colors
 #'
 #' ## Note some differences to plot_area (i.e., area/mosaic plot):
-#' #
 #' # In plot_tab:
-#' #
 #' # (1) p_split does not matter (except for selecting different prob links):
 #' plot_tab(by = "cddc", p_split = "v")  # v01 (see v07)
 #' plot_tab(by = "cddc", p_split = "h")  # v03 (see v05)
@@ -309,7 +301,7 @@ plot_tab <- function(prev = num$prev,    # probabilities
                      f_lbl = "num",      # freq label of 4 SDT & N cells: "default" vs. "abb", "nam", "num", "namnum". (Set to NA/NULL to hide freq labels).
                      f_lbl_sep = NA,     # freq label separator (default: " = ", use ":\n" to add an extra line break)
                      f_lbl_sum = f_lbl,  # freq label of summary cells (bottom row and right column)
-                     f_lbl_hd  = "abb",  # freq labels of headers at top (for columns) and left (for rows)
+                     f_lbl_hd  = "nam",  # freq labels of headers at top (for columns) and left (for rows)
                      f_lwd = 0,          # lwd of freq boxes: 0 (set to tiny_lwd, lty = 0) vs. 1 (numeric), or NULL/NA (set to 0).
                      # f_lty = 0,        # lty of freq boxes: 1 ("solid") vs. 0 ("blank"), etc. (currently not used)
 
@@ -332,7 +324,7 @@ plot_tab <- function(prev = num$prev,    # probabilities
                      col_pal = pal,      # color palette
 
                      # Generic options:
-                     mar_notes = TRUE,   # show margin notes?
+                     mar_notes = FALSE,  # show margin notes?
                      ...                 # other (graphical) parameters (passed to plot_line and plot_ftype_label)
 ) {
 
@@ -529,9 +521,10 @@ plot_tab <- function(prev = num$prev,    # probabilities
   } # if (scale == etc.)
 
   # f_lwd & lty:
+  tiny_lwd <- .001   # initialize tiny, invisible width
+
   if ( is.null(f_lwd) || is.na(f_lwd) || f_lwd <= 0 ) {
 
-    tiny_lwd <- .001   # tiny, invisible width
     f_lwd <- tiny_lwd  # to avoid error (for lwd = 0)
     lty <- 0           # "blank" (no lines) [only when f_lty and p_lty are NOT used]
 
@@ -561,15 +554,6 @@ plot_tab <- function(prev = num$prev,    # probabilities
   # p_lwd <- 1  # lwd of p-links
   # p_lty <- 1  # lty of p-links
 
-  # colors:
-  # if (!all(col_p %in% colors())) { message("col_p must contain (1 to 3) valid color names.") }
-  if (length(col_p) == 1) { col_p <- rep(col_p, 3) }  # 1 color: use for all 3 p-links
-  if (length(col_p) == 2) { col_p <- c(col_p[1], col_p[2], col_p[2]) } # 2 colors: use 2nd for 2 and 3
-
-  p_col_1 <- col_p[1]  # prob color 1 (must be visible on hi)
-  p_col_2 <- col_p[2]  # prob color 2 (must be visible on hi)
-  p_col_3 <- col_p[3]  # prob color 3 (must be visible on cr AND fa)
-
   # arr_c:
   if ( is.null(arr_c) || is.na(arr_c) ) { arr_c <- 0 }  # sensible zero
 
@@ -589,14 +573,48 @@ plot_tab <- function(prev = num$prev,    # probabilities
   if ( cex_p_lbl == 0 )  { cex_p_lbl <- .001 } # other sensible zero
 
 
-  ## 5. Plot borders: ----
+  ## 5. Colors / color palettes: ----
+
+  # (a) Set plot background color:
+  par(bg = col_pal[["bg"]])  # col_pal[["bg"]] / "white" / NA (for transparent background)
+
+  # (b) Detect and handle special cases of color equality (e.g., pal_bwp):
+  if ( (par("bg") %in% col_pal[1:11]) && # if bg is equal to ANY fbox color AND
+       (f_lwd <= tiny_lwd) ) {           # f_lwd is tiny_lwd (default):
+    f_lwd <- 1
+    if (lty == 0) {lty <- 1}  # prevent lty = 0
+    # message(paste0("f_lwd = ", f_lwd, "; col_pal[['brd']] = ",  col_pal[["brd"]], "; lty = ", lty)) # debugging
+  }
+
+  # (c) Probability link colors:
+  if (!is.na(p_lbl)) {  # only when labels OR links are being shown:
+
+    # if (!all(col_p %in% colors())) { message("col_p must contain (1 to 3) valid color names.") }
+    if (length(col_p) == 1) { col_p <- rep(col_p, 3) }  # 1 color: use for all 3 p-links
+    if (length(col_p) == 2) { col_p <- c(col_p[1], col_p[2], col_p[2]) } # 2 colors: use 2nd for 2 and 3
+
+    p_col_1 <- col_p[1]  # prob color 1 (must be visible on hi)
+    p_col_2 <- col_p[2]  # prob color 2 (must be visible on hi)
+    p_col_3 <- col_p[3]  # prob color 3 (must be visible on cr AND fa)
+
+    # (+) Detect and handle special case (when color of hi is "white", so that defaults of "yellow" would not be visible):
+    if (all_equal(c("white", col_pal[["hi"]]))) {
+      if (p_col_1 == "yellow" || p_col_1 == "white") { p_col_1 <- grey(.01, .99) }  # change if set to "yellow"
+      if (p_col_2 == "yellow" || p_col_2 == "white") { p_col_2 <- grey(.11, .99) }  # change if still default color
+      if (p_col_3 == "yellow" || p_col_3 == "white") { p_col_3 <- grey(.22, .99) }  # change if still default color
+    }
+
+  }  # if if (!is.na(p_lbl)) end.
+
+
+  ## 6. Plot borders: ----
 
   # brd_w:
   if ( is.null(brd_w) || is.na(brd_w) ) { brd_w <- 0 }  # set to 0 (min)
   if ( brd_w > .5 ) { brd_w <- 0.5 }                    # set to 0.5 (max)
 
 
-  ## 6. Additional parameters (currently fixed): ----
+  ## 7. Additional parameters (currently fixed): ----
 
   lty <- 1  # default
 
@@ -640,6 +658,7 @@ plot_tab <- function(prev = num$prev,    # probabilities
   # } else {
   #   f_lbl_hd  <- "abb"  # use abbreviated names
   # }
+
 
   ## (3) Define plot and margin areas: ----------
 
@@ -732,7 +751,7 @@ plot_tab <- function(prev = num$prev,    # probabilities
   # points(0, 0, pch = 1, col = grey(.33, .50), cex = 1)                        # mark origin
 
 
-  ## (5) Main: Custom ct plot: -----------
+  ## (5) Main: Custom table plot: -----------
 
   ##   (a) Plot 4 SDT cases/cells in center (coordinates + boxes): ----------
 
@@ -1204,8 +1223,9 @@ plot_tab <- function(prev = num$prev,    # probabilities
                  cur_freq = freq, lbl_txt = lbl_txt, col_pal = col_pal,  # PASS current freq/txt/pal arguments!
                  lbl_type = f_lbl, lbl_sep = f_lbl_sep, cex = cex_lbl, lwd = f_lwd, lty = lty)  # No ...!
 
-  ##   (+) Check: Mark 2 key points/checkpoints (per plot): ------
-  mark_key_points <- FALSE  # default
+  ##   (+) Check: Mark 2 key points/checkpoints (per plot): NOT RELEVANT for plot_tab! ------
+  mark_key_points <- FALSE   # default
+  # mark_key_points <- TRUE  # debugging/test
 
   if (mark_key_points) {
 
@@ -1805,8 +1825,6 @@ plot_tab <- function(prev = num$prev,    # probabilities
 
   } # if ( !is.null(p_lbl) && !is.na(p_lbl) )
 
-  ## +++ here now +++
-
   ##   (e) Plot text labels (for 2 perspectives) on 2 sides: ----------
 
   ## (A) top labels (horizontal):
@@ -1970,7 +1988,7 @@ plot_tab <- function(prev = num$prev,    # probabilities
   ##   (f) Plot other stuff: ----------
 
   ##   Sum labels:
-  sum_lbl <- "Sums:"
+  sum_lbl <- paste0(lbl["sum_lbl"], ":")
 
   text((c3_x * scale_x), (n_rows + h_gap + h_shift),  # top: right column (c3):
        labels = sum_lbl,
@@ -1994,7 +2012,7 @@ plot_tab <- function(prev = num$prev,    # probabilities
   if (title_lbl == "") {  # if title has been set to "":
     type_lbl <- ""        # assume that no subtitle is desired either
   } else {
-    type_lbl <- paste0("Confusion table (by ", as.character(by), ")")  # plot name: Table/Contingency table/etc.
+    type_lbl <- paste0(lbl["plot_tab_lbl"], " (by ", as.character(by), ")")  # plot name: Table/Contingency table/etc.
   }
 
   # Compose label:
@@ -2030,7 +2048,7 @@ plot_tab <- function(prev = num$prev,    # probabilities
   ## Finish: ---------
 
   # on.exit(par(opar))  # par(opar)  # restore original settings
-  invisible()# restores par(opar)
+  invisible() # restores par(opar)
 
 } # plot_tab end.
 
@@ -2072,7 +2090,7 @@ plot_tab <- function(prev = num$prev,    # probabilities
 # ## Misc. options:
 # plot_tab(area = "sq")        # area: square
 # plot_tab(title_lbl = "")     # no titles
-# plot_tab(mar_notes = FALSE)  # no margin notes
+# plot_tab(mar_notes = TRUE)   # show margin notes
 #
 # plot_tab(by = "cddc", gaps = c(.08, .00), area = "sq")    # gaps
 # plot_tab(by = "cddc", gaps = c(.02, .08), p_split = "h")  # gaps
@@ -2101,7 +2119,6 @@ plot_tab <- function(prev = num$prev,    # probabilities
 # ## Note some differences to plot_area (area/mosaic plot):
 # #
 # # In plot_tab:
-# #
 # # (1) p_split does not matter (except for selecting different prob links):
 # plot_tab(by = "cddc", p_split = "v")  # v01 (see v07)
 # plot_tab(by = "cddc", p_split = "h")  # v03 (see v05)
@@ -2115,15 +2132,13 @@ plot_tab <- function(prev = num$prev,    # probabilities
 
 ## (+) ToDo: ------
 
-## - Shorten and simplify code (when possible).
+## - Allow showing more than 1 set of probabilities at once.
+## - Simplify:
+#    a. specify perspectives => position of 4 table cells
+#    b. specify probabilities (lines) to be shown
 
 ## (*) Done: ------
 
-## - Make a function of 3 essential probabilities (generating local freq and prob),
-##   and pass local txt and pal arguments (to allow changes when calling function).
-## - Add probability link options for perspectives beyond "cd.."
-## - Use scale == "f" to re-compute prob values from (rounded or non-rounded) freq.
-## - Set sensible defaults.
-## - Add documentation and integrate in riskyr package  [2018 10 24].
+## - etc.
 
 ## eof. ----------

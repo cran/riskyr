@@ -4,15 +4,37 @@
 \alias{plot_tab}
 \title{Plot a 2 x 2 contingency table of population frequencies.}
 \usage{
-plot_tab(prev = num$prev, sens = num$sens, mirt = NA,
-  spec = num$spec, fart = NA, N = num$N, by = "cddc",
-  p_split = "v", area = "no", scale = "p", round = TRUE,
-  f_lbl = "num", f_lbl_sep = NA, f_lbl_sum = f_lbl,
-  f_lbl_hd = "abb", f_lwd = 0, gaps = c(NA, NA), brd_w = 0.1,
-  p_lbl = NA, arr_c = -3, col_p = c(grey(0.15, 0.99), "yellow",
-  "yellow"), brd_dis = 0.3, lbl_txt = txt, title_lbl = txt$scen_lbl,
-  cex_lbl = 0.9, cex_p_lbl = NA, col_pal = pal, mar_notes = TRUE,
-  ...)
+plot_tab(
+  prev = num$prev,
+  sens = num$sens,
+  mirt = NA,
+  spec = num$spec,
+  fart = NA,
+  N = num$N,
+  by = "cddc",
+  p_split = "v",
+  area = "no",
+  scale = "p",
+  round = TRUE,
+  f_lbl = "num",
+  f_lbl_sep = NA,
+  f_lbl_sum = f_lbl,
+  f_lbl_hd = "nam",
+  f_lwd = 0,
+  gaps = c(NA, NA),
+  brd_w = 0.1,
+  p_lbl = NA,
+  arr_c = -3,
+  col_p = c(grey(0.15, 0.99), "yellow", "yellow"),
+  brd_dis = 0.3,
+  lbl_txt = txt,
+  title_lbl = txt$scen_lbl,
+  cex_lbl = 0.9,
+  cex_p_lbl = NA,
+  col_pal = pal,
+  mar_notes = FALSE,
+  ...
+)
 }
 \arguments{
 \item{prev}{The condition's prevalence \code{\link{prev}}
@@ -107,7 +129,7 @@ Default: \code{f_lbl_sum = "def"}: abbreviated names and numeric values.}
 
 \item{f_lbl_hd}{Type of label for showing frequency values in header,
 with same 6 options as \code{f_lbl} (above).
-Default: \code{f_lbl_hd = "abb"}: abbreviated names only.}
+Default: \code{f_lbl_hd = "nam"}: names only (as specified in \code{lbl_txt = txt}).}
 
 \item{f_lwd}{Line width of areas.
 Default: \code{f_lwd = 1}.}
@@ -169,7 +191,7 @@ Default: \code{cex_p_lbl = cex_lbl - .05}.}
 Default: \code{col_pal = \link{pal}}.}
 
 \item{mar_notes}{Boolean option for showing margin notes.
-Default: \code{mar_notes = TRUE}.}
+Default: \code{mar_notes = FALSE}.}
 
 \item{...}{Other (graphical) parameters.}
 }
@@ -212,55 +234,49 @@ plot_tab(by = "cdac", p_split = "v", p_lbl = "def")  # v02 (see v11)
 plot_tab(by = "cddc", p_split = "h", p_lbl = "def")  # v03 (see v05)
 plot_tab(by = "cdac", p_split = "h", p_lbl = "def")  # v04 (see v09)
 
-plot_tab(by = "dccd", p_split = "v", p_lbl = "def")  # v05 (is v03 rotated)
-plot_tab(by = "dcac", p_split = "v", p_lbl = "def")  # v06 (see v12)
-plot_tab(by = "dccd", p_split = "h", p_lbl = "def")  # v07 (is v01 rotated)
-plot_tab(by = "dcac", p_split = "h", p_lbl = "def")  # v08 (see v10)
+# plot_tab(by = "dccd", p_split = "h", p_lbl = "def")  # v07 (v01 rotated)
+# plot_tab(by = "dccd", p_split = "v", p_lbl = "def")  # v05 (v03 rotated)
+plot_tab(by = "dcac", p_split = "v", p_lbl = "def")    # v06 (see v12)
+plot_tab(by = "dcac", p_split = "h", p_lbl = "def")    # v08 (see v10)
 
-plot_tab(by = "accd", p_split = "v", p_lbl = "def")  # v09 (is v04 rotated)
-plot_tab(by = "acdc", p_split = "v", p_lbl = "def")  # v10 (is v08 rotated)
-plot_tab(by = "accd", p_split = "h", p_lbl = "def")  # v11 (is v02 rotated)
-plot_tab(by = "acdc", p_split = "h", p_lbl = "def")  # v12 (is v06 rotated)
+# plot_tab(by = "accd", p_split = "v", p_lbl = "def")  # v09 (v04 rotated)
+# plot_tab(by = "acdc", p_split = "v", p_lbl = "def")  # v10 (v08 rotated)
+# plot_tab(by = "accd", p_split = "h", p_lbl = "def")  # v11 (v02 rotated)
+# plot_tab(by = "acdc", p_split = "h", p_lbl = "def")  # v12 (v06 rotated)
 
 ## Explore labels and links:
-plot_tab(f_lbl = "abb", p_lbl = NA)  # abbreviated labels, no probability links
-plot_tab(f_lbl = "num", f_lbl_sum = "abb", p_lbl = "num", f_lbl_hd = "abb")
-plot_tab(f_lbl = "abb", f_lbl_sum = "abb", p_lbl = "nam", f_lbl_hd = "nam")
-plot_tab(f_lbl = "namnum", f_lbl_sep = ":\\n",
-         f_lbl_sum = "namnum", f_lbl_hd = "nam", p_lbl = "namnum")
+# plot_tab(f_lbl = "abb", p_lbl = NA)  # abbr. labels, no probability links
+# plot_tab(f_lbl = "num", f_lbl_sum = "abb", p_lbl = "num", f_lbl_hd = "abb")
+plot_tab(f_lbl = "def", f_lbl_sum = "def", p_lbl = "def", f_lbl_hd = "nam")
+plot_tab(f_lbl = "namnum", f_lbl_sep = " = ",
+         f_lbl_sum = "namnum", f_lbl_hd = "num", p_lbl = "namnum")
 
 ## Misc. options:
 plot_tab(area = "sq")        # area: square
-plot_tab(title_lbl = "")     # no titles
-plot_tab(mar_notes = FALSE)  # no margin notes
-
-plot_tab(by = "cddc", gaps = c(.08, .00), area = "sq")    # gaps
-plot_tab(by = "cddc", gaps = c(.02, .08), p_split = "h")  # gaps
+# plot_tab(title_lbl = "")     # no titles
+# plot_tab(mar_notes = TRUE)   # show margin notes
+plot_tab(by = "cddc", gaps = c(.08, .00), area = "sq")      # gaps
+# plot_tab(by = "cddc", gaps = c(.02, .08), p_split = "h")  # gaps
 
 # Showing prob as lines:
 plot_tab(prev = 1/4, sens = 6/7, spec = 3/5, N = 100,
          by = "cddc", p_split = "v", col_pal = pal_rgb,
-         p_lbl = "def", brd_dis = .25, arr_c = -3)
-plot_tab(prev = 1/3, sens = 6/7, spec = 3/4, N = 100, scale = "f",
-         by = "cddc", p_split = "h", col_pal = pal_mod,
-         p_lbl = "namnum", brd_dis = .15, arr_c = +3)
+         p_lbl = "def", brd_dis = .25, arr_c = +3, lwd = 2)
 
-## Custom text labels and colors:
+# Custom text labels and colors:
 plot_tab(prev = .5, sens = 4/5, spec = 3/5, N = 10,
-         by = "cddc", p_split = "v", area = "sq",
-         lbl_txt = txt_org,  # custom text
-         f_lbl = "namnum", f_lbl_sep = ":\\n", f_lbl_sum = "num", f_lbl_hd  = "nam",
-         col_pal = pal_mod, f_lwd = 3)  # custom colors
+         by = "cddc", p_split = "v", area = "no",
+         lbl_txt = txt_TF,  # custom text
+         f_lbl = "namnum", f_lbl_sep = ":\n", f_lbl_sum = "num", f_lbl_hd  = "nam",
+         col_pal = pal_vir, f_lwd = 3)  # custom colors
 plot_tab(prev = .5, sens = 3/5, spec = 4/5, N = 10,
          by = "cddc", p_split = "h", area = "sq",
          lbl_txt = txt_org,  # custom text
-         f_lbl = "namnum", f_lbl_sep = ":\\n", f_lbl_sum = "num", f_lbl_hd  = "nam",
+         f_lbl = "namnum", f_lbl_sep = ":\n", f_lbl_sum = "num", f_lbl_hd  = "nam",
          col_pal = pal_kn, f_lwd = 1)  # custom colors
 
 ## Note some differences to plot_area (i.e., area/mosaic plot):
-#
 # In plot_tab:
-#
 # (1) p_split does not matter (except for selecting different prob links):
 plot_tab(by = "cddc", p_split = "v")  # v01 (see v07)
 plot_tab(by = "cddc", p_split = "h")  # v03 (see v05)
@@ -280,11 +296,16 @@ plot_tab(N = 5, prev = .3, sens = .9, spec = .5,
 \code{\link{pal}} contains current color settings;
 \code{\link{txt}} contains current text settings.
 
-Other visualization functions: \code{\link{plot.riskyr}},
-  \code{\link{plot_area}}, \code{\link{plot_bar}},
-  \code{\link{plot_curve}}, \code{\link{plot_fnet}},
-  \code{\link{plot_icons}}, \code{\link{plot_mosaic}},
-  \code{\link{plot_plane}}, \code{\link{plot_prism}},
-  \code{\link{plot_tree}}
+Other visualization functions: 
+\code{\link{plot.riskyr}()},
+\code{\link{plot_area}()},
+\code{\link{plot_bar}()},
+\code{\link{plot_curve}()},
+\code{\link{plot_fnet}()},
+\code{\link{plot_icons}()},
+\code{\link{plot_mosaic}()},
+\code{\link{plot_plane}()},
+\code{\link{plot_prism}()},
+\code{\link{plot_tree}()}
 }
 \concept{visualization functions}

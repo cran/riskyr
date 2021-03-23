@@ -1,11 +1,83 @@
 
-# Current version
+# riskyr 0.3.0
 
-The current development version is available at <https://github.com/hneth/riskyr/>. 
+**riskyr 0.3.0** is published [on CRAN](https://CRAN.R-project.org/package=riskyr) on March 23, 2021. 
+
+Log of changes since last release:
+
+
+## Major changes
+
+- Added `plot_fnet()` for plotting _frequency nets_ (Binder et al., 2020) [2020-12]. 
+
+
+## Minor changes
+
+### Changes to existing visualization functions 
+
+- Changed default setting of `mar_notes` in all plotting functions [2021-01]: 
+Using `mar_notes = FALSE` as those details are not needed and can be distracting in visualizations. 
+
+- Change default arguments for `plot_area()` and `plot_tab()` [2019-01]:   
+Change default settings from `f_lbl_hd = "abb"` to `f_lbl_hd = "nam"` (as this makes more sense for riskyrApp).  
+
+- New options for `plot_curve()` [2019-01]:  
+Plotting probability curves as a function of prevalence does not require any specific prevalence value. 
+Thus, setting the `prev` argument to either `NA` or to a vector of several probabilities is now supported. 
+Setting the new `prev_range` argument to a range within `c(0, 1)` allows zooming into more specific ranges of `prev` values (on x-axis).  
+
+- New options for `plot_plane()` [2019-01]:  
+Plotting a probability plane as a function of sensitivity and specificity does not require specifying all values. 
+Thus, setting the `sens` and `spec` arguments to either `NA` or to a vector of several probabilities is now supported. 
+Setting the new `sens_range` and `spec_range` arguments to ranges within `c(0, 1)` allows zooming into more specific ranges of `sens` values (on x-axis) and `spec` values (on y-axis). 
+
+- New options for `plot_prism()` [2019-01]:  
+Using the new `p_lwd` and `p_scale` arguments allows scaling the widths of probability links by current probability values.  
+
+
+### Data and functions 
+
+- `data` [2019-07]:  
+Removed data files `df_scenarios.RData` and `df_scenarios.csv`, as they were redundant to `df_scenarios.rda` (loaded from `\data`). 
+
+- `make_cond_lbl()` [2019-01]:   
+The condition label now allows for `NA` or vectors of several values (for `prev`, `sens`, and `spec`).  
+
+- `is_prob_range()` [2019-01]:  
+Add utility function to verify a range of two probability values (to check new arguments of `plot_curve()` and `plot_plane()`).  
+
+
+## Micro changes
+
+### Colors 
+
+- Using colors of `pal` for fill colors of symbols in `plot_icon()` [2021-02]. 
+
+- Add color palettes [2019-01]:   
+
+    - Add `pal_bwp` (a strict b+w color palette suited for printing purposes) and corresponding special cases to major plotting functions. 
+    
+    - Add `pal_unikn` (based on color definitions of the **unikn** package). 
+
+- Changes to color palettes [2019-01]:  
+Add a background color `pal[["bg"]]` to all palettes and plots (to preempt different system defaults).  
+Adopt `pal_mod` -- rather than `pal_mbw` -- as default color scheme `pal` (to highlight `cond_true` and `dec_pos` cases in default plots).  
+
+### Details
+
+- Added reference to article on theoretical background ([Neth et al., 2021](https://doi.org/10.3389/fpsyg.2020.567817)).  
+
+- Bug fix in `plot_prism()`: Allow plotting simple trees for `nchar(by) == 2`.
+
+- Bug fix in `plot_icons()` [2019-01]: 
+Enforce 2 different symbol types for icon arrays with a binary perspective (`by = cd` or `dc` or `ac`).   
+
+
+---------- 
 
 # riskyr 0.2.0
 
-riskyr 0.2.0 was ready to be released on December 20, 2018, and submitted to CRAN on January 02, 2019.
+**riskyr 0.2.0** was released [on CRAN](https://CRAN.R-project.org/package=riskyr) on January 03, 2019.
 
 Log of changes since last release:
 
@@ -16,11 +88,11 @@ Log of changes since last release:
 - New `riskyrApp` version [2018-12]:   
 To use selected `riskyr` functions without the need for coding 
 an updated version of `riskyrApp` is available 
-at <https://github.com/hneth/riskyrApp> (R Shiny code) and 
-at <http://riskyr.org> (interactive online version). 
+at <https://github.com/hneth/riskyrApp/> (R Shiny code) and 
+at [http://riskyr.org/](http://134.34.54.61:3838/spds/riskyr/) (interactive online version). 
 
 - Using `pkgdown` [2018-12]:   
-Provide package documentation online at <https://hneth.github.io/riskyr> (latest release version) and <https://hneth.github.io/riskyr/dev/> (current development version). 
+Provide package documentation online at <https://hneth.github.io/riskyr/> (latest release version) and <https://hneth.github.io/riskyr/dev/> (current development version). 
 
 
 ### Visualization functions
@@ -72,13 +144,6 @@ Change Boolean `vsplit` argument to `by = "cd"` vs. `by = "dc"` to ensure consis
 - `mar_notes` and `plot_mar` [2018-09]:   
 Use consistent plot margins and options for showing margin notes for all plots.
 
-### Other changes 
-
-- `read_popu` [2018-11]:   
-Read a data frame `popu` and interpret is as a `riskyr` scenario, allows creating scenarios from raw data. 
-
-- `comp_accu.R` [2018-08]:   
-Compute exact accuracy values (not approximations, when using `comp_accu_freq` on rounded `freq` values) by using the new function `comp_accu_prob` to compute the list `accu` from probabilities. Signal rounding when showing accuracy based on rounded frequencies in plots (when `show.accu == TRUE` and `round == TRUE`). 
 
 ### Default objects (lists and vectors)
 
@@ -93,6 +158,15 @@ Include accuracy metrics in probabilities (in `prob` and summary functions).
 
 - `pal` and `txt` [2018-10]:   
 Add multiple color palettes and text labeling schemes (see `?pal` and `?txt` for details). 
+
+
+### Other changes 
+
+- `read_popu` [2018-11]:   
+Read a data frame `popu` and interpret is as a `riskyr` scenario, allows creating scenarios from raw data. 
+
+- `comp_accu.R` [2018-08]:   
+Compute exact accuracy values (not approximations, when using `comp_accu_freq` on rounded `freq` values) by using the new function `comp_accu_prob` to compute the list `accu` from probabilities. Signal rounding when showing accuracy based on rounded frequencies in plots (when `show.accu == TRUE` and `round == TRUE`). 
 
 
 ## Micro changes
@@ -114,7 +188,37 @@ Simplify some default text labels (e.g., for current population, condition, and 
 - `.onAttach` [2018-02]:   
 Cast dice to display probabilistic (i.e., risk-related) start-up messages. 
 
+---------- 
 
 # riskyr 0.1.0
 
-- Initial release on CRAN: <https://CRAN.R-project.org/package=riskyr> [2018-02-19] 
+**riskyr 0.1.0** was released [on CRAN](https://CRAN.R-project.org/package=riskyr) on February 19, 2018. 
+
+---------- 
+
+# References
+
+To cite **riskyr** in derivations and publications please use:
+
+- Neth, H., Gaisbauer, F., Gradwohl, N., & Gaissmaier, W. (2021). 
+riskyr: A toolbox for rendering risk literacy more transparent.  
+  Social Psychology and Decision Sciences, University of Konstanz, Germany. Computer software (R package version 0.3.0, March 23, 2021). 
+  Retrieved from <https://CRAN.R-project.org/package=riskyr>.  
+
+<!-- Background article: -->
+
+The following article provides details on the conceptual and theoretical background: 
+
+- Neth, H., Gradwohl, N., Streeb, D., Keim, D.A., & Gaissmaier, W. (2021). 
+Perspectives on the 2x2 matrix: Solving semantically distinct problems based on a shared structure of binary contingencies. 
+_Frontiers in Psychology_, _11_, 567817. 
+doi: [10.3389/fpsyg.2020.567817](https://doi.org/10.3389/fpsyg.2020.567817) 
+
+
+<!-- Update: -->
+
+---------- 
+
+(`NEWS.md` updated on 2021-03-23 by [hn](https://neth.de).) 
+
+<!-- eof -->

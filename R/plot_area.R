@@ -1,9 +1,9 @@
 ## plot_area.R | riskyr
-## 2018 12 20
+## 2021 01 04
 ## Plot area diagram (replacing plot_mosaic.R).
 ## -----------------------------------------------
 
-## (1) plot_area: Documentation ----------
+## (1) plot_area: Documentation ------
 
 #' Plot an area diagram of probabilities or frequencies.
 #'
@@ -128,7 +128,7 @@
 #'
 #' @param f_lbl_hd  Type of label for showing frequency values in header,
 #' with same 6 options as \code{f_lbl} (above).
-#' Default: \code{f_lbl_hd = "abb"}: abbreviated names only.
+#' Default: \code{f_lbl_hd = "nam"}: names only (as specified in \code{lbl_txt = txt}).
 #'
 #' @param f_lwd  Line width of areas.
 #' Default: \code{f_lwd = 0}.
@@ -142,7 +142,7 @@
 #'   \item \code{"num"}: show links and numeric probability values;
 #'   \item \code{"namnum"}: show links with names and numeric probability values;
 #'   \item \code{"no"}: show links with no labels;
-#'   \item \code{NA}: no link (same for \code{p_lbl = NULL}, default).
+#'   \item \code{NA}: show no labels or links (same for \code{p_lbl = NULL}, default).
 #'   }
 #'
 #' @param arr_c  Arrow code for symbols at ends of probability links
@@ -182,7 +182,7 @@
 #' Default: \code{col_pal = \link{pal}}.
 #'
 #' @param mar_notes  Boolean option for showing margin notes.
-#' Default: \code{mar_notes = TRUE}.
+#' Default: \code{mar_notes = FALSE}.
 #'
 #' @param ...  Other (graphical) parameters.
 #'
@@ -202,26 +202,21 @@
 #'           by = "cddc", p_split = "v", scale = "p",
 #'           title_lbl = "Custom text and color:",
 #'           lbl_txt = txt_org, f_lbl = "namnum",
-#'           f_lwd = 2, col_pal = pal_rgb)
-#' plot_area(prev = .4, sens = 6/7, spec = 4/7, N = 5,
-#'           by = "cdac", p_split = "h", scale = "f",
-#'           title_lbl = "Custom text and color:",
-#'           lbl_txt = txt_org, f_lbl = "namnum", f_lbl_sep = ":\n",
-#'           f_lwd = 1, col_pal = pal_kn)
+#'           f_lbl_sep = ":\n", f_lwd = 2, col_pal = pal_rgb)
 #'
 #' ## Versions:
 #' ## by x p_split (= [3 x 2 x 2] = 12 versions):
 #' plot_area(by = "cddc", p_split = "v")  # v01 (see v07)
 #' plot_area(by = "cdac", p_split = "v")  # v02 (see v11)
-#' plot_area(by = "cddc", p_split = "h")  # v03 (see v05)
-#' plot_area(by = "cdac", p_split = "h")  # v04 (see v09)
+#' # plot_area(by = "cddc", p_split = "h")  # v03 (see v05)
+#' # plot_area(by = "cdac", p_split = "h")  # v04 (see v09)
 #'
 #' # plot_area(by = "dccd", p_split = "v")  # v05 (is v03 rotated)
 #' plot_area(by = "dcac", p_split = "v")  # v06 (see v12)
 #' # plot_area(by = "dccd", p_split = "h")  # v07 (is v01 rotated)
-#' plot_area(by = "dcac", p_split = "h")  # v08 (see v10)
+#' # plot_area(by = "dcac", p_split = "h")  # v08 (see v10)
 #'
-#' plot_area(by = "accd", p_split = "v")  # v09 (is v04 rotated)
+#' # plot_area(by = "accd", p_split = "v")  # v09 (is v04 rotated)
 #' # plot_area(by = "acdc", p_split = "v")  # v10 (is v08 rotated)
 #' # plot_area(by = "accd", p_split = "h")  # v11 (is v02 rotated)
 #' # plot_area(by = "acdc", p_split = "h")  # v12 (is v06 rotated)
@@ -242,45 +237,46 @@
 #'           by = "cdac", p_split = "h", scale = "f", p_lbl = "def")  # scaled by freq (for small N)
 #'
 #' # gaps (sensible range: 0--.10):
-#' plot_area(gaps = NA)           # use default gaps (based on p_split)
-#' plot_area(gaps = c(0, 0))      # no gaps
-#' plot_area(gaps = c(.05, .01))  # v_gap > h_gap
+#' plot_area(gaps = NA)             # default gaps (based on p_split)
+#' plot_area(gaps = c(0, 0))        # no gaps
+#' # plot_area(gaps = c(.05, .01))  # v_gap > h_gap
 #'
 #' # freq labels:
 #' plot_area(f_lbl = "def", f_lbl_sep = " = ")  # default
-#' plot_area(f_lbl = NA)      # NA/NULL: no freq labels (in main area & top/left boxes)
-#' plot_area(f_lbl = "abb")   # abbreviated name (i.e., variable name)
-#' plot_area(f_lbl = "nam")   # only freq name
-#' plot_area(f_lbl = "num")   # only freq number
+#' plot_area(f_lbl = NA)       # NA/NULL: no freq labels (in main area & top/left boxes)
+#' plot_area(f_lbl = "abb")    # abbreviated name (i.e., variable name)
+#' # plot_area(f_lbl = "nam")  # only freq name
+#' # plot_area(f_lbl = "num")  # only freq number
 #' plot_area(f_lbl = "namnum", f_lbl_sep = ":\n", cex_lbl = .75)  # explicit & smaller
 #'
 #' # prob labels:
-#' plot_area(p_lbl = NA)      # no prob labels, no links
-#' plot_area(p_lbl = "no")    # show links, but no labels
+#' plot_area(p_lbl = NA)      # default: no prob labels, no links
+#' # plot_area(p_lbl = "no")  # show links, but no labels
 #' plot_area(p_lbl = "namnum", cex_lbl = .70)  # explicit & smaller labels
 #'
 #' # prob arrows:
-#' plot_area(arr_c = +3, f_lbl = NA)  # V-shape arrows
-#' plot_area(arr_c = +6, f_lbl = NA)  # T-shape arrows
-#' plot_area(arr_c = +6, f_lbl = NA,
-#'           brd_dis = -.02, col_p = c("black")) # adjust arrow type/position
+#' plot_area(arr_c = +3, p_lbl = "def", f_lbl = NA)  # V-shape arrows
+#' # plot_area(arr_c = +6, p_lbl = "def", f_lbl = NA)  # T-shape arrows
+#' # plot_area(arr_c = +6, p_lbl = "def", f_lbl = NA,
+#' #           brd_dis = -.02, col_p = c("black")) # adjust arrow type/position
 #'
 #' # f_lwd:
-#' plot_area(f_lwd =  3)  # thicker lines
-#' plot_area(f_lwd = .5)  # thinner lines
-#' plot_area(f_lwd =  0)  # no lines (if f_lwd = 0/NULL/NA: lty = 0)
+#' plot_area(f_lwd =  3)    # thicker lines
+#' plot_area(f_lwd = .5)    # thinner lines
+#' # plot_area(f_lwd =  0)  # no lines (if f_lwd = 0/NULL/NA: lty = 0)
 #'
 #' # sum_w:
-#' plot_area(sum_w = .10)  # default (showing top and left freq panels & labels)
+#' # plot_area(sum_w = .10)  # default (showing top and left freq panels & labels)
 #' plot_area(sum_w =  0)   # remove top and left freq panels
 #' plot_area(sum_w =  1,         # top and left freq panels scaled to size of main areas
 #'           col_pal = pal_org)  # custom colors
 #'
 #' ## Plain and suggested plot versions:
 #' plot_area(sum_w = 0, f_lbl = "abb", p_lbl = NA)  # no compound indicators (on top/left)
-#' plot_area(gap = c(0, 0), sum_w = 0, f_lbl = "num", p_lbl = "num") # no gaps, numeric labels
-#' plot_area(f_lbl = "nam", p_lbl = NA, col_pal = pal_mod) # plot with freq labels
-#' plot_area(f_lbl = "num", p_lbl = NA, col_pal = pal_rgb) # no borders around boxes
+#' plot_area(gap = c(0, 0), sum_w = 0, f_lbl = "num", p_lbl = "num",  # no gaps, numeric labels
+#'           f_lwd = .5, col_pal = pal_bw, title_lbl = "Black-and-white")  # b+w print version
+#' # plot_area(f_lbl = "nam", p_lbl = NA, col_pal = pal_mod)  # plot with freq labels
+#' plot_area(f_lbl = "num", p_lbl = NA, col_pal = pal_rgb)  # no borders around boxes
 #'
 #' @importFrom graphics par
 #' @importFrom graphics plot
@@ -309,7 +305,7 @@
 #' @export
 
 
-## (2) plot_area: Definition ----------
+## (2) plot_area: Definition ------
 
 plot_area <- function(prev = num$prev,    # probabilities
                       sens = num$sens, mirt = NA,
@@ -330,7 +326,7 @@ plot_area <- function(prev = num$prev,    # probabilities
                       f_lbl = "num",      # freq label: "def" vs. "abb"/"nam"/"num"/"namnum". (Set to "no"/NA/NULL to hide freq labels).
                       f_lbl_sep = NA,     # freq label separator (default: " = ", use ":\n" to add an extra line break)
                       f_lbl_sum = "num",  # freq label of summary cells (bottom row and right column)
-                      f_lbl_hd  = "abb",  # freq labels of headers at top (for columns) and left (for rows)
+                      f_lbl_hd  = "nam",  # freq labels of headers at top (for columns) and left (for rows)
                       f_lwd = 0,          # lwd of freq boxes: 0 (set to tiny_lwd, lty = 0) vs. 1 (numeric), or NULL/NA (set to 0).
                       # f_lty = 0,        # lty of freq boxes: 1 ("solid") vs. 0 ("blank"), etc. (currently not used)
 
@@ -350,7 +346,7 @@ plot_area <- function(prev = num$prev,    # probabilities
                       col_pal = pal,      # color palette
 
                       ## Generic options:
-                      mar_notes = TRUE,   # show margin notes?
+                      mar_notes = FALSE,  # show margin notes?
                       ...                 # other (graphical) parameters (passed to plot_line and plot_ftype_label)
 ) {
 
@@ -561,9 +557,10 @@ plot_area <- function(prev = num$prev,    # probabilities
   } # if (scale == etc.)
 
   # f_lwd & lty:
+  tiny_lwd <- .001   # initialize tiny, invisible width
+
   if ( is.null(f_lwd) || is.na(f_lwd) || f_lwd <= 0 ) {
 
-    tiny_lwd <- .001   # tiny, invisible width
     f_lwd <- tiny_lwd  # to avoid error (for lwd = 0)
     lty <- 0           # "blank" (no lines) [only when f_lty and p_lty are NOT used]
 
@@ -593,15 +590,6 @@ plot_area <- function(prev = num$prev,    # probabilities
   # p_lwd <- 1  # lwd of p-links
   # p_lty <- 1  # lty of p-links
 
-  # colors:
-  # if (!all(col_p %in% colors())) { message("col_p must contain (1 to 3) valid color names.") }
-  if (length(col_p) == 1) { col_p <- rep(col_p, 3) }  # 1 color: use for all 3 p-links
-  if (length(col_p) == 2) { col_p <- c(col_p[1], col_p[2], col_p[2]) } # 2 colors: use 2nd for 2 and 3
-
-  p_col_1 <- col_p[1]  # prob color 1 (must be visible on hi)
-  p_col_2 <- col_p[2]  # prob color 2 (must be visible on hi)
-  p_col_3 <- col_p[3]  # prob color 3 (must be visible on cr AND fa)
-
   # arr_c:
   if ( is.null(arr_c) || is.na(arr_c) ) { arr_c <- 0 }  # sensible zero
 
@@ -621,7 +609,40 @@ plot_area <- function(prev = num$prev,    # probabilities
   if ( cex_p_lbl == 0 )  { cex_p_lbl <- .001 } # other sensible zero
 
 
-  ## 5. Plot borders: ----
+  ## 5. Colors / color palettes: ----
+
+  # (a) Set plot background color:
+  par(bg = col_pal[["bg"]])  # col_pal[["bg"]] / "white" / NA (for transparent background)
+
+  # (b) Detect and handle special cases of color equality (e.g., pal_bwp):
+  if ( (par("bg") %in% col_pal[1:11]) && # if bg is equal to ANY fbox color AND
+       (f_lwd <= tiny_lwd) ) {           # f_lwd is tiny_lwd (default):
+    f_lwd <- 1
+    if (lty == 0) {lty <- 1}  # prevent lty = 0
+    # message(paste0("f_lwd = ", f_lwd, "; col_pal[['brd']] = ",  col_pal[["brd"]], "; lty = ", lty)) # debugging
+  }
+
+  # (c) Probability link colors:
+  if (!is.na(p_lbl)) {  # only when labels OR links are being shown:
+
+    # if (!all(col_p %in% colors())) { message("col_p must contain (1 to 3) valid color names.") }
+    if (length(col_p) == 1) { col_p <- rep(col_p, 3) }                   # 1 color: use for all 3 p-links
+    if (length(col_p) == 2) { col_p <- c(col_p[1], col_p[2], col_p[2]) } # 2 colors: use 2nd for 2 and 3
+
+    p_col_1 <- col_p[1]  # prob color 1 (must be visible on hi)
+    p_col_2 <- col_p[2]  # prob color 2 (must be visible on hi)
+    p_col_3 <- col_p[3]  # prob color 3 (must be visible on cr AND fa)
+
+    # (+) Detect and handle special case (when color of hi is "white", so that defaults of "yellow" would not be visible):
+    if (all_equal(c("white", col_pal[["hi"]]))) {
+      if (p_col_1 == "yellow" || p_col_1 == "white") { p_col_1 <- grey(.01, .99) }  # change if set to "yellow"
+      if (p_col_2 == "yellow" || p_col_2 == "white") { p_col_2 <- grey(.11, .99) }  # change if still default color
+      if (p_col_3 == "yellow" || p_col_3 == "white") { p_col_3 <- grey(.22, .99) }  # change if still default color
+    }
+
+  }  # if if (!is.na(p_lbl)) end.
+
+  ## 6. Plot borders: ----
 
   # sum_w: Must be a value in range 0 to 1:
   if ( is.null(sum_w) || is.na(sum_w) ) { sum_w <- 0 }  # set to 0 (min)
@@ -631,7 +652,7 @@ plot_area <- function(prev = num$prev,    # probabilities
   if ( sum_w < sum_w_min ) { sum_w <- sum_w_min }  # set to sum_w_min
 
 
-  ## 6. Additional parameters (currently fixed): ----
+  ## 7. Additional parameters (currently fixed): ----
 
   lty <- 1  # default
 
@@ -661,7 +682,8 @@ plot_area <- function(prev = num$prev,    # probabilities
   #   f_lbl_hd  <- "abb"  # use abbreviated names
   # }
 
-  ## (2) Define plot and margin areas: ----------
+
+  ## (2) Define plot and margin areas: --------
 
   ## Define margin areas:
 
@@ -677,7 +699,7 @@ plot_area <- function(prev = num$prev,    # probabilities
   ## Orientation of the tick mark labels (and corresponding mtext captions below):
   par(las = 0)  # Options: parallel to the axis (0 = default), horizontal (1), perpendicular to axis (2), vertical (3).
 
-  ## (3) Plot setup: ----------
+  ## (3) Plot setup: --------
 
   ## Plot dimensions:
 
@@ -714,7 +736,7 @@ plot_area <- function(prev = num$prev,    # probabilities
   # grid(nx = NULL, ny = NA,  # x-axes only (at tick marks)
   #      col = grey(.75, .99), lty = 2, lwd = par("lwd"), equilogs = TRUE)
 
-  ## (4) Draw plot points: ----------
+  ## (4) Draw plot points: --------
 
   ## Grid of points:
   # grid_x <- rep(seq(0, 1, by = .25), times = length(seq(0, 1, by = .25))) # x/horizontal
@@ -724,9 +746,9 @@ plot_area <- function(prev = num$prev,    # probabilities
   # points(grid_x * scale_x, grid_y, pch = 3, col = grey(.66, .50), cex = 3/4)  # grid points (scaled)
   # points(0, 0, pch = 1, col = grey(.33, .50), cex = 1)  # mark origin
 
-  ## (5) Main: Custom area/mosaic plot: -----------
+  ## (5) Main: Custom area/mosaic plot: ---------
 
-  ##   (a) Plot 4 SDT cases/cells in center (coordinates + boxes): ----------
+  ##   (a) Plot 4 SDT cases/cells in center (coordinates + boxes): --------
 
   ## 4 SDT cases in center (by perspective):
 
@@ -1284,7 +1306,7 @@ plot_area <- function(prev = num$prev,    # probabilities
   } # if (mark_key_points) etc.
 
 
-  ##   (b) Plot 2 perspectives (compound frequencies and labels) on 2 sides: ----------
+  ##   (b) Plot 2 perspectives (compound frequencies and labels) on 2 sides: --------
 
   # (A) top (horizontal):
 
@@ -1430,7 +1452,7 @@ plot_area <- function(prev = num$prev,    # probabilities
   } # if (by_bot == etc.)
 
 
-  ##   (c) Plot 3 key probabilities (as lines/arrows): ----------
+  ##   (c) Plot 3 key probabilities (as lines/arrows): --------
 
   if ( !is.null(p_lbl) && !is.na(p_lbl) ) {
 
@@ -1635,7 +1657,6 @@ plot_area <- function(prev = num$prev,    # probabilities
 
       } # if (p_split == etc.)
 
-
     } else if (by_top == "ac") {
 
       ## (c) by accuracy:
@@ -1742,7 +1763,7 @@ plot_area <- function(prev = num$prev,    # probabilities
   } # if ( !is.null(p_lbl) && !is.na(p_lbl) ) etc.
 
 
-  ##   (d) Plot text labels (for 2 perspectives) on 2 sides: ----------
+  ##   (d) Plot text labels (for 2 perspectives) on 2 sides: --------
 
   ## (A) top labels (horizontal):
 
@@ -1901,7 +1922,7 @@ plot_area <- function(prev = num$prev,    # probabilities
   } # if (by_bot == etc.)
 
 
-  ##   (f) Plot other stuff: ----------
+  ##   (f) Plot other stuff: --------
 
   # box_else <- make_box("else_box", 9, -2, b_w, b_h)  # define some arbitrary box
   # plot(box_else, col = "firebrick1", cex = 1/2, font = 2)     # plot box
@@ -1915,7 +1936,7 @@ plot_area <- function(prev = num$prev,    # probabilities
   if (title_lbl == "") {  # if title has been set to "":
     type_lbl <- ""        # assume that no subtitle is desired either
   } else {
-    type_lbl <- paste0("Area plot (by ", as.character(by), ")")  # plot name: Area/Mosaic/Eikosogram/etc.
+    type_lbl <- paste0(lbl["plot_area_lbl"], " (by ", as.character(by), ")")  # plot name: Area/Mosaic/Eikosogram/etc.
   }
 
   # Compose label:
@@ -1944,7 +1965,7 @@ plot_area <- function(prev = num$prev,    # probabilities
   } # if (mar_notes) etc.
 
 
-  ## Finish: ---------
+  ## Finish: -----
 
   # on.exit(par(opar))  # par(opar)  # restore original settings
   invisible()# restores par(opar)
@@ -2063,9 +2084,7 @@ plot_area <- function(prev = num$prev,    # probabilities
 
 ## - Fix top/left captions when sum_w = 0 (and consider setting
 ##   3 summary shapes to 3 squares to boundary case of sum_w = 1).
-
 ## - Shift entire plot to center (right) when area == "sq".
-
 ## - Shorten and simplify code (by removing redundancies).
 
 
@@ -2144,6 +2163,5 @@ plot_area <- function(prev = num$prev,    # probabilities
 ## - Add documentation and integrate in riskyr project [2018 10 22].
 
 ## - Use scale == "f" to re-compute prob values from (rounded or non-rounded) freq.
-
 
 ## eof. ----------

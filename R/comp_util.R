@@ -1,5 +1,5 @@
 ## comp_util.R | riskyr
-## 2018 12 20
+## 2020 03 20
 ## Generic utility functions:
 ## -----------------------------------------------
 
@@ -11,23 +11,26 @@
 
 ## (A) Verification functions: ----------
 
-## 1. is_prob               (exported)
-## 2. is_perc               (exported)
-## 3. is_freq               (exported)
-## 4. is_suff_prob_set      (exported)
-## +. is_suff_freq_set
-## 5. is_complement         (exported)
-## 6. is_extreme_prob_set   (exported)
-## 7. is_valid_prob_pair    (exported)
-## 8. is_valid_prob_set     (exported)
-## 9. is_valid_prob_triple  [exported, but deprecated]
+#  1. is_prob               (exported)
+#  2. is_perc               (exported)
+#  3. is_freq               (exported)
+#  4. is_suff_prob_set      (exported)
+#  +. is_suff_freq_set      (ToDo)
+#  5. is_complement         (exported)
+#  6. is_prob_range         (NOT exported)
+#  7. is_extreme_prob_set   (exported)
+#  8. is_valid_prob_pair    (exported)
+#  9. is_valid_prob_set     (exported)
+# 10. is_valid_prob_triple  [exported, but deprecated]
+
 
 ## is_prob: Verify that input is a probability ----------
 
 #' Verify that input is a probability (numeric value from 0 to 1).
 #'
 #' \code{is_prob} is a function that checks whether its argument \code{prob}
-#' is a probability (i.e., a numeric value in the range from 0 to 1).
+#' (a scalar or a vector) is a probability
+#' (i.e., a numeric value in the range from 0 to 1).
 #'
 #' @param prob A numeric argument (scalar or vector) that is to be checked.
 #'
@@ -40,10 +43,13 @@
 #' otherwise \code{FALSE}.
 #'
 #' @examples
-#' # ways to succeed:
-#' is_prob(1/2)                  # => TRUE
-#' p.seq <- seq(0, 1, by = .1)   # Vector of probabilities
-#' is_prob(p.seq)                # => TRUE (for vector)
+#' is_prob(1/2)                  # TRUE
+#' is_prob(2)                    # FALSE
+#'
+#' # vectors:
+#' p_seq <- seq(0, 1, by = .1)   # Vector of probabilities
+#' is_prob(p_seq)                # TRUE (as scalar, not: TRUE TRUE etc.)
+#' is_prob(c(.1, 2, .9))         # FALSE (as scalar, not: TRUE FALSE etc.)
 #'
 #' ## watch out for:
 #' # is_prob(NA)                   # => FALSE + NO warning!
@@ -121,7 +127,7 @@ is_prob <- function(prob, NA_warn = FALSE) {
 
 }
 
-## Checks:
+## Check:
 # ## ways to succeed:
 # is_prob(1/2)                  # => TRUE
 # p.seq <- seq(0, 1, by = .1)   # Define vector of probabilities.
@@ -435,7 +441,7 @@ is_suff_prob_set <- function(prev,
 
 }
 
-## Checks:
+## Check:
 # # ways to work:
 # is_suff_prob_set(prev = 1, sens = 1, spec = 1)  # => TRUE
 # is_suff_prob_set(prev = 1, mirt = 1, spec = 1)  # => TRUE
@@ -482,12 +488,11 @@ is_suff_prob_set <- function(prev,
 #' \code{\link{is_suff_prob_set}} for this purpose.
 #'
 #' @param p1 A numeric argument (typically probability in range from 0 to 1).
-
+#'
 #' @param p2 A numeric argument (typically probability in range from 0 to 1).
 #'
 #' @param tol A numeric tolerance value.
 #' Default: \code{tol = .01}.
-#'
 #'
 #' @return \code{NA} or a Boolean value:
 #' \code{NA} if one or both arguments are \code{NA};
@@ -567,10 +572,8 @@ is_complement <- function(p1, p2, tol = .01) {
 
 }
 
-## Checks:
-
+## Check:
 ## Removed from documentation (to avoid ERRORS):
-
 # # ways to succeed:
 # is_complement(0, 1)           # => TRUE
 # is_complement(1/3, 2/3)       # => TRUE
@@ -589,7 +592,38 @@ is_complement <- function(p1, p2, tol = .01) {
 # # is_complement(8, 8)            # => FALSE + warning (beyond tolerance)
 
 
+## is_prob_range: Verify that some_range includes exactly 2 numeric prob values (from 0 to 1): ------
 
+is_prob_range <- function(some_range) {
+
+  val <- NA
+
+  if (!is.numeric(some_range)) {
+    message(paste0("Range must be numeric."))
+    val <- FALSE
+  } else if (length(some_range) != 2) {
+    message(paste0("Range requires exactly 2 values."))
+    val <- FALSE
+  } else if (!is_prob(some_range)) {
+    message(paste0("Range requires probability values (from 0 to 1)."))
+    val <- FALSE
+  } else {
+    val <- TRUE
+  }
+
+  return(val)
+
+}
+
+# ## Check:
+# # succeeds:
+# is_prob_range(c(0, 1))   # TRUE
+# is_prob_range(c(0, 0))   # TRUE
+# # fails:
+# is_prob_range(c("a", 1))  # FALSE: not numeric
+# is_prob_range(c(0, 0, 1)) # FALSE: not 2 values
+# is_prob_range(c(0, 2))    # FALSE: not prob
+# is_prob_range(c(0, NA))   # FALSE: not prob
 
 
 ## (B) Beware of extreme cases: ----------
@@ -926,7 +960,7 @@ is_valid_prob_pair <- function(p1, p2, tol = .01) {
        ( is.na(p2) && !is.na(p1) && is_prob(p1) ) |  # only p1 is provided and is_prob
 
        ( # !is.na(p1)  && !is.na(p2)  &&  # commented out to suppress NA warning messages
-         is_prob(p1) && is_prob(p2) &&               # both p1 and p2 are provided
+         all(is_prob(p1)) && all(is_prob(p2)) &&     # both p1 and p2 are provided
          is_complement(p1, p2, tol) ) ) {            # and both are complements
 
     val <- TRUE
@@ -948,6 +982,9 @@ is_valid_prob_pair <- function(p1, p2, tol = .01) {
 # is_valid_prob_pair(.50, .52)  # => FALSE (as beyond tol)
 # is_valid_prob_pair(1, 2)      # => FALSE + warning (beyond range)
 # is_valid_prob_pair(NA, NA)    # => FALSE + warning (NA)
+
+## multiple prev values:
+# is_valid_prob_pair(c(.301, .299), .7)   # => TRUE
 
 
 ## is_valid_prob_set: Verify a set of probability inputs ------------
@@ -1084,6 +1121,9 @@ is_valid_prob_set <- function(prev,
 # is_valid_prob_set(.3, .9, NA, NA, .8)            # => TRUE + warning (NAs)
 # is_valid_prob_set(.3, .8, .1, .7, .2, tol = .1)  # => TRUE (due to increased tol)
 #
+## multiple prev values:
+# is_valid_prob_set(c(0, 1), 1, 0, 1, 0)           # => TRUE
+#
 # # watch out for:
 # is_valid_prob_set(1, 0, 1, 0, 1)    # => TRUE, but NO warning about extreme case!
 # is_valid_prob_set(1, 1, 0, 1, 0)    # => TRUE, but NO warning about extreme case!
@@ -1187,13 +1227,11 @@ is_valid_prob_triple <- function(prev, sens, spec) {
 # # is_valid_prob_triple("p", 0, 0)  # => FALSE + warning (non-numeric)
 
 
-
-
-## (C) Conversion functions: ------------------------
+## (C) Conversion functions: ----------------------
 
 ## Toggle between showing probabilities and percentages:
 
-## as_pc: Show a probability as a (numeric and rounded) percentage ----------
+## as_pc: Show a probability as a (numeric and rounded) percentage --------
 
 #' Display a probability as a (numeric and rounded) percentage.
 #'
@@ -1285,7 +1323,7 @@ as_pc <- function(prob, n_digits = 2) {
 
 ## Percentage as probability (4 decimals):
 
-## as_pb: Show a percentage as a (numeric and rounded) probability ----------
+## as_pb: Show a percentage as a (numeric and rounded) probability --------
 
 #' Display a percentage as a (numeric and rounded) probability.
 #'
@@ -1331,9 +1369,12 @@ as_pb <- function(perc, n_digits = 4) {
   if (is_perc(perc)) {
 
     prob <- round(perc/100, n_digits) # compute
+
   } else {
+
     warning("Percentage (perc) is not in range 0 to 100.")
     prob <- round(perc/100, n_digits) # still compute
+
   }
 
   return(prob)  # numeric value
@@ -1369,19 +1410,23 @@ as_pb <- function(perc, n_digits = 4) {
 
 
 
-## (D) Color and plotting functions: ----------
+## (D) Color and plotting functions: --------
 
-## Note: Moved plotting help functions to file "plot_util.R".
+# Note:
+# - Moved plotting help functions to file "plot_util.R".
+# - Use unikn pkg or functions for color settings.
 
-## make_transparent: Make colors transparent ------
+
+## make_transparent: Make colors transparent ----
 
 make_transparent <- function(..., alpha = .50) {
 
   if (alpha < 0 | alpha > 1) {
-    stop("alpha value must be in range from 0 to 1")
+    stop("make_transparent: alpha value must be in range from 0 to 1.")
   }
 
   alpha <- floor(255 * alpha)
+
   newColor <- col2rgb(col = unlist(list(...)), alpha = FALSE)
 
   .make_transparent <- function(col, alpha) {
@@ -1399,9 +1444,10 @@ make_transparent <- function(..., alpha = .50) {
 # make_transparent("black")
 
 ## See also:
-# adjustcolor(col = "green", alpha.f = .50)
+# grDevices::adjustcolor(col = "green", alpha.f = .50)
 
-## (E) Text functions: ----------
+
+## (E) Text functions: --------
 
 capitalise_1st <- function(string) {
   String <- ""
@@ -1415,13 +1461,22 @@ capitalise_1st <- function(string) {
 # capitalise_1st(123)        # "123"
 
 
+## (F) Miscellaneous: --------
+
+# kill_all: Kill all objects in current environment (without warning): ----
+
+kill_all <- function(){
+
+  rm(list = ls())
+
+}
+
+# Check: ----
+# kill_all()
+
 ## (*) Done: ----------
 
-## - Moved graphical help functions to file "plot_util.R" [2018 08 27].
-## - Clean up code                                        [2018 09 22].
-## - Export utility functions again,
-##   as they are used in some examples                    [2018 11 08].
-
+## - Clean up code [2021 03 20].
 
 ## (+) ToDo: ----------
 

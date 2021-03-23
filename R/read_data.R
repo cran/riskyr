@@ -1,5 +1,5 @@
 ## read_data.R | riskyr
-## 2018 12 20
+## 2020 04 24
 ## Read data file for scenario information:
 ## -----------------------------------------------
 
@@ -27,8 +27,8 @@
 ## Note that German Umlauts are corrupted.
 
 ## (3) Write out df_scenarios to ./data/ directory:
-# write.csv2(df_scenarios, file = "./data/df_scenarios.csv")  # 1. as .csv file
-# save(df_scenarios, file = "./data/df_scenarios.RData")      # 2. as .RData file
+## write.csv2(df_scenarios, file = "./data/df_scenarios.csv")  # 1. as .csv file   (not included in release)
+## save(df_scenarios, file = "./data/df_scenarios.RData")      # 2. as .RData file (obsolete; no longer included)
 
 ### OLD: Using devtools:
 # devtools::use_data(df_scenarios, overwrite = TRUE) # deprecated

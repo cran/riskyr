@@ -4,7 +4,9 @@
 \name{err}
 \alias{err}
 \title{Error rate (err) as the probability of an incorrect decision.}
-\format{An object of class \code{numeric} of length 1.}
+\format{
+An object of class \code{numeric} of length 1.
+}
 \usage{
 err
 }
@@ -50,16 +52,26 @@ is_prob(err)   # TRUE
 \code{\link{prob}} contains current probability information;
 \code{\link{is_prob}} verifies probabilities.
 
-Other probabilities: \code{\link{FDR}}, \code{\link{FOR}},
-  \code{\link{NPV}}, \code{\link{PPV}}, \code{\link{acc}},
-  \code{\link{fart}}, \code{\link{mirt}},
-  \code{\link{ppod}}, \code{\link{prev}},
-  \code{\link{sens}}, \code{\link{spec}}
+Other probabilities: 
+\code{\link{FDR}},
+\code{\link{FOR}},
+\code{\link{NPV}},
+\code{\link{PPV}},
+\code{\link{acc}},
+\code{\link{fart}},
+\code{\link{mirt}},
+\code{\link{ppod}},
+\code{\link{prev}},
+\code{\link{sens}},
+\code{\link{spec}}
 
-Other metrics: \code{\link{accu}}, \code{\link{acc}},
-  \code{\link{comp_accu_freq}},
-  \code{\link{comp_accu_prob}}, \code{\link{comp_acc}},
-  \code{\link{comp_err}}
+Other metrics: 
+\code{\link{accu}},
+\code{\link{acc}},
+\code{\link{comp_accu_freq}()},
+\code{\link{comp_accu_prob}()},
+\code{\link{comp_acc}()},
+\code{\link{comp_err}()}
 }
 \concept{metrics}
 \concept{probabilities}

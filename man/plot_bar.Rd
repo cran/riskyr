@@ -4,11 +4,26 @@
 \alias{plot_bar}
 \title{Plot bar charts of population frequencies.}
 \usage{
-plot_bar(prev = num$prev, sens = num$sens, mirt = NA,
-  spec = num$spec, fart = NA, N = num$N, by = "all", dir = 1,
-  scale = "f", round = TRUE, f_lbl = "num", f_lwd = 1, lty = 0,
-  lbl_txt = txt, title_lbl = txt$scen_lbl, col_pal = pal,
-  mar_notes = TRUE, ...)
+plot_bar(
+  prev = num$prev,
+  sens = num$sens,
+  mirt = NA,
+  spec = num$spec,
+  fart = NA,
+  N = num$N,
+  by = "all",
+  dir = 1,
+  scale = "f",
+  round = TRUE,
+  f_lbl = "num",
+  f_lwd = 1,
+  lty = 0,
+  lbl_txt = txt,
+  title_lbl = txt$scen_lbl,
+  col_pal = pal,
+  mar_notes = FALSE,
+  ...
+)
 }
 \arguments{
 \item{prev}{The condition's prevalence \code{\link{prev}}
@@ -97,7 +112,7 @@ Default: \code{title_lbl = txt$scen_lbl}.}
 Default: \code{col_pal = \link{pal}} (see \code{\link{init_pal}}).}
 
 \item{mar_notes}{Boolean option for showing margin notes.
-Default: \code{mar_notes = TRUE}.}
+Default: \code{mar_notes = FALSE}.}
 
 \item{...}{Other (graphical) parameters
 (e.g., \code{cex}, \code{font}, \code{lty}, etc.).}
@@ -145,36 +160,35 @@ for related functions.
 \examples{
 # Basics:
 plot_bar(prev = .33, sens = .75, spec = .66, title_lbl = "Test 1")
-
 plot_bar(N = 1000, prev = .33, sens = .75, spec = .60,
          title_lbl = "Test 2")  # by "all" (default)
 
 # Perspectives (by):
-plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "cd",
-         title_lbl = "Test 3a")  # by condition
+# plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "cd",
+#          title_lbl = "Test 3a")  # by condition
 plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "cd", dir = 2,
          title_lbl = "Test 3b", f_lbl = "num")  # bi-directional
 
-plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "dc",
-         title_lbl = "Test 4a")  # by decision
+# plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "dc",
+#          title_lbl = "Test 4a")  # by decision
 plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "dc", dir = 2,
          title_lbl = "Test 4b", f_lbl = "num")  # bi-directional
 
-plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "ac",
-         title_lbl = "Test 5a")  # by accuracy
+# plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "ac",
+#          title_lbl = "Test 5a")  # by accuracy
 plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "ac", dir = 2,
          title_lbl = "Test 5b", f_lbl = "num")  # bi-directional
 
 # Customize colors and text:
 plot_bar(dir = 1, f_lbl = "num", col_pal = pal_org)
-plot_bar(dir = 2, f_lbl = "nam", col_pal = pal_mod)
+# plot_bar(dir = 2, f_lbl = "nam", col_pal = pal_bw)
 
 # Frequency labels (f_lbl):
-plot_bar(f_lbl = "def")  # default labels: name = num
+# plot_bar(f_lbl = "def")  # default labels: name = num
 plot_bar(f_lbl = "nam")  # name only
 plot_bar(f_lbl = "num")  # numeric value only
-plot_bar(f_lbl = "abb")  # abbreviated name
-plot_bar(f_lbl = NA)     # no labels (NA/NULL/"no")
+# plot_bar(f_lbl = "abb")  # abbreviated name
+# plot_bar(f_lbl = NA)     # no labels (NA/NULL/"no")
 
 # Scaling and rounding effects:
 plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
@@ -200,11 +214,16 @@ plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
 \code{\link{txt}} for current text settings;
 \code{\link{pal}} for current color settings
 
-Other visualization functions: \code{\link{plot.riskyr}},
-  \code{\link{plot_area}}, \code{\link{plot_curve}},
-  \code{\link{plot_fnet}}, \code{\link{plot_icons}},
-  \code{\link{plot_mosaic}}, \code{\link{plot_plane}},
-  \code{\link{plot_prism}}, \code{\link{plot_tab}},
-  \code{\link{plot_tree}}
+Other visualization functions: 
+\code{\link{plot.riskyr}()},
+\code{\link{plot_area}()},
+\code{\link{plot_curve}()},
+\code{\link{plot_fnet}()},
+\code{\link{plot_icons}()},
+\code{\link{plot_mosaic}()},
+\code{\link{plot_plane}()},
+\code{\link{plot_prism}()},
+\code{\link{plot_tab}()},
+\code{\link{plot_tree}()}
 }
 \concept{visualization functions}

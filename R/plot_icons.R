@@ -1,34 +1,33 @@
 ## plot_icons.R | riskyr
-## 2018 12 20
+## 2021 02 07
 ## plot_icons: Plot a variety of icon arrays.
 ## -----------------------------------------------
 
-# Preparation:------------------------------------
+# Preparation: -----------------------------------
 
 # Note: The final function needs:
-# - A vector of identities (colors.)
-#   This can be obtained in different ways (e.g., calculation by respective function)
-# - the vector of positions (to be generated according to version.)
-# - the number of blocks.
+# - A vector of identities (colors).
+#   This can be obtained in different ways (e.g., calculation by respective function):
+# - the vector of positions (generated according to version)
+# - the number of blocks
 # - the size for the icons (cex)
-# - etc.?
 
 # Plotting symbols: -----
 
 # Note: An icon array is equivalent to an ordered (position constrained) scatterplot.
 # All variants display the population concerning some property.
 
-# (A) Distinguish 4 types:
-#  1. Random position, random colors (typical scatterplot)
-#  2. Random position, clustered colors (clustered scatterplot?)
-#  3. Fixed positions (sample of positions constrained), random colors (random icon array)
-#  4. Fixed positions, clustered colors (typical icon array)
+# (A) 4 types:
+#  1. random position, random colors (typical scatterplot)
+#  2. random position, clustered colors (clustered scatterplot?)
+#  3. fixed positions (sample of positions constrained), random colors (random icon array)
+#  4. fixed positions, clustered colors (typical icon array)
 
 # (B) 2 dimensions:
-#  1. Position
-#  2. Identity
+#  1. position
+#  2. identity
 
-# (C) Translating these dimensions into code:
+# (C) Code:
 
 ## plot_icons Documentation: ----------
 
@@ -135,34 +134,42 @@
 #' Default: \code{ident_order = c("hi", "mi", "fa", "cr")}
 #'
 #' @param icon_types Specifies the appearance of the icons as a vector.
+#' Default: \code{icon_types = 11} (i.e., squares with border).
 #' Accepts values from 1 to 25 (see \code{?points}).
 #'
 #' @param icon_size Manually specifies the size of the icons via \code{cex}
-#' (calculated dynamically by default).
+#' Default: \code{icon_size = NULL} for automatic calculation.
 #'
 #' @param icon_brd_lwd Specifies the border width of icons (if applicable).
+#' Default: \code{icon_brd_lwd = 1.5}. Set to \code{NA} for no border.
 #'
-#' @param block_d  The distance between blocks
+#' @param block_d  The distance between blocks.
+#' Default: \code{block_d = NULL} for automatic calculation;
 #' (does not apply to "filleft", "filltop", and "scatter")
 #'
 #' @param border_d  The distance of icons to the border.
+#' Default: \code{border_d = 0.1}.
 #'
 #' Additional options for controlling the arrangement of arrays
 #' (for \code{arr_type = "array"} and \code{"shuffledarray"}):
 #'
 #' @param block_size_row specifies how many icons should be in each block row.
+#' Default: \code{block_size_row = 10}.
 #'
 #' @param block_size_col specifies how many icons should be in each block column.
+#' Default: \code{block_size_col = 10}.
 #'
-#' @param nblocks_row specifies how many blocks there are in each row.  Is calculated by default.
+#' @param nblocks_row Number of blocks per row.
+#' Default: \code{nblocks_row = NULL} for automatic calculation.
 #'
-#' @param nblocks_col specifies how many blocks are there in each column.  Is calculated by default.
+#' @param nblocks_col Number of blocks per column.
+#' Default: \code{nblocks_col = NULL} for automatic calculation.
 #'
-#' @param fill_array specifies how the blocks are filled into the array
-#' (Options "left" (default) and "top").
+#' @param fill_array specifies how the blocks are filled into the array.
+#' Options: \code{fill_array = "left"} (default) vs. \code{"top"}.
 #'
-#' @param fill_blocks specifies how icons within blocks are filled
-#' (Options: \code{fill_blocks = "rowwise"} (default) and \code{fill_blocks = "colwise"})
+#' @param fill_blocks specifies how icons within blocks are filled.
+#' Options: \code{fill_blocks = "rowwise"} (default) and \code{"colwise"}.
 #'
 #' Generic text and color options:
 #'
@@ -182,14 +189,13 @@
 #' (not for \code{arr_type = "array"} and \code{"shuffledarray"}).
 #'
 #' @param mar_notes  Boolean option for showing margin notes.
-#' Default: \code{mar_notes = TRUE}.
+#' Default: \code{mar_notes = FALSE}.
 #'
 #' @param ...  Other (graphical) parameters.
 #'
 #' @return Nothing (NULL).
 #'
 #' @examples
-#' # ways to work:
 #' plot_icons(N = 1000)  # icon array with default settings (arr_type = "array")
 #' plot_icons(arr_type = "shuffledarray", N = 1000)  # icon array with shuffled IDs
 #'
@@ -200,47 +206,28 @@
 #' plot_icons(arr_type = "filltop",   N = 1000)  # icons filled from top to bottom (in rows)
 #' plot_icons(arr_type = "scatter",   N = 1000)  # icons randomly scattered
 #'
-#' # by argument:
+#' # by:
 #' plot_icons(N = 1000, by = "all")  # hi, mi, fa, cr (TP, FN, FP, TN) cases
-#' plot_icons(N = 1000, by = "cd")   # (hi + mi) vs. (fa + cr) (TP + FN vs. FP + TN) cases
-#' plot_icons(N = 1000, by = "dc")   # (hi + fa) vs. (mi + cr) (TP + FP vs. FN + TN) cases
-#' plot_icons(N = 1000, by = "ac")   # (hi + cr) vs. (fa + mi) (TP + TN vs. FP + FN) cases
+#' plot_icons(N = 1000, by = "cd", title_lbl = "Cases by condition")  # (hi + mi) vs. (fa + cr)
+#' plot_icons(N = 1000, by = "dc", title_lbl = "Cases by decision")   # (hi + fa) vs. (mi + cr)
+#' plot_icons(N = 1000, by = "ac", title_lbl = "Cases by accuracy")   # (hi + cr) vs. (fa + mi)
 #'
-#' # icon symbols:
-#' plot_icons(N = 100, icon_types = c(21, 23, 24, 23),
-#'                block_size_row = 5, block_size_col = 5, #nblocks_row = 2, nblocks_col = 2,
-#'                block_d = 0.5, border_d = 0.9)
-#'
-#' # variants:
+#' # Custom icon types and colors:
 #' plot_icons(N = 800, arr_type = "array", icon_types = c(21, 22, 23, 24),
-#'            block_d = 0.5, border_d = 0.5)
-#'
-#' plot_icons(N = 1250, sens = 0.9, spec = 0.9, prev = 0.9,
-#'                icon_types = c(21, 23, 24, 23),
-#'                block_size_row = 10, block_size_col = 5,
-#'                nblocks_row = 5, nblocks_col = 5,
-#'                block_d = 0.8,
-#'                border_d = 0.2,
-#'                fill_array = "top")
+#'            block_d = 0.5, border_d = 0.5, col_pal = pal_vir)
 #'
 #' plot_icons(N = 800, arr_type = "shuffledarray", icon_types = c(21, 23, 24, 22),
 #'            block_d = 0.5, border_d = 0.5)
-#'
-#' plot_icons(N = 800, arr_type = "shuffledarray", icon_types = c(21, 23, 24, 22),
-#'            icon_brd_col = grey(.33, .99), icon_brd_lwd = 3, cex_lbl = 1.2)
 #'
 #' plot_icons(N = 800, arr_type = "fillequal", icon_types = c(21, 22, 22, 21),
 #'            icon_brd_lwd = .5, cex = 1, cex_lbl = 1.1)
 #'
 #' # Text and color options:
 #' plot_icons(N = 1000, prev = .5, sens = .5, spec = .5, arr_type = "shuffledarray",
-#'            title_lbl = "", lbl_txt = txt_TF, col_pal = pal_vir, mar_notes = FALSE)
+#'            title_lbl = "", lbl_txt = txt_TF, col_pal = pal_vir, mar_notes = TRUE)
 #'
 #' plot_icons(N = 1000, prev = .5, sens = .5, spec = .5, arr_type = "shuffledarray",
 #'            title_lbl = "Green vs. red", col_pal = pal_rgb, transparency = .5)
-#'
-#' plot_icons(N = 1000, prev = .5, sens = .5, spec = .5, arr_type = "shuffledarray",
-#'            title_lbl = "Shades of blue", col_pal = pal_kn, transparency = .3)
 #'
 #' @family visualization functions
 #'
@@ -271,7 +258,7 @@ plot_icons <- function(prev = num$prev,             # probabilities
 
                        # Icon settings:
                        ident_order = c("hi", "mi", "fa", "cr"),
-                       icon_types = 22,    # plotting symbols; default: square with border
+                       icon_types = 22,    # plotting symbols; default: 22 (i.e., square with border)
                        icon_size = NULL,   # size of icons
                        icon_brd_lwd = 1.5, # line width of icons
                        block_d = NULL,     # distance between blocks (where applicable).
@@ -298,10 +285,10 @@ plot_icons <- function(prev = num$prev,             # probabilities
                        # icon_brd_col = col_pal["brd"],   # border color of icons [was: grey(.10, .50)]
 
                        # Generic options:
-                       mar_notes = TRUE,   # show margin notes?
-                       # show_accu = TRUE,   # Option for showing current accuracy metrics.
+                       mar_notes = FALSE,   # show margin notes?
+                       # show_accu = TRUE,  # Option for showing current accuracy metrics.
                        # w_acc = 0.50,
-                       ...                 # other (graphical) parameters (passed to plot_link and plot_ftype_label)
+                       ...                  # other (graphical) parameters (passed to plot_link and plot_ftype_label)
 
 ) {
 
@@ -310,10 +297,17 @@ plot_icons <- function(prev = num$prev,             # probabilities
   opar <- par(no.readonly = TRUE)  # all par settings that can be changed.
   on.exit(par(opar))  # par(opar)  # restore original settings
 
+  show_legend <- TRUE  # default
+  # show_legend <- FALSE  # debugging
+
   ## (2) Define plot and margin areas: ----------
 
   ## Define margin areas:
-  n_lines_mar <- 3 + 2  # to accommodate legend
+  if (show_legend){
+    n_lines_mar <- 3 + 2  # to accommodate legend
+  } else {
+    n_lines_mar <- 3  # no legend
+  }
   n_lines_oma <- 0
   par(mar = c(n_lines_mar, 1, 3, 1) + 0.1)  # margins; default: par("mar") = 5.1 4.1 4.1 2.1.
   par(oma = c(n_lines_oma, 0, 0, 0) + 0.1)  # outer margins; default: par("oma") = 0 0 0 0.
@@ -323,7 +317,7 @@ plot_icons <- function(prev = num$prev,             # probabilities
   # (a) Get current SDT case labels from lbl_txt:
   type_lbls = lbl_txt[c("hi_lbl", "mi_lbl", "fa_lbl", "cr_lbl")]  # 4 SDT cases/combinations
 
-  # Increase robustness: by
+  # Set default of by perspective:
   if (!(by %in% c("all", "cd", "dc", "ac"))) {
     by <- "all"  # default
   }
@@ -336,23 +330,29 @@ plot_icons <- function(prev = num$prev,             # probabilities
   } else if (by == "dc") {
 
     ident_order <- c("hi", "fa", "mi", "cr")  # order by (positive) decision.
-    icon_col <- c(col_pal["hi"], col_pal["hi"],
-                  col_pal["mi"], col_pal["mi"])
+    icon_col <- c(col_pal["dec_pos"], col_pal["dec_pos"],
+                  col_pal["dec_neg"], col_pal["dec_neg"])
     names(icon_col) <- ident_order
+
+    if (length(unique(icon_types)) < 2) { icon_types <- c(22, 22, 23, 23) }  # square vs. diamond
 
   } else if (by == "cd") {
 
     ident_order <- c("hi", "mi", "cr", "fa")  # order by (positive) condition.
-    icon_col <- c(col_pal["hi"], col_pal["hi"],
-                  col_pal["mi"], col_pal["mi"])
+    icon_col <- c(col_pal["cond_true"], col_pal["cond_true"],
+                  col_pal["cond_false"], col_pal["cond_false"])
     names(icon_col) <- ident_order
+
+    if (length(unique(icon_types)) < 2) { icon_types <- c(22, 22, 21, 21) }  # square vs. circle
 
   } else if (by == "ac") {
 
     ident_order <- c("hi", "cr", "mi", "fa")  # order by accuracy/correctness.
-    icon_col <- c(col_pal["hi"], col_pal["hi"],
-                  col_pal["mi"], col_pal["mi"])
+    icon_col <- c(col_pal["dec_cor"], col_pal["dec_cor"],
+                  col_pal["dec_err"], col_pal["dec_err"])
     names(icon_col) <- ident_order
+
+    if (length(unique(icon_types)) < 2) { icon_types <- c(22, 22, 25, 25) }  # square vs. downwards triangle
   }
 
   icon_brd_col <- col_pal["brd"]        # border color of icons [was: grey(.10, .50)]
@@ -360,6 +360,7 @@ plot_icons <- function(prev = num$prev,             # probabilities
 
   ## Increase robustness by anticipating and correcting common entry errors: ------
 
+  ## 1. arr_type:
   if ( !is.null(arr_type) && !is.na(arr_type) ) {
     arr_type <- tolower(arr_type)  # express arr_type in lowercase
   }
@@ -370,14 +371,39 @@ plot_icons <- function(prev = num$prev,             # probabilities
   if ( arr_type == "top" ) { arr_type <- "filltop" }
   if ( arr_type == "equal" ) { arr_type <- "fillequal" }
 
-  # Plot title:
+  ## 2. Colors / color palettes: ----
+
+  # Set plot background color:
+  par(bg = col_pal[["bg"]])  # col_pal[["bg"]] / "white" / NA (for transparent background)
+
+  # (+) Detect and handle special case of color equality (e.g., pal_bwp):
+  if (all_equal(c(col_pal[["hi"]], col_pal[["mi"]])) && (length(unique(icon_types)) < 4)) {
+
+    if (by == "all") {
+
+      icon_types <- c(22, 25, 23, 21)
+      icon_col <- c("white", "grey20", "black", "grey90")  # (white dark black bright)
+
+    } else {  # by cd/dc/ac:
+
+      icon_types <- c(22, 22, 25, 25)  # square vs. downwards triangle
+      icon_col <- c("white", "white", "black", "black")
+      names(icon_col) <- ident_order
+
+    } # by.
+
+    # icon_brd_col <- "black"
+
+  }
+
+  ## 3. Plot title: ----
   if (is.null(title_lbl)) { title_lbl <- "" }              # adjust NULL to "" (i.e., no title)
   if (is.na(title_lbl)) { title_lbl <- lbl_txt$scen_lbl }  # use scen_lbl as default plot title
 
-  ## Currently fixed parameters:
-  xlim = c(0, 1)  # xlim and ylim should currently remain fixed
+  ## 4. Additional parameters (currently fixed): ----
+  xlim = c(0, 1)   # xlim and ylim should currently remain fixed
   ylim = c(0, 1)
-  cex = icon_size      # if NULL, cex will be calculated on demand
+  cex = icon_size  # if NULL, cex will be calculated on demand
 
   # #' @param cex Size of the icons (calculated by default).
 
@@ -385,12 +411,15 @@ plot_icons <- function(prev = num$prev,             # probabilities
   if (arr_type %in% c("mosaic", "fillequal", "fillleft", "filltop", "scatter")) {
 
     random.position <-  TRUE
+
   } else {
+
     if (arr_type %in% c("array", "shuffledarray")) {
       random.position <- FALSE
     } else {
       stop('Invalid "arr_type" argument in plot_icons. ')
     }
+
   }
 
   if (arr_type %in% c("mosaic", "fillequal", "fillleft", "filltop", "array")) {
@@ -541,13 +570,16 @@ plot_icons <- function(prev = num$prev,             # probabilities
       block_n <- length(unique(col_vec))  # number of blocks for x and y.
       # TODO: not final; they should be distributed.
 
+      ## message(paste0("Note: block_n = ", block_n))
+      ##
+      ## Note: Potential source of error for
+      ##       plot_icons(by = "cd", arr_type = "mosaic") ???
+
       # calculate number of observations in each block retaining original order:
       type_n <- sapply(unique(col_vec), function(x) sum(col_vec == x))
 
-
       # equal compartments:
       if (arr_type == "fillequal") {  # density varies, area is constant.
-
 
         if (is.null(block_d)) {
           block_d <- 0.05
@@ -951,12 +983,13 @@ plot_icons <- function(prev = num$prev,             # probabilities
 
   ## TODO: Add text!
 
-  if (any(!pch.vec %in% c(NA, 21:25))) {
-    # if any of the plotting characters is not in the set of symbols with border,
-    # omit border and color accordingly.
+  if (any(!pch.vec %in% c(NA, 21:25))) {# if any symbol is NOT in the set of symbols with a border:
+    icon_brd_col <- col_vec  # use fill color for border color
+  }
 
-    icon_brd_col <- col_vec
-
+  if (is.na(icon_brd_lwd) | (icon_brd_lwd == 0)){# if border color is set to NA or 0:
+    icon_brd_col <- col_vec  # use fill color for border color
+    icon_brd_lwd <- 1        # (to keep original symbol size)
   }
 
   ## Plot setup: ------
@@ -992,39 +1025,44 @@ plot_icons <- function(prev = num$prev,             # probabilities
 
   ## Legend: -----
 
-  if (sum(nchar(type_lbls)) > 0) {
-    # reorder labels:
-    names(type_lbls) <- c("hi", "mi", "fa", "cr")
-    type_lbls <- type_lbls[ident_order]
+  if (show_legend){
+
+    if (sum(nchar(type_lbls)) > 0) {
+      # reorder labels:
+      names(type_lbls) <- c("hi", "mi", "fa", "cr")
+      type_lbls <- type_lbls[ident_order]
+    }
+
+    if(by == "all") {
+      legend_col <- icon_col
+      legend_ico <- icon_types
+      legend_lbls <- type_lbls
+    } else {
+      legend_col <- icon_col[c(1, 3)]
+      legend_ico <- icon_types[c(1, 3)]
+
+      if (by == "dc") {
+        legend_lbls <- c(txt$dec_pos_lbl, txt$dec_neg_lbl)
+      }
+
+      if (by == "cd") {
+        legend_lbls <- c(txt$cond_true_lbl, txt$cond_false_lbl)
+      }
+
+      if (by == "ac") {
+        legend_lbls <- c(txt$dec_cor_lbl, txt$dec_err_lbl)
+      }
+    }
+
+    legend(x = xlim[2] / 2, y = ylim[1] - (ylim[2] / 20),
+           legend = legend_lbls,
+           horiz = TRUE, bty = "n",
+           pt.bg = legend_col, pch = legend_ico,
+           cex = cex_lbl, xjust = 0.5, xpd = TRUE)
+
+    ## TODO: fixed order of legend?
+
   }
-
-  if(by == "all") {
-    legend_col <- icon_col
-    legend_ico <- icon_types
-    legend_lbls <- type_lbls
-  } else {
-    legend_col <- icon_col[c(1, 3)]
-    legend_ico <- icon_types[c(1, 3)]
-
-    if (by == "dc") {
-      legend_lbls <- c(txt$dec_pos_lbl, txt$dec_neg_lbl)
-    }
-
-    if (by == "cd") {
-      legend_lbls <- c(txt$cond_true_lbl, txt$cond_false_lbl)
-    }
-
-    if (by == "ac") {
-      legend_lbls <- c(txt$dec_cor_lbl, txt$dec_err_lbl)
-    }
-  }
-
-  legend(x = xlim[2] / 2, y = ylim[1] - (ylim[2] / 20),
-         legend = legend_lbls,
-         horiz = TRUE, bty = "n",
-         pt.bg = legend_col, pch = legend_ico,
-         cex = cex_lbl, xjust = 0.5, xpd = TRUE)
-  ## TODO: fixed order of legend?
 
 
   ## Title: -----
@@ -1035,7 +1073,7 @@ plot_icons <- function(prev = num$prev,             # probabilities
   if (title_lbl == "") {  # if title has been set to "":
     type_lbl <- ""        # assume that no subtitle is desired either
   } else {
-    type_lbl <- paste0("Icon array") # , "(N = ", N, ")") # plot name: icon array.
+    type_lbl <- paste0(lbl["plot_icons_lbl"])  # , "(N = ", N, ")") # plot name: icon array.
   }
 
   # Compose label:
@@ -1075,9 +1113,7 @@ plot_icons <- function(prev = num$prev,             # probabilities
 } # plot_icons end.
 
 
-## Check: ----------
-
-# # ways to work:
+## Check: -------
 # plot_icons()  # => plots icon array for default population (with default arr_type = "array")
 # plot_icons(arr_type = "shuffledarray")  # => icon array with shuffled IDs
 #
@@ -1092,7 +1128,6 @@ plot_icons <- function(prev = num$prev,             # probabilities
 # plot_icons(arr_type = "filltop",   N = 1000)  # => icons filled from top to bottom (in rows)
 #
 # plot_icons(arr_type = "scatter",   N = 1000)  # => icons randomly scattered.
-#
 
 # plot_icons(N = 1250, sens = 0.9, spec = 0.9, prev = 0.9,
 #                icon_types = c(21,23,24,23),
@@ -1117,9 +1152,7 @@ plot_icons <- function(prev = num$prev,             # probabilities
 
 ## (*) Done: ----------
 
-## - Use default txt and pal arguments.   [2018 11 25]
-## - Use default title and margin (mar_notes) options.
-
+## - etc.
 
 ## (+) ToDo: ----------
 
@@ -1133,5 +1166,8 @@ plot_icons <- function(prev = num$prev,             # probabilities
 ## - More modular: Different plot types as separate (sub-)functions?
 
 ## - Understand cex: how does it work, when does it (not) change size?
+
+## - Check out the R package personograph
+##   at https://CRAN.R-project.org/package=personograph
 
 ## eof. ------------------------------------------

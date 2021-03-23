@@ -4,15 +4,35 @@
 \alias{plot_icons}
 \title{Plot an icon array of a population.}
 \usage{
-plot_icons(prev = num$prev, sens = num$sens, mirt = NA,
-  spec = num$spec, fart = NA, N = freq$N, arr_type = "array",
-  by = "all", ident_order = c("hi", "mi", "fa", "cr"),
-  icon_types = 22, icon_size = NULL, icon_brd_lwd = 1.5,
-  block_d = NULL, border_d = 0.1, block_size_row = 10,
-  block_size_col = 10, nblocks_row = NULL, nblocks_col = NULL,
-  fill_array = "left", fill_blocks = "rowwise", lbl_txt = txt,
-  title_lbl = txt$scen_lbl, cex_lbl = 0.9, col_pal = pal,
-  transparency = 0.5, mar_notes = TRUE, ...)
+plot_icons(
+  prev = num$prev,
+  sens = num$sens,
+  mirt = NA,
+  spec = num$spec,
+  fart = NA,
+  N = freq$N,
+  arr_type = "array",
+  by = "all",
+  ident_order = c("hi", "mi", "fa", "cr"),
+  icon_types = 22,
+  icon_size = NULL,
+  icon_brd_lwd = 1.5,
+  block_d = NULL,
+  border_d = 0.1,
+  block_size_row = 10,
+  block_size_col = 10,
+  nblocks_row = NULL,
+  nblocks_col = NULL,
+  fill_array = "left",
+  fill_blocks = "rowwise",
+  lbl_txt = txt,
+  title_lbl = txt$scen_lbl,
+  cex_lbl = 0.9,
+  col_pal = pal,
+  transparency = 0.5,
+  mar_notes = FALSE,
+  ...
+)
 }
 \arguments{
 \item{prev}{The condition's prevalence \code{\link{prev}}
@@ -100,34 +120,42 @@ with 4 options:
 Default: \code{ident_order = c("hi", "mi", "fa", "cr")}}
 
 \item{icon_types}{Specifies the appearance of the icons as a vector.
+Default: \code{icon_types = 11} (i.e., squares with border).
 Accepts values from 1 to 25 (see \code{?points}).}
 
 \item{icon_size}{Manually specifies the size of the icons via \code{cex}
-(calculated dynamically by default).}
+Default: \code{icon_size = NULL} for automatic calculation.}
 
-\item{icon_brd_lwd}{Specifies the border width of icons (if applicable).}
+\item{icon_brd_lwd}{Specifies the border width of icons (if applicable).
+Default: \code{icon_brd_lwd = 1.5}. Set to \code{NA} for no border.}
 
-\item{block_d}{The distance between blocks
+\item{block_d}{The distance between blocks.
+Default: \code{block_d = NULL} for automatic calculation;
 (does not apply to "filleft", "filltop", and "scatter")}
 
 \item{border_d}{The distance of icons to the border.
+Default: \code{border_d = 0.1}.
 
 Additional options for controlling the arrangement of arrays
 (for \code{arr_type = "array"} and \code{"shuffledarray"}):}
 
-\item{block_size_row}{specifies how many icons should be in each block row.}
+\item{block_size_row}{specifies how many icons should be in each block row.
+Default: \code{block_size_row = 10}.}
 
-\item{block_size_col}{specifies how many icons should be in each block column.}
+\item{block_size_col}{specifies how many icons should be in each block column.
+Default: \code{block_size_col = 10}.}
 
-\item{nblocks_row}{specifies how many blocks there are in each row.  Is calculated by default.}
+\item{nblocks_row}{Number of blocks per row.
+Default: \code{nblocks_row = NULL} for automatic calculation.}
 
-\item{nblocks_col}{specifies how many blocks are there in each column.  Is calculated by default.}
+\item{nblocks_col}{Number of blocks per column.
+Default: \code{nblocks_col = NULL} for automatic calculation.}
 
-\item{fill_array}{specifies how the blocks are filled into the array
-(Options "left" (default) and "top").}
+\item{fill_array}{specifies how the blocks are filled into the array.
+Options: \code{fill_array = "left"} (default) vs. \code{"top"}.}
 
-\item{fill_blocks}{specifies how icons within blocks are filled
-(Options: \code{fill_blocks = "rowwise"} (default) and \code{fill_blocks = "colwise"})
+\item{fill_blocks}{specifies how icons within blocks are filled.
+Options: \code{fill_blocks = "rowwise"} (default) and \code{"colwise"}.
 
 Generic text and color options:}
 
@@ -147,7 +175,7 @@ Default: \code{col_pal = \link{pal}}.}
 (not for \code{arr_type = "array"} and \code{"shuffledarray"}).}
 
 \item{mar_notes}{Boolean option for showing margin notes.
-Default: \code{mar_notes = TRUE}.}
+Default: \code{mar_notes = FALSE}.}
 
 \item{...}{Other (graphical) parameters.}
 }
@@ -173,7 +201,6 @@ By default, \code{\link{comp_freq}} rounds frequencies to nearest integers
 to avoid decimal values in \code{\link{freq}}.
 }
 \examples{
-# ways to work:
 plot_icons(N = 1000)  # icon array with default settings (arr_type = "array")
 plot_icons(arr_type = "shuffledarray", N = 1000)  # icon array with shuffled IDs
 
@@ -184,55 +211,41 @@ plot_icons(arr_type = "fillleft",  N = 1000)  # icons filled from left to right 
 plot_icons(arr_type = "filltop",   N = 1000)  # icons filled from top to bottom (in rows)
 plot_icons(arr_type = "scatter",   N = 1000)  # icons randomly scattered
 
-# by argument:
+# by:
 plot_icons(N = 1000, by = "all")  # hi, mi, fa, cr (TP, FN, FP, TN) cases
-plot_icons(N = 1000, by = "cd")   # (hi + mi) vs. (fa + cr) (TP + FN vs. FP + TN) cases
-plot_icons(N = 1000, by = "dc")   # (hi + fa) vs. (mi + cr) (TP + FP vs. FN + TN) cases
-plot_icons(N = 1000, by = "ac")   # (hi + cr) vs. (fa + mi) (TP + TN vs. FP + FN) cases
+plot_icons(N = 1000, by = "cd", title_lbl = "Cases by condition")  # (hi + mi) vs. (fa + cr)
+plot_icons(N = 1000, by = "dc", title_lbl = "Cases by decision")   # (hi + fa) vs. (mi + cr)
+plot_icons(N = 1000, by = "ac", title_lbl = "Cases by accuracy")   # (hi + cr) vs. (fa + mi)
 
-# icon symbols:
-plot_icons(N = 100, icon_types = c(21, 23, 24, 23),
-               block_size_row = 5, block_size_col = 5, #nblocks_row = 2, nblocks_col = 2,
-               block_d = 0.5, border_d = 0.9)
-
-# variants:
+# Custom icon types and colors:
 plot_icons(N = 800, arr_type = "array", icon_types = c(21, 22, 23, 24),
-           block_d = 0.5, border_d = 0.5)
-
-plot_icons(N = 1250, sens = 0.9, spec = 0.9, prev = 0.9,
-               icon_types = c(21, 23, 24, 23),
-               block_size_row = 10, block_size_col = 5,
-               nblocks_row = 5, nblocks_col = 5,
-               block_d = 0.8,
-               border_d = 0.2,
-               fill_array = "top")
+           block_d = 0.5, border_d = 0.5, col_pal = pal_vir)
 
 plot_icons(N = 800, arr_type = "shuffledarray", icon_types = c(21, 23, 24, 22),
            block_d = 0.5, border_d = 0.5)
-
-plot_icons(N = 800, arr_type = "shuffledarray", icon_types = c(21, 23, 24, 22),
-           icon_brd_col = grey(.33, .99), icon_brd_lwd = 3, cex_lbl = 1.2)
 
 plot_icons(N = 800, arr_type = "fillequal", icon_types = c(21, 22, 22, 21),
            icon_brd_lwd = .5, cex = 1, cex_lbl = 1.1)
 
 # Text and color options:
 plot_icons(N = 1000, prev = .5, sens = .5, spec = .5, arr_type = "shuffledarray",
-           title_lbl = "", lbl_txt = txt_TF, col_pal = pal_vir, mar_notes = FALSE)
+           title_lbl = "", lbl_txt = txt_TF, col_pal = pal_vir, mar_notes = TRUE)
 
 plot_icons(N = 1000, prev = .5, sens = .5, spec = .5, arr_type = "shuffledarray",
            title_lbl = "Green vs. red", col_pal = pal_rgb, transparency = .5)
 
-plot_icons(N = 1000, prev = .5, sens = .5, spec = .5, arr_type = "shuffledarray",
-           title_lbl = "Shades of blue", col_pal = pal_kn, transparency = .3)
-
 }
 \seealso{
-Other visualization functions: \code{\link{plot.riskyr}},
-  \code{\link{plot_area}}, \code{\link{plot_bar}},
-  \code{\link{plot_curve}}, \code{\link{plot_fnet}},
-  \code{\link{plot_mosaic}}, \code{\link{plot_plane}},
-  \code{\link{plot_prism}}, \code{\link{plot_tab}},
-  \code{\link{plot_tree}}
+Other visualization functions: 
+\code{\link{plot.riskyr}()},
+\code{\link{plot_area}()},
+\code{\link{plot_bar}()},
+\code{\link{plot_curve}()},
+\code{\link{plot_fnet}()},
+\code{\link{plot_mosaic}()},
+\code{\link{plot_plane}()},
+\code{\link{plot_prism}()},
+\code{\link{plot_tab}()},
+\code{\link{plot_tree}()}
 }
 \concept{visualization functions}

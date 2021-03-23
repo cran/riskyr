@@ -1,7 +1,7 @@
 ## plot_prism.R | riskyr
-## 2018 12 20
+## 2021 01 04
 ## Plot prism: Plot a network diagram of
-## frequencies (nodes) and probabilities (edges)
+## frequencies (nodes) and probabilities (edges).
 ## -----------------------------------------------
 
 # This function replaces the older functions
@@ -50,12 +50,13 @@
 #'
 #' @param N  The number of individuals in the population.
 #' A suitable value of \code{\link{N}} is computed, if not provided.
-#' Note: \code{\link{N}} is not represented in the plot,
-#' but used for computing frequency information \code{\link{freq}}
-#' from current probabilities \code{\link{prob}}.
+#' Note that a population size \code{\link{N}} is not needed
+#' for computing current probability information \code{\link{prob}},
+#' but is needed for computing frequency information
+#' \code{\link{freq}} from current probabilities \code{\link{prob}}.
 #'
-#' @param by  A character code specifying 1 or 2 perspectives
-#' that split the population into 2 subsets.
+#' @param by  A character code specifying 1 or 2 perspective(s)
+#' that split(s) the population into 2 subsets.
 #' Specifying 1 perspective plots a frequency tree (single tree)
 #' with 3 options:
 #'   \enumerate{
@@ -63,7 +64,7 @@
 #'   \item \code{"dc"}: by decision only;
 #'   \item \code{"ac"}: by accuracy only.
 #'   }
-#' Specifying 2 perspectives plots a frequency prism (network, double tree)
+#' Specifying 2 perspectives plots a frequency prism (double tree)
 #' with 6 options:
 #'   \enumerate{
 #'   \item \code{"cddc"}: by condition (cd) and by decision (dc) (default);
@@ -92,7 +93,7 @@
 #'  Note: \code{scale} setting matters for the display of probability values and for
 #'  area plots with small population sizes \code{\link{N}} when \code{round = TRUE}.
 #'
-#' @param round  A Boolean option specifying whether computed frequencies
+#' @param round  Boolean option specifying whether computed frequencies
 #' are rounded to integers. Default: \code{round = TRUE}.
 #'
 #' @param f_lbl  Type of label for showing frequency values in 4 main areas,
@@ -113,6 +114,13 @@
 #'
 #' @param f_lwd  Line width of areas.
 #' Default: \code{f_lwd = 0}.
+#'
+#' @param p_lwd  Line width of probability links.
+#' Default: \code{p_lwd = 1}, but consider increasing when setting \code{p_scale = TRUE}.
+#'
+#' @param p_scale  Boolean option for scaling current widths of probability links
+#' (as set by \code{p_lwd}) by the current probability values.
+#' Default: \code{p_scale = FALSE}.
 #'
 #' @param p_lbl  Type of label for showing 3 key probability links and values,
 #' with many options:
@@ -138,6 +146,7 @@
 #' }
 #' Default: \code{arr_c = NA}, but adjusted by \code{area}.
 #'
+#'
 #' @param lbl_txt  Default label set for text elements.
 #' Default: \code{lbl_txt = \link{txt}}.
 #'
@@ -154,7 +163,7 @@
 #' Default: \code{col_pal = \link{pal}}.
 #'
 #' @param mar_notes  Boolean option for showing margin notes.
-#' Default: \code{mar_notes = TRUE}.
+#' Default: \code{mar_notes = FALSE}.
 #'
 #' @param ...  Other (graphical) parameters.
 #'
@@ -175,8 +184,8 @@
 #' plot_prism(N = 10, prev = 1/4, sens = 3/5, spec = 2/5, area = "sq", mar_notes = TRUE)
 #'
 #' ## Custom color and text settings:
-#' plot_prism(col_pal = pal_bw, f_lwd = .5, lwd = .5, lty = 2, # custom fbox color, prob links,
-#'            font = 3, cex_p_lbl = .75)                       # and text labels
+#' plot_prism(col_pal = pal_bw, f_lwd = .5, p_lwd = .5, lty = 2, # custom fbox color, prob links,
+#'            font = 3, cex_p_lbl = .75)                         # and text labels
 #'
 #' my_txt <- init_txt(cond_lbl = "The Truth", cond_true_lbl = "so true", cond_false_lbl = "so false",
 #'                    hi_lbl = "TP", mi_lbl = "FN", fa_lbl = "FP", cr_lbl = "TN")
@@ -202,26 +211,26 @@
 #' #     3 versions:
 #' plot_prism(by = "cd", f_lbl = "def", col_pal = pal_mod) # by condition (freq boxes: hi mi fa cr)
 #' plot_prism(by = "dc", f_lbl = "def", col_pal = pal_mod) # by decision  (freq boxes: hi fa mi cr)
-#' plot_prism(by = "ac", f_lbl = "def", col_pal = pal_mod) # by decision  (freq boxes: hi cr mi fa)
+#' plot_prism(by = "ac", f_lbl = "def", col_pal = pal_mod) # by accuracy  (freq boxes: hi cr mi fa)
 #'
 #' # (B) prism/double tree (nchar(by) == 4):
 #' #     6 (3 x 2) versions (+ 3 redundant ones):
-#' plot_prism(by = "cddc")  # v01 (default)
-#' plot_prism(by = "cdac")  # v02
-#' plot_prism(by = "cdcd")  # (+) Message
+#' plot_prism(by = "cddc")    # v01 (default)
+#' plot_prism(by = "cdac")    # v02
+#' # plot_prism(by = "cdcd")  # (+) Message
 #'
-#' plot_prism(by = "dccd")  # v03
-#' plot_prism(by = "dcac")  # v04
-#' plot_prism(by = "dcdc")  # (+) Message
+#' plot_prism(by = "dccd")    # v03
+#' plot_prism(by = "dcac")    # v04
+#' # plot_prism(by = "dcdc")  # (+) Message
 #'
-#' plot_prism(by = "accd")  # v05
-#' plot_prism(by = "acdc")  # v06
-#' plot_prism(by = "acac")  # (+) Message
+#' plot_prism(by = "accd")    # v05
+#' plot_prism(by = "acdc")    # v06
+#' # plot_prism(by = "acac")  # (+) Message
 #'
 #' ## Other options:
 #'
 #' # area:
-#' plot_prism(area = "no")  # rectangular boxes (default): (same if area = NA/NULL)
+#' # plot_prism(area = "no")  # rectangular boxes (default): (same if area = NA/NULL)
 #' plot_prism(area = "hr")  # horizontal rectangles (widths on each level sum to N)
 #' plot_prism(area = "sq")  # squares (areas on each level sum to N)
 #'
@@ -237,69 +246,72 @@
 #'
 #' ## Frequency boxes:
 #' # f_lbl:
-#' plot_prism(f_lbl = "abb")     # abbreviated freq names (variable names)
-#' plot_prism(f_lbl = "nam")     # only freq names
-#' plot_prism(f_lbl = "num")     # only numeric freq values (default)
-#' plot_prism(f_lbl = "namnum")  # names and numeric freq values
-#' plot_prism(f_lbl = "namnum", cex_lbl = .75)  # smaller freq labels
-#' plot_prism(f_lbl = NA)        # no freq labels
-#' plot_prism(f_lbl = "def")     # informative default: short name and numeric value (abb = num)
+#' plot_prism(f_lbl = "abb")      # abbreviated freq names (variable names)
+#' plot_prism(f_lbl = "nam")      # only freq names
+#' plot_prism(f_lbl = "num")      # only numeric freq values (default)
+#' plot_prism(f_lbl = "namnum")   # names and numeric freq values
+#' # plot_prism(f_lbl = "namnum", cex_lbl = .75)  # smaller freq labels
+#' # plot_prism(f_lbl = NA)       # no freq labels
+#' # plot_prism(f_lbl = "def")    # informative default: short name and numeric value (abb = num)
 #'
 #' # f_lwd:
-#' plot_prism(f_lwd =  0)  # no lines (default), set to tiny_lwd = .001, lty = 0 (same if NA/NULL)
+#' # plot_prism(f_lwd =  0)  # no lines (default), set to tiny_lwd = .001, lty = 0 (same if NA/NULL)
 #' plot_prism(f_lwd =  1)  # basic lines
 #' plot_prism(f_lwd =  3)  # thicker lines
-#' plot_prism(f_lwd = .5)  # thinner lines
+#' # plot_prism(f_lwd = .5)  # thinner lines
 #'
 #' ## Probability links:
+#' # Scale link widths (p_lwd & p_scale):
+#' plot_prism(p_lwd = 6, p_scale = TRUE)
+#' plot_prism(area = "sq", f_lbl = "num", p_lbl = NA, col_pal = pal_bw, p_lwd = 6, p_scale = TRUE)
+#'
 #' # p_lbl:
 #' plot_prism(p_lbl = "mix")     # abbreviated names with numeric values (abb = num)
-#' plot_prism(p_lbl = NA)        # no prob labels (NA/NULL/"none")
+#' plot_prism(p_lbl = "min")     # minimal names (of key probabilities)
+#' # plot_prism(p_lbl = NA)      # no prob labels (NA/NULL/"none")
 #' plot_prism(p_lbl = "nam")     # only prob names
 #' plot_prism(p_lbl = "num")     # only numeric prob values
 #' plot_prism(p_lbl = "namnum")  # names and numeric prob values
-#' plot_prism(p_lbl = "namnum", cex_p_lbl = .70)  # smaller prob labels
-#' plot_prism(by = "cddc", p_lbl = "min")  # minimal labels
-#' plot_prism(by = "cdac", p_lbl = "min")
-#' plot_prism(by = "cddc", p_lbl = "mix")  # mix abbreviated names and numeric values
-#' plot_prism(by = "cdac", p_lbl = "mix")
-#' plot_prism(by = "cddc", p_lbl = "abb")  # abbreviated names
-#' plot_prism(by = "cdac", p_lbl = "abb")
-#' plot_prism(p_lbl = "any") # short name and value (abb = num)
+#' # plot_prism(p_lbl = "namnum", cex_p_lbl = .70)  # smaller prob labels
+#' # plot_prism(by = "cddc", p_lbl = "min")  # minimal labels
+#' # plot_prism(by = "cdac", p_lbl = "min")
+#' # plot_prism(by = "cddc", p_lbl = "mix")  # mix abbreviated names and numeric values
+#' # plot_prism(by = "cdac", p_lbl = "mix")
+#' # plot_prism(by = "cddc", p_lbl = "abb")  # abbreviated names
+#' # plot_prism(by = "cdac", p_lbl = "abb")
+#' # plot_prism(p_lbl = "any") # short name and value (abb = num)
 #'
 #' # arr_c:
 #' plot_prism(arr_c =  0)  # acc_c = 0: no arrows
 #' plot_prism(arr_c = -3)  # arr_c = -1 to -3: points at both ends
 #' plot_prism(arr_c = -2)  # point at far end
 #' plot_prism(arr_c = +2)  # crr_c = 1-3: V-shape arrows at far end
-#' plot_prism(arr_c = +3)  # V-shape arrows at both ends
-#' plot_prism(arr_c = +6)  # arr_c = 4-6: T-shape arrows
+#' # plot_prism(arr_c = +3)  # V-shape arrows at both ends
+#' # plot_prism(arr_c = +6)  # arr_c = 4-6: T-shape arrows
 #'
 #' ## Plain plot versions:
 #' plot_prism(area = "no", f_lbl = "def", p_lbl = "num", col_pal = pal_mod, f_lwd = 1,
 #'            title_lbl = "", mar_notes = FALSE)  # remove titles and margin notes
 #' plot_prism(area = "no", f_lbl = "nam", p_lbl = "min", col_pal = pal_rgb)
-#' plot_prism(area = "no", f_lbl = "abb", p_lbl = "abb", col_pal = pal_bw)
 #' plot_prism(area = "no", f_lbl = "num", p_lbl = "num", col_pal = pal_kn)
 #'
-#' plot_prism(area = "hr", f_lbl = "num", f_lwd = .5, p_lbl = NA, arr_c = 0,
-#'            col_pal = pal_mod, lwd = .5)
-#' plot_prism(area = "hr", f_lbl = "nam", f_lwd = .5, p_lbl = NA, col_pal = pal_bw)
+#' # plot_prism(area = "hr", f_lbl = "nam", f_lwd = .5, p_lwd = .5, col_pal = pal_bwp)
 #' plot_prism(area = "hr", f_lbl = "nam", f_lwd = .5, p_lbl = "num")
 #'
-#' plot_prism(area = "sq", f_lbl = "nam", p_lbl = NA, col_pal = pal_rgb)
-#' plot_prism(area = "sq", f_lbl = "num", p_lbl = NA, f_lwd = 1, col_pal = pal_bw, lwd = .5)
+#' # plot_prism(area = "sq", f_lbl = "nam", p_lbl = NA, col_pal = pal_rgb)
 #' plot_prism(area = "sq", f_lbl = "def", f_lbl_sep = ":\n", p_lbl = NA, f_lwd = 1, col_pal = pal_kn)
 #'
 #' ## Suggested combinations:
-#' plot_prism(f_lbl = "nam", p_lbl = "mix", col_pal = pal_mod)
-#' plot_prism(f_lbl = "namnum", p_lbl = "mix", cex_lbl = .80, cex_p_lbl = .75)
+#' plot_prism(f_lbl = "nam", p_lbl = "mix", col_pal = pal_mod)  # basic plot
+#' plot_prism(f_lbl = "namnum", p_lbl = "num", cex_lbl = .80, cex_p_lbl = .75)
+#' # plot_prism(area = "no", f_lbl = "def", p_lbl = "abb",           # def/abb labels
+#' #            f_lwd = .8, p_lwd = .8, lty = 3, col_pal = pal_bwp)  # black-&-white
 #'
-#' plot_prism(area = "hr", f_lbl = "nam", p_lbl = "num", col_pal = pal_mod)
-#' plot_prism(area = "hr", f_lbl = "abb", p_lbl = "abb", f_lwd = 1, col_pal = pal_bw)
 #' plot_prism(area = "hr", f_lbl = "num", p_lbl = "mix", f_lwd = 1, cex_p_lbl = .75)
+#' plot_prism(area = "hr", f_lbl = "nam", p_lbl = "num", p_lwd = 6, p_scale = TRUE)
+#' plot_prism(area = "hr", f_lbl = "abb", p_lbl = "abb", f_lwd = 1, col_pal = pal_kn)
 #'
-#' plot_prism(area = "sq", f_lbl = "nam", p_lbl = "abb", lbl_txt = txt_TF)
+#' # plot_prism(area = "sq", f_lbl = "nam", p_lbl = "abb", lbl_txt = txt_TF)
 #' plot_prism(area = "sq", f_lbl = "num", p_lbl = "num", f_lwd = 1, col_pal = pal_rgb)
 #' plot_prism(area = "sq", f_lbl = "namnum", p_lbl = "mix", f_lwd = .5, col_pal = pal_kn)
 #'
@@ -351,8 +363,9 @@ plot_prism <- function(prev = num$prev,    # probabilities
                        # f_lty = 0,        # lty of freq boxes: 1 ("solid") vs. 0 ("blank"), etc. (currently not used)
 
                        # Prob links:
+                       p_lwd = 1,          # lwd of prob links: Default p_lwd = 1 (and used as p_lwd_max when p_scale = TRUE).
+                       p_scale = FALSE,    # scale widths of probability links (set by p_lwd) by current p_val?
                        p_lbl = "mix",      # prob labels: "def", "nam"/"num"/"namnum", "abb"/"mix"/"min", or NA/NULL/"no" to hide prob labels.
-                       # p_lwd,            # lwd of prob links: set to default = 1 (currently not used)
                        # p_lty,            # lty of prob links: set to default = 1 (currently not used)
                        arr_c = NA,         # arrow code (-3 to +6). Set to defaults of -2 or 0 (by area, below).
 
@@ -364,7 +377,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
                        col_pal = pal,      # color palette
 
                        # Generic options:
-                       mar_notes = TRUE,   # show margin notes?
+                       mar_notes = FALSE,  # show margin notes?
                        ...                 # other (graphical) parameters (passed to plot_link and plot_ftype_label)
 ) {
 
@@ -373,26 +386,26 @@ plot_prism <- function(prev = num$prev,    # probabilities
   ## (A) If a valid set of probabilities was provided:
   if (is_valid_prob_set(prev = prev, sens = sens, mirt = mirt, spec = spec, fart = fart, tol = .01)) {
 
-    ## (a) Compute the complete quintet of probabilities:
+    # (a) Compute the complete quintet of probabilities:
     prob_quintet <- comp_complete_prob_set(prev = prev, sens = sens, mirt = mirt, spec = spec, fart = fart)
     sens <- prob_quintet[2]  # gets sens (if not provided)
     mirt <- prob_quintet[3]  # gets mirt (if not provided)
     spec <- prob_quintet[4]  # gets spec (if not provided)
     fart <- prob_quintet[5]  # gets fart (if not provided)
 
-    ## (b) Compute LOCAL freq and prob based on current parameters (N and probabilities):
+    # (b) Compute LOCAL freq and prob based on current parameters (N and probabilities):
     freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N, round = round)  # compute freq (default: round = TRUE)
     prob <- comp_prob_prob(prev = prev, sens = sens, spec = spec)
 
     # message("Computed local freq and prob to plot prism.")
 
-    ## (c) Compute cur.popu from computed frequencies (not needed):
+    # (c) Compute cur.popu from computed frequencies (not needed):
     # cur.popu <- comp_popu(hi = freq$hi, mi = freq$mi, fa = freq$fa, cr = freq$cr)  # compute cur.popu (from 4 essential frequencies)
     # message("Generated new population (cur.popu) to plot.")
 
   } else {  # (B) NO valid set of probabilities was provided:
 
-    message("No valid set of probabilities provided. Using global freq & prob to plot prism.")
+    message("No valid set of probabilities provided: Using global freq & prob to plot prism.")
 
   } # if (is_valid_prob_set)
 
@@ -404,7 +417,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   ## (2) Key options and parameters: ----------
 
-  ## 1. Perspective:
+  ## 1. by Perspective: ----
 
   # by:
   by_vec <- read_by(by = by) # helper function returns vector with 3 elements:
@@ -412,7 +425,8 @@ plot_prism <- function(prev = num$prev,    # probabilities
   by_bot <- by_vec[2]
   by     <- by_vec[3]  # updates original by to (possibly changed) by_now
 
-  ## 2. Freq boxes
+
+  ## 2. Freq boxes: ----
 
   # area:
   if (is.null(area) || is.na(area) || tolower(area) == "none" || tolower(area) == "fix") { area <- "no" }
@@ -444,9 +458,10 @@ plot_prism <- function(prev = num$prev,    # probabilities
   }
 
   # f_lwd & lty:
+  tiny_lwd <- .001   # initialize tiny, invisible width
+
   if ( is.null(f_lwd) || is.na(f_lwd) || f_lwd <= 0 ) {
 
-    tiny_lwd <- .001   # tiny, invisible width
     f_lwd <- tiny_lwd  # to avoid error (for lwd = 0)
     lty <- 0           # "blank" (no lines) [only when f_lty and p_lty are NOT used]
 
@@ -463,7 +478,8 @@ plot_prism <- function(prev = num$prev,    # probabilities
     }
   }
 
-  ## 3. Prob links:
+
+  ## 3. Prob links: ----
 
   # No probability labels: Detect special strings:
   if (!is.null(p_lbl)) {
@@ -474,15 +490,22 @@ plot_prism <- function(prev = num$prev,    # probabilities
   }
 
   # arr_c:
+  # Note that arr_c <- NA by default:
+
   if ( is.null(arr_c) ) { arr_c <- 0 }  # sensible zero
 
-  if ( is.na(arr_c) ) { # sensible defaults:
+  # sensible default (based on p_scale):
+  if (p_scale && is.na(arr_c)) { arr_c <- 0 }  # default for p_scale (unless arr_c was set)
+
+  # sensible defaults (based on area):
+  if ( is.na(arr_c) ) {
     if (area == "no") { arr_c <- -2 }  # point at far end
     if (area == "hr") { arr_c <- -2 }  # point at far end
     if (area == "sq") { arr_c <-  0 }  # no arrows
   }
 
-  ## 4. Text labels:
+
+  ## 4. Text labels: ----
 
   # Plot title:
   if (is.null(title_lbl)) { title_lbl <- "" }              # adjust NULL to "" (i.e., no title)
@@ -497,10 +520,25 @@ plot_prism <- function(prev = num$prev,    # probabilities
   if ( cex_p_lbl == 0 )  { cex_p_lbl <- .001 } # other sensible zero
 
 
-  ## 5. Additional parameters (currently fixed):
+  ## 5. Colors / color palettes: ----
+
+  # (a) Set plot background color:
+  par(bg = col_pal[["bg"]])  # col_pal[["bg"]] / "white" / NA (for transparent background)
+
+  # (b) Detect and handle special cases of color equality (e.g., pal_bwp):
+  if ( (par("bg") %in% col_pal[1:11]) && # if bg is equal to ANY fbox color AND
+       (f_lwd <= tiny_lwd) ) {           # f_lwd is tiny_lwd (default):
+    f_lwd <- 1
+    # lty <- 1
+  }
+
+
+  ## 6. Additional parameters (currently fixed): ----
+
   lty <- 1
-  ftype_x <- -5.5    # x-value of ftype labels
+  ftype_x <- -5.5  # x-value of ftype labels
   ftype_pos <- 4   # pos of ftype labels (NULL: centered, 2: right justified, or 4: left justified)
+
 
   ## (3) Define plot and margin areas: ----------
 
@@ -534,7 +572,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   if ( !is.na(by_bot) ) {
     y_min <- -5
-  } else {
+  } else { # is.na(by_bot):
     y_min <- -1
   } # if ( !is.na(by_bot) ) etc.
   y_max <- +5
@@ -556,12 +594,12 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   ## (C) Mark plot areas:
 
-  ## (a) Mark plot area:
+  # (a) Mark plot area:
   # col.plot <- "firebrick3"
   # box("plot", col = col.plot)
   # text(x_max/2, y_max/2, "Plot area", col = col.plot, cex = 1, font = 2)  ## plot text
 
-  ## (b) Mark margin area:
+  # (b) Mark margin area:
   # mar.col <- "forestgreen"
   # box("figure", col = mar.col)
   # mtext("Margin area", side = 3, line = 2, cex = 1, font = 2, col = mar.col)
@@ -570,7 +608,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
   # mtext("side 3, line 0, adj 0", side = 3, line = 0, adj = 0.0, cex = cex_lbl, col = mar.col)
   # mtext("side 3, line 0, adj 1", side = 3, line = 0, adj = 1.0, cex = cex_lbl, col = mar.col)
 
-  ## (c) Mark outer margin area (oma):
+  # (c) Mark outer margin area (oma):
   # oma.col <- "steelblue4"
   # box("outer", col = oma.col)
   # mtext("Outer margin area", side = 1, line = 1, cex = 1, font = 2, col = oma.col, outer = TRUE)
@@ -578,7 +616,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
   # mtext("side 1, line 0, adj 1", side = 1, line = 0, adj = 1.0, cex = cex_lbl, col = oma.col, outer = TRUE)
 
 
-  ## (d) Draw a grid of plot points:
+  # (d) Draw a grid of plot points:
 
   # points(0, 0, pch = 1, col = grey(.66, .50), cex = 1)  # mark origin
 
@@ -601,7 +639,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   ## Box areas with fixed size:
 
-  ## (a) rectangular box (area == "no", i.e., default):
+  # (a) rectangular box (area == "no", i.e., default):
   if ( !is.na(by_bot) ) {
 
     b_h_scale <- 1.15       # optional scaling factor (for larger box heights)
@@ -617,16 +655,20 @@ plot_prism <- function(prev = num$prev,    # probabilities
     # b_w <- comp_lx(b_h, mf = compromise, corf = scale_x)  # c. compromise + corrected
     # b_w <- comp_lx(b_h, mf = wider, corf = scale_x)       # d. wider + corrected
 
+    # b_w <- comp_lx(b_h, mf = 2, corf = scale_x)   # x. customized width
+
   } else {
 
     b_h <- 1
     two_to_one <- 2.0
 
-    b_w <- comp_lx(b_h, mf = two_to_one, corf = scale_x)  # two_to_one + corrected for aspect ratio
+    b_w <- comp_lx(b_h, mf = two_to_one, corf = scale_x)  # a. two_to_one + corrected for aspect ratio
+
+    b_w <- comp_lx(b_h, mf = 3.0, corf = scale_x)         # x. customized width (+++ here now +++)
 
   } # if ( !is.na(by_bot) ) etc.
 
-  ## (b) Square box:
+  # (b) Square box:
   if (area == "sq") {
 
     # Scale correction factor for showing 3 (single tree) instead of 5 levels (prism, double tree):
@@ -640,7 +682,6 @@ plot_prism <- function(prev = num$prev,    # probabilities
   ## Dimensions:
   # x_range <- x_max - 2  # range in x direction
   # t_w <- x_range + b_w  # total width = range + width of center box
-
 
   ## (5) Main fnet/ftree/prism diagram: --------
 
@@ -656,7 +697,6 @@ plot_prism <- function(prev = num$prev,    # probabilities
   ##   1st and 5th rows (top/bot: y = +4/-4): population size N ------
 
   # box 1 dimensions:
-
   if (area == "hr") {
 
     # N area as horizontal rectangle:
@@ -710,7 +750,6 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   # plot list of fboxes:
   # plot_fbox_list(row_1_boxes, lbl_type = f_lbl, cex = cex_lbl, lwd = f_lwd)  # plot list of boxes
-
 
   ##   3rd row (y = 0, center): SDT cases/cells as 4 boxes: ------
 
@@ -853,7 +892,6 @@ plot_prism <- function(prev = num$prev,    # probabilities
   # plot label:
   plot_ftype_label("hi", ftype_x, box_3_y, lbl_txt = lbl_txt, suffix = ":", pos = ftype_pos, col = pal["txt"], cex = cex_lbl, ...)  # Allow ...!
 
-
   ##   2nd row (y = +2): by_top perspective ------
 
   # Note: Express all widths of compound frequencies
@@ -873,12 +911,10 @@ plot_prism <- function(prev = num$prev,    # probabilities
   box_2_1_y <- +2  # above center
   box_2_2_y <- +2  # above center
 
-
   # Define boxes and labels by perspective:
   if (by_top == "cd") {
 
-    ## (a) by condition:
-
+    # (a) by condition:
     if (area == "hr") {
 
       # scale dimensions (as sums of SDT dimensions):
@@ -910,8 +946,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   } else if (by_top == "dc") {
 
-    ## (b) by decision:
-
+    # (b) by decision:
     if (area == "hr") {
 
       # scale dimensions (as sums of SDT dimensions):
@@ -943,8 +978,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   } else if (by_top == "ac") {
 
-    ## (c) by accuracy:
-
+    # (c) by accuracy:
     if (area == "hr") {
 
       # scale dimensions (as sums of SDT dimensions):
@@ -976,8 +1010,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   } else {  # default on top: same as (by_top == "cd")
 
-    ## (+) by condition:
-
+    # (+) by condition:
     if (area == "hr") {
 
       # scale dimensions (as sums of SDT dimensions):
@@ -1017,7 +1050,6 @@ plot_prism <- function(prev = num$prev,    # probabilities
   row_2_boxes <- list(box_2_1, box_2_2)  # list of boxes (lists)
   # plot_fbox_list(row_2_boxes, lbl_type = f_lbl, cex = cex_lbl, lwd = f_lwd)  # plot list of boxes
 
-
   ##   4th row (y = -2): by perspective ------
 
   if ( !is.na(by_bot) ) {
@@ -1042,8 +1074,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
     # Define boxes and labels by perspective:
     if (by_bot == "cd") {
 
-      ## (a) by condition:
-
+      # (a) by condition:
       if (area == "hr") {
 
         # scale dimensions (as sums of SDT dimensions):
@@ -1075,8 +1106,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
     } else if (by_bot == "dc") {
 
-      ## (b) by decision:
-
+      # (b) by decision:
       if (area == "hr") {
 
         # scale dimensions (as sums of SDT dimensions):
@@ -1108,8 +1138,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
     } else if (by_bot == "ac") {
 
-      ## (c) by accuracy:
-
+      # (c) by accuracy:
       if (area == "hr") {
 
         # scale dimensions (as sums of SDT dimensions):
@@ -1141,8 +1170,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
     } else {  # default on bot: same as (by_bot == "dc")
 
-      ## (+) by decision:
-
+      # (+) by decision:
       if (area == "hr") {
 
         # scale dimensions (as sums of SDT dimensions):
@@ -1200,16 +1228,22 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   ## (B) Plot probabilities as links: ------
 
+  ## parameters:
+
   ## from top:
 
   ##   row 1 to 2: ----
 
   plot_link(box_1, box_2_1, 1, 3, cur_prob = prob, arr_code = arr_c,
-            lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl,
-            col_pal = col_pal, ...)  # Allow ...!
+            lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal,
+            p_lwd = p_lwd, p_scale = p_scale,
+            ...)  # Allow ...!
   plot_link(box_1, box_2_2, 1, 3, cur_prob = prob, arr_code = arr_c,
-            lbl_type = p_lbl, lbl_pos = 4, lbl_off = 1, cex = cex_p_lbl, lbl_sep = "\n    = ",
-            col_pal = col_pal, ...)  # Allow ...!  # link label in 2 lines
+            lbl_type = p_lbl, lbl_pos = 4, lbl_off = 1, cex = cex_p_lbl,
+            lbl_sep = "\n    = ",  # special case: cprev label !!!
+            col_pal = col_pal,
+            p_lwd = p_lwd, p_scale = p_scale,
+            ...)  # Allow ...!  # link label in 2 lines
 
   ##   row 2 to 3: ----
 
@@ -1218,34 +1252,34 @@ plot_prism <- function(prev = num$prev,    # probabilities
   if (by_top == "cd") {  # row 2: by condition (cond_true vs. cond_false)
 
     ## (a) by condition:
-    plot_link(box_2_1, box_hi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_true  - hi
-    plot_link(box_2_1, box_mi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_true  - mi
-    plot_link(box_2_2, box_fa, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_false - fa
-    plot_link(box_2_2, box_cr, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_false - cr
+    plot_link(box_2_1, box_hi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_true  - hi
+    plot_link(box_2_1, box_mi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_true  - mi
+    plot_link(box_2_2, box_fa, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_false - fa
+    plot_link(box_2_2, box_cr, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_false - cr
 
   } else if (by_top == "dc") {  # row 2: by decision (dec_pos vs. dec_neg)
 
     ## (b) by decision:
-    plot_link(box_2_1, box_hi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_pos - hi
-    plot_link(box_2_1, box_fa, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_pos - fa !
-    plot_link(box_2_2, box_mi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_neg - mi !
-    plot_link(box_2_2, box_cr, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_neg - cr
+    plot_link(box_2_1, box_hi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_pos - hi
+    plot_link(box_2_1, box_fa, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_pos - fa !
+    plot_link(box_2_2, box_mi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_neg - mi !
+    plot_link(box_2_2, box_cr, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_neg - cr
 
   } else if (by_top == "ac") {  # row 2: by accuracy (dec_cor vs. dec_err)
 
     ## (c) by accuracy:
-    plot_link(box_2_1, box_hi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_cor - hi: acc_hi
-    plot_link(box_2_1, box_cr, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_cor - cr: acc_cr
-    plot_link(box_2_2, box_mi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_err - mi: err_mi
-    plot_link(box_2_2, box_fa, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_err - fa: err_fa
+    plot_link(box_2_1, box_hi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_cor - hi: acc_hi
+    plot_link(box_2_1, box_cr, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_cor - cr: acc_cr
+    plot_link(box_2_2, box_mi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_err - mi: err_mi
+    plot_link(box_2_2, box_fa, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_err - fa: err_fa
 
   } else {  # default on top: same as (by_top == "cd")
 
     ## (+) by condition:
-    plot_link(box_2_1, box_hi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_true  - hi
-    plot_link(box_2_1, box_mi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_true  - mi
-    plot_link(box_2_2, box_fa, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_false - fa
-    plot_link(box_2_2, box_cr, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_false - cr
+    plot_link(box_2_1, box_hi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_true  - hi
+    plot_link(box_2_1, box_mi, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_true  - mi
+    plot_link(box_2_2, box_fa, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_false - fa
+    plot_link(box_2_2, box_cr, 1, 3, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_false - cr
 
   }
 
@@ -1259,49 +1293,49 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
     if (by_bot == "cd") {  # row 4: by condition (cond_true vs. cond_false)
 
-      ## (a) by condition:
-      plot_link(box_4_1, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_true  - hi
-      plot_link(box_4_1, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_true  - mi
-      plot_link(box_4_2, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_false - fa
-      plot_link(box_4_2, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # cond_false - cr
+      # (a) by condition:
+      plot_link(box_4_1, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_true  - hi
+      plot_link(box_4_1, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_true  - mi
+      plot_link(box_4_2, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_false - fa
+      plot_link(box_4_2, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # cond_false - cr
 
     } else if (by_bot == "dc") {  # row 4: by decision (dec_pos vs. dec_neg)
 
-      ## (b) by decision:
-      plot_link(box_4_1, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_pos - hi
-      plot_link(box_4_1, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_pos - fa !
-      plot_link(box_4_2, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_neg - mi !
-      plot_link(box_4_2, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_neg - cr
+      # (b) by decision:
+      plot_link(box_4_1, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_pos - hi
+      plot_link(box_4_1, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_pos - fa !
+      plot_link(box_4_2, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_neg - mi !
+      plot_link(box_4_2, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_neg - cr
 
     } else if (by_bot == "ac") {  # row 4: by accuracy (dec_cor vs. dec_err)
 
-      ## (c) by accuracy:
-      plot_link(box_4_1, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_cor - hi: acc_hi
-      plot_link(box_4_1, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_cor - cr: acc_cr
-      plot_link(box_4_2, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_err - mi: err_mi
-      plot_link(box_4_2, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_err - fa: err_fa
+      # (c) by accuracy:
+      plot_link(box_4_1, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_cor - hi: acc_hi
+      plot_link(box_4_1, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_cor - cr: acc_cr
+      plot_link(box_4_2, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_err - mi: err_mi
+      plot_link(box_4_2, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_err - fa: err_fa
 
     } else {  # default on bot: same as (by_bot == "dc")
 
-      ## (+) by decision:
-      plot_link(box_4_1, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_pos - hi
-      plot_link(box_4_1, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_pos - fa !
-      plot_link(box_4_2, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_neg - mi !
-      plot_link(box_4_2, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_neg - cr
+      # (+) by decision:
+      plot_link(box_4_1, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_pos - hi
+      plot_link(box_4_1, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_pos - fa !
+      plot_link(box_4_2, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_neg - mi !
+      plot_link(box_4_2, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_neg - cr
 
       ## OLDER default: show 4 boxes (dec_pos / dec_neg) vs. (dec_cor / dec_err):
 
       # # 2 default boxes:
-      # plot_link(box_4_1, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = NULL, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_pos - hi / PPV
-      # plot_link(box_4_1, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = NULL, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_pos - fa
-      # plot_link(box_4_2, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = 3, cex = cex_p_lbl, col_pal = col_pal, ...)     # Allow ...!     # dec_neg - mi
-      # plot_link(box_4_2, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 3, cex = cex_p_lbl, col_pal = col_pal, ...)     # Allow ...!     # dec_neg - cr / NPV
+      # plot_link(box_4_1, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = NULL, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_pos - hi / PPV
+      # plot_link(box_4_1, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = NULL, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_pos - fa
+      # plot_link(box_4_2, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = 3, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)     # Allow ...!     # dec_neg - mi
+      # plot_link(box_4_2, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 3, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)     # Allow ...!     # dec_neg - cr / NPV
       #
       # # 2 additional boxes:
-      # plot_link(box_4_3, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)     # Allow ...!     # dec_cor - hi
-      # plot_link(box_4_3, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)     # Allow ...!     # dec_cor - cr
-      # plot_link(box_4_4, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = NULL, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_err - mi
-      # plot_link(box_4_4, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = NULL, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!  # dec_err - fa
+      # plot_link(box_4_3, box_hi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)     # Allow ...!     # dec_cor - hi
+      # plot_link(box_4_3, box_cr, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)     # Allow ...!     # dec_cor - cr
+      # plot_link(box_4_4, box_mi, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = NULL, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_err - mi
+      # plot_link(box_4_4, box_fa, 3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = NULL, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!  # dec_err - fa
 
     }
 
@@ -1310,18 +1344,26 @@ plot_prism <- function(prev = num$prev,    # probabilities
     if (by_bot == "cd" || by_bot == "dc" || by_bot == "ac" ) {
 
       # link to 2 default boxes:
-      plot_link(box_5, box_4_1,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!
-      plot_link(box_5, box_4_2,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, lbl_off = 4/4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!
+      plot_link(box_5, box_4_1,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal,
+                p_lwd = p_lwd, p_scale = p_scale,
+                ...)  # Allow ...!
+      plot_link(box_5, box_4_2,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, lbl_off = 4/4, cex = cex_p_lbl, col_pal = col_pal,
+                p_lwd = p_lwd, p_scale = p_scale,
+                ...)  # Allow ...!
 
     } else {  # link to 4 boxes (dec_pos / dec_neg) vs. (dec_cor / dec_err):
 
       # link to 2 default boxes:
-      plot_link(box_5, box_4_1,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!
-      plot_link(box_5, box_4_2,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, lbl_off = 4/4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!
+      plot_link(box_5, box_4_1,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, cex = cex_p_lbl, col_pal = col_pal,
+                p_lwd = p_lwd, p_scale = p_scale,
+                ...)  # Allow ...!
+      plot_link(box_5, box_4_2,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 2, lbl_off = 4/4, cex = cex_p_lbl, col_pal = col_pal,
+                p_lwd = p_lwd, p_scale = p_scale,
+                ...)  # Allow ...!
 
       ## OLDER: link to 2 additional boxes:
-      # plot_link(box_5, box_4_3,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!
-      # plot_link(box_5, box_4_4,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = 4, lbl_off = 4/4, cex = cex_p_lbl, col_pal = col_pal, ...)  # Allow ...!
+      # plot_link(box_5, box_4_3,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = p_lbl, lbl_pos = 4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!
+      # plot_link(box_5, box_4_4,  3, 1, cur_prob = prob, arr_code = arr_c, lbl_type = "num", lbl_pos = 4, lbl_off = 4/4, cex = cex_p_lbl, col_pal = col_pal, p_lwd = p_lwd, p_scale = p_scale, ...)  # Allow ...!
 
     }
 
@@ -1351,9 +1393,9 @@ plot_prism <- function(prev = num$prev,    # probabilities
     type_lbl <- ""        # assume that no subtitle is desired either
   } else {
     if ( !is.na(by_bot) ) {
-      type_lbl <- paste0("Prism plot (by ", as.character(by), ")")  # plot name: prism/network/double tree.
+      type_lbl <- paste0(lbl["plot_prism_lbl"], " (by ", as.character(by), ")")  # plot name: prism/network/double tree.
     } else {
-      type_lbl <- paste0("Tree plot (by ", as.character(by), ")")  # plot name: tree/double tree.
+      type_lbl <- paste0(lbl["plot_tree_lbl"], " (by ", as.character(by), ")")  # plot name: tree/double tree.
     } # if ( !is.na(by_bot) )
   }
 
@@ -1380,7 +1422,6 @@ plot_prism <- function(prev = num$prev,    # probabilities
              cur_freq = freq, cur_prob = prob, lbl_txt = lbl_txt)
 
   } # if (mar_notes)
-
 
   ##   Finish: ---------
 
@@ -1444,7 +1485,6 @@ plot_prism <- function(prev = num$prev,    # probabilities
 # plot_prism(by = "acac")  # (+) Message
 #
 # ## Plot options:
-#
 # # area:
 # plot_prism(area = "no")  # rectangular boxes (default): (same if area = NA/NULL)
 # plot_prism(area = "hr")  # horizontal rectangles (widths on each level sum to N)
@@ -1475,7 +1515,6 @@ plot_prism <- function(prev = num$prev,    # probabilities
 # plot_prism(f_lwd = .5)  # thinner lines
 #
 # ## Prob (as links):
-#
 # # p_lbl: Label types
 # plot_prism(p_lbl = "mix")     # abbreviated names with numeric values (abb = num)
 # plot_prism(p_lbl = NA)      # no prob labels (NA/NULL/"none")
@@ -1501,7 +1540,6 @@ plot_prism <- function(prev = num$prev,    # probabilities
 #
 #
 # ## Plain plot versions:
-#
 # plot_prism(area = "no", f_lbl = "nam", p_lbl = NA, col_pal = pal_rgb)
 # plot_prism(area = "no", f_lbl = "abb", p_lbl = "abb", col_pal = pal_bw)
 # plot_prism(area = "no", f_lbl = "num", p_lbl = "num", col_pal = pal_kn)
@@ -1515,7 +1553,6 @@ plot_prism <- function(prev = num$prev,    # probabilities
 # plot_prism(area = "sq", f_lbl = "def", p_lbl = NA, f_lwd = 1, col_pal = pal_kn)
 #
 # ## Suggested combinations:
-#
 # plot_prism(f_lbl = "def", p_lbl = "mix")
 # plot_prism(f_lbl = "namnum", p_lbl = "mix", cex_lbl = .80, cex_p_lbl = .75)
 #
@@ -1604,7 +1641,9 @@ read_by <- function(by){
 
   # Finish:
   return(c(by_top, by_bot, by_now))
-}
+
+} # read_by() end.
+
 ## Check:
 # read_by(by = "cd")
 # read_by(by = "cddc")
@@ -1612,7 +1651,7 @@ read_by <- function(by){
 # read_by(by = "cdxx")
 # read_by(by = "xxxxxx")
 
-## Done: [2018 11 17] ------
+## Done: ------
 
 ## (0) Design as function plot_prism (generalizing plot_fnet).
 
@@ -1661,9 +1700,8 @@ read_by <- function(by){
 ## (12) Re-shuffle x positions of 4 SDT boxes by 1st perspective (by_top)
 ##      so that prob-links from level 2 to 3 do not cross.
 
-## ToDo: [2018 11 17] ------
+## ToDo: ------
 
-## (1) Add option to scale width of links by prob.
+## - etc.
 
 ## eof. ----------
-

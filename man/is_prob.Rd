@@ -20,13 +20,17 @@ otherwise \code{FALSE}.
 }
 \description{
 \code{is_prob} is a function that checks whether its argument \code{prob}
-is a probability (i.e., a numeric value in the range from 0 to 1).
+(a scalar or a vector) is a probability
+(i.e., a numeric value in the range from 0 to 1).
 }
 \examples{
-# ways to succeed:
-is_prob(1/2)                  # => TRUE
-p.seq <- seq(0, 1, by = .1)   # Vector of probabilities
-is_prob(p.seq)                # => TRUE (for vector)
+is_prob(1/2)                  # TRUE
+is_prob(2)                    # FALSE
+
+# vectors:
+p_seq <- seq(0, 1, by = .1)   # Vector of probabilities
+is_prob(p_seq)                # TRUE (as scalar, not: TRUE TRUE etc.)
+is_prob(c(.1, 2, .9))         # FALSE (as scalar, not: TRUE FALSE etc.)
 
 ## watch out for:
 # is_prob(NA)                   # => FALSE + NO warning!
@@ -50,11 +54,14 @@ is_prob(p.seq)                # => TRUE (for vector)
 \code{\link{as_pc}} displays a probability as a percentage;
 \code{\link{as_pb}} displays a percentage as probability.
 
-Other verification functions: \code{\link{is_complement}},
-  \code{\link{is_extreme_prob_set}}, \code{\link{is_freq}},
-  \code{\link{is_perc}}, \code{\link{is_suff_prob_set}},
-  \code{\link{is_valid_prob_pair}},
-  \code{\link{is_valid_prob_set}},
-  \code{\link{is_valid_prob_triple}}
+Other verification functions: 
+\code{\link{is_complement}()},
+\code{\link{is_extreme_prob_set}()},
+\code{\link{is_freq}()},
+\code{\link{is_perc}()},
+\code{\link{is_suff_prob_set}()},
+\code{\link{is_valid_prob_pair}()},
+\code{\link{is_valid_prob_set}()},
+\code{\link{is_valid_prob_triple}()}
 }
 \concept{verification functions}
