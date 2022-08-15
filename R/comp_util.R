@@ -1,5 +1,5 @@
 ## comp_util.R | riskyr
-## 2020 03 20
+## 2022 08 14
 ## Generic utility functions:
 ## -----------------------------------------------
 
@@ -9,7 +9,7 @@
 ## (D) Color and plotting functions (mostly moved to plot_util.R)
 ## (E) Text functions
 
-## (A) Verification functions: ----------
+## (A) Verification functions: ------
 
 #  1. is_prob               (exported)
 #  2. is_perc               (exported)
@@ -22,9 +22,9 @@
 #  8. is_valid_prob_pair    (exported)
 #  9. is_valid_prob_set     (exported)
 # 10. is_valid_prob_triple  [exported, but deprecated]
+# 11. is_matrix             (exported)
 
-
-## is_prob: Verify that input is a probability ----------
+## is_prob: Verify that input is a probability ------
 
 #' Verify that input is a probability (numeric value from 0 to 1).
 #'
@@ -145,7 +145,7 @@ is_prob <- function(prob, NA_warn = FALSE) {
 # is_prob("Laplace", NA_warn = TRUE) # => FALSE + warning (non-numeric values)
 
 
-## is_perc: Verify that input is a percentage --------------------
+## is_perc: Verify that input is a percentage ------
 
 #' Verify that input is a percentage (numeric value from 0 to 100).
 #'
@@ -227,7 +227,7 @@ is_perc <- function(perc) {
 
 }
 
-## is_freq: Verify that input is a frequency -----------
+## is_freq: Verify that input is a frequency -------
 
 #' Verify that input is a frequency (positive integer value).
 #'
@@ -307,17 +307,18 @@ is_freq <- function(freq) {
     warning(paste0(freq, " contains non-integer values. "))
   }
 
-  else {  # one way to succeed:
+  else { # one way to succeed:
 
     val <- TRUE
+
   }
 
   return(val)
 
-}
+} # is_freq().
 
 
-## is_suff_prob_set: Verify that sufficient set of probabilities is provided ----------
+## is_suff_prob_set: Verify that sufficient set of probabilities is provided ------
 
 #' Verify a sufficient set of probability inputs.
 #'
@@ -459,14 +460,14 @@ is_suff_prob_set <- function(prev,
 # # is_suff_prob_set(prev = 1, sens = 1)  # => FALSE + warning (spec or fart missing)
 
 
-## ToDo: Analog fn for freq: is_suff_freq_set ----------
+## ToDo: Analog fn for freq: is_suff_freq_set ------
 
 ## Analog function: is_suff_freq_set
 ## that verifies an input for sufficient number of frequencies
 
 
 
-## is_complement: Verify that 2 numbers are complements -----------------
+## is_complement: Verify that 2 numbers are complements -------
 
 #' Verify that two numbers are complements.
 #'
@@ -626,11 +627,74 @@ is_prob_range <- function(some_range) {
 # is_prob_range(c(0, NA))   # FALSE: not prob
 
 
-## (B) Beware of extreme cases: ----------
+
+# is_integer: Testing for integer values (which is.integer does not) ------
+
+# Note that is.integer() tests for objects of TYPE "integer", not integer values.
+# See help on is.integer().
+
+#' Test for inters (i.e., whole numbers).
+#'
+#' \code{is_integer} tests if \code{x} contains \emph{only} integer numbers.
+#'
+#' Thus, \code{is_integer} does what the \strong{base} R function \code{is.integer} is \emph{not} designed to do:
+#'
+#' \itemize{
+#'   \item \code{is_integer()} returns TRUE or FALSE depending on whether its numeric argument \code{x} is an integer value (i.e., a "whole" number).
+#'
+#'   \item \code{is.integer()} returns TRUE or FALSE depending on whether its argument is of type "integer", and FALSE if its argument is a factor.
+#' }
+#'
+#' See the documentation of \code{\link{is.integer}} for definition and details.
+#'
+#' @param x Number(s) to test (required, accepts numeric vectors).
+#'
+#' @param tol Numeric tolerance value.
+#' Default: \code{tol = .Machine$double.eps^0.5}
+#' (see \code{?.Machine} for details).
+#'
+#' @examples
+#' is_integer(2)    # TRUE
+#' is_integer(2/1)  # TRUE
+#' is_integer(2/3)  # FALSE
+#' x <- seq(1, 2, by = 0.5)
+#' is_integer(x)
+#'
+#' # Note contrast to base R:
+#' is.integer(2/1)  # FALSE!
+#'
+#' # Compare:
+#' is.integer(1 + 2)
+#' is_integer(1 + 2)
+#'
+#' @family verification functions
+#'
+#' @seealso
+#' \code{\link{is.integer}} function of the R \strong{base} package.
+#'
+#' @export
+
+is_integer <- function(x, tol = .Machine$double.eps^0.5) {
+
+  abs(x - round(x)) < tol
+
+} # is_integer().
+
+# # Check:
+# is_integer(1)    # is TRUE
+# is_integer(1/2)  # is FALSE
+# x <- seq(1, 2, by = 0.5)
+# is_integer(x)
+#
+# # Compare:
+# is.integer(1+2)
+# is_integer(1+2)
+
+## (B) Beware of extreme cases: ------
 ##     Verify if the current set of (sufficient) probabilities
 ##     describe an extreme case:
 
-## is_extreme_prob_set: Verify that a prob set is an extreme case ----------
+## is_extreme_prob_set: Verify that a prob set is an extreme case ------
 
 #' Verify that a set of probabilities describes an extreme case.
 #'
@@ -882,7 +946,7 @@ is_extreme_prob_set <- function(prev,
 # plot_tree(prev, 1, NA, 0, NA, N = 650)     # => illustrates this case
 
 
-## is_valid_prob_pair: Verify a pair of probability inputs -------------
+## is_valid_prob_pair: Verify a pair of probability inputs -------
 
 # Verify that 2 probabilities are valid inputs
 # for a pair of complementary probabilities:
@@ -987,7 +1051,7 @@ is_valid_prob_pair <- function(p1, p2, tol = .01) {
 # is_valid_prob_pair(c(.301, .299), .7)   # => TRUE
 
 
-## is_valid_prob_set: Verify a set of probability inputs ------------
+## is_valid_prob_set: Verify a set of probability inputs ------
 
 # Verify that a set of up to 5 probabilities can
 # be interpreted as valid probability inputs:
@@ -1141,7 +1205,7 @@ is_valid_prob_set <- function(prev,
 # is_valid_prob_set(1, 1, 0, 1, 1)      # => FALSE + warning (beyond complement range)
 
 
-## is_valid_prob_triple: Verify a triple of essential probability inputs ---------------
+## is_valid_prob_triple: Verify a triple of essential probability inputs -------
 
 # Verify that a triple of inputs can
 # be interpreted as valid set of 3 essential probabilites:
@@ -1226,12 +1290,100 @@ is_valid_prob_triple <- function(prev, sens, spec) {
 # # is_valid_prob_triple(0, NA, 0)   # => FALSE + warning (NA)
 # # is_valid_prob_triple("p", 0, 0)  # => FALSE + warning (non-numeric)
 
+## is_matrix: Verify that mx is a numeric 2x2 contingency table: ------
 
-## (C) Conversion functions: ----------------------
+#' Verify a 2x2 matrix as a numeric contingency table.
+#'
+#' \code{is_matrix} verifies that \code{mx} is a
+#' valid 2x2 matrix (i.e., a numeric contingency table).
+#'
+#' \code{is_matrix} is more restrictive than \code{\link{is.matrix}},
+#' as it also requires that \code{mx} \code{\link{is.numeric}},
+#' \code{\link{is.table}}, \code{nrows(mx) == 2}, and \code{ncols(mx) == 2}.
+#'
+#' @param mx An object to verify (required).
+#'
+#' @return A Boolean value: \code{TRUE} if \code{mx}
+#' is a numeric matrix and 2x2 contingency table;
+#' otherwise \code{FALSE}.
+#'
+#' @examples
+#' is_matrix(1:4)
+#' is_matrix(matrix("A"))
+#' is_matrix(matrix(1:4))
+#' is_matrix(as.table(matrix(1:4, nrow = 1, ncol = 4)))
+#' is_matrix(as.table(matrix(1:4, nrow = 4, ncol = 1)))
+#' is_matrix(as.table(matrix(1:4, nrow = 2, ncol = 2)))
+#'
+#' @family verification functions
+#'
+#' @references
+#' Neth, H., Gradwohl, N., Streeb, D., Keim, D.A., & Gaissmaier, W. (2021).
+#' Perspectives on the 2×2 matrix: Solving semantically distinct problems
+#' based on a shared structure of binary contingencies.
+#' \emph{Frontiers in Psychology}, \emph{11}, 567817.
+#' doi: \doi{10.3389/fpsyg.2020.567817}
+#'
+#' @export
+
+is_matrix <- function(mx){
+
+  out <- FALSE  # initialize
+
+  if (!is.matrix(mx)){ # 1: Shape:
+
+    message("is_matrix: mx is no matrix.")
+
+  } else if (!is.table(mx)){
+
+    message("is_matrix: mx is no contingency table.")
+
+  } else if (nrow(mx) != 2){
+
+    message("is_matrix: mx does not have 2 rows.")
+
+  } else if (ncol(mx) != 2){
+
+    message("is_matrix: mx does not have 2 columns.")
+
+  } else if (!is.numeric(mx)){ # 2: Data type:
+
+    message("is_matrix: mx is not numeric.")
+
+    # NOT checked: Contingency table:
+    # Contents are only frequency counts (i.e., integers >= 0)
+    # to allow for probability matrices (i.e., non frequency values):
+
+    # } else if (!is_freq(mx)){ # Only contingency table contents:
+    #
+    #     message("is_matrix: mx contains non-frequency counts.")
+
+  } else { # mx is a numeric matrix:
+
+    out <- TRUE
+
+  } # if end.
+
+  return(out)
+
+} # is_matrix().
+
+# ## Check:
+# is_matrix(NA)
+# is_matrix(1:4)
+# is_matrix(matrix("A"))
+# is_matrix(matrix(1:4))
+# is_matrix(as.table(matrix(1:4, nrow = 1, ncol = 4)))
+# is_matrix(as.table(matrix(1:4, nrow = 4, ncol = 1)))
+# is_matrix(as.table(matrix(1:4 + .1, nrow = 2, ncol = 2))) # non-frequency counts/not contingency table
+# is_matrix(as.table(matrix(0:3, nrow = 2, ncol = 2)))
+
+
+## (C) Conversion functions: --------
 
 ## Toggle between showing probabilities and percentages:
 
-## as_pc: Show a probability as a (numeric and rounded) percentage --------
+## as_pc: Show a probability as a (numeric and rounded) percentage ------
 
 #' Display a probability as a (numeric and rounded) percentage.
 #'
@@ -1272,7 +1424,7 @@ is_valid_prob_triple <- function(prev, sens, spec) {
 #'
 #' @export
 
-## Probability as percentage (2 decimals):
+# Probability as percentage (2 decimals):
 
 as_pc <- function(prob, n_digits = 2) {
 
@@ -1293,7 +1445,8 @@ as_pc <- function(prob, n_digits = 2) {
   }
 
   return(perc)  # return (numeric)
-}
+
+} # as_pc().
 
 ## Check:
 # as_pc(1/2)                # =>  50
@@ -1323,7 +1476,7 @@ as_pc <- function(prob, n_digits = 2) {
 
 ## Percentage as probability (4 decimals):
 
-## as_pb: Show a percentage as a (numeric and rounded) probability --------
+## as_pb: Show a percentage as a (numeric and rounded) probability ------
 
 #' Display a percentage as a (numeric and rounded) probability.
 #'
@@ -1409,6 +1562,19 @@ as_pb <- function(perc, n_digits = 4) {
 # # round(prob_seq, 4) == as_pb(as_pc(prob_seq))  # => all TRUE (both rounded to 4 decimals)
 
 
+## incsum: Incremental sum (as an inverse of cumsum): ------
+
+incsum <- function(cumsum){
+
+  diff(c(0, cumsum))
+
+}
+
+## Check:
+# v <- runif(10)
+# all.equal(incsum(cumsum(v)), v)
+
+
 
 ## (D) Color and plotting functions: --------
 
@@ -1427,21 +1593,23 @@ make_transparent <- function(..., alpha = .50) {
 
   alpha <- floor(255 * alpha)
 
-  newColor <- col2rgb(col = unlist(list(...)), alpha = FALSE)
+  new_color <- grDevices::col2rgb(col = unlist(list(...)), alpha = FALSE)
 
   .make_transparent <- function(col, alpha) {
-    rgb(red = col[1], green = col[2], blue = col[3],
-        alpha = alpha, maxColorValue = 255)
+    grDevices::rgb(red = col[1], green = col[2], blue = col[3],
+                   alpha = alpha, maxColorValue = 255)
   }
 
-  newColor <- apply(newColor, 2, .make_transparent, alpha = alpha)
+  new_color <- apply(new_color, 2, .make_transparent, alpha = alpha)
 
-  return(newColor)
+  return(new_color)
 
 }
 
 ## Check:
-# make_transparent("black")
+# make_transparent(c("black", "red"), alpha =  0)
+# make_transparent(c("black", "red"), alpha = .5)
+# make_transparent(c("black", "red"), alpha =  1)
 
 ## See also:
 # grDevices::adjustcolor(col = "green", alpha.f = .50)
@@ -1474,11 +1642,11 @@ kill_all <- function(){
 # Check: ----
 # kill_all()
 
-## (*) Done: ----------
+## (*) Done: --------
 
 ## - Clean up code [2021 03 20].
 
-## (+) ToDo: ----------
+## (+) ToDo: --------
 
 ## (e+) ToDo: Generalize is_perfect to
 ##      is_extreme_prob_set to incorporate other extreme cases:

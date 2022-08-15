@@ -1,21 +1,97 @@
 
+# riskyr 0.4.0
+
+**riskyr 0.4.0** was released [on CRAN](https://CRAN.R-project.org/package=riskyr) on August\ 15, 2022. 
+
+Changes since last release:  
+
+## Major changes
+
+<!-- Sampling from prob: -->     
+
+- Enable _sampling_ when computing `freq` from `prob` (i.e., _by description_, given\ `N` and 3\ essential probabilities) [2021-03]: 
+
+    - add a `sample` argument to `comp_freq()`, `comp_freq_prob()`, and `riskyr()`;  
+    
+    - add a `sample` argument to 6\ key plots:  
+    `plot_area()`, `plot_bar()`, `plot_fnet()`, `plot_icons()`, `plot_prism()`, and `plot_tab()`.  
+
+
+<!-- Conversion data vs. description: --> 
+
+- Allow conversions/translations between data and descriptions [2021-03]:
+
+    - `write_popu()` creates population data from a description (a riskyr scenario); 
+    
+    - `read_popu()` creates a description (a riskyr scenario) from population data. 
+
+
+<!-- Cumulative risks (plot_crisk): -->  
+
+- Add a function for plotting cumulative risk curves [2021-12]:
+
+    - `plot_crisk()` plots curves and auxiliary information for visualizing cumulative risks and risk increments; 
+    
+    - `pal_crisk` provides a corresponding color palette (as a named vector).  
+
+
+<!-- FFTrees: -->
+
+- Add `FFTrees_riskyr()` to convert `FFTrees` objects into corresponding `riskyr` objects [2022-08]. 
+
+
+<!-- Minor: --> 
+
+## Minor changes
+
+- Add `main` and `sub` arguments to all plots (and deprecate the previous `title_lbl` argument) [2022-08]. 
+
+- Add `is_matrix()` to verify a 2x2 matrix (as a 2x2 numeric contingency table). 
+
+- Add `is_integer()` to verify integer values.
+
+
+<!-- Micro/details: --> 
+
+## Micro changes 
+
+- Fix bug in `plot_bar()` that caused incorrect bar labels [2022-08].
+
+- Update URLs in `README.md` and all vignettes to <https://riskyr.org/> [2021-03]. 
+
+- Increase options and robustness for labeling frequencies and probabilities in plots [2021-03]. 
+
+- Reduce widths of freq boxes in `plot_prism()` to reduce overlaps [2021-03]. 
+
+- Rename labels in `txt_TF` to avoid confusion, as "True condition" (i.e., X) was `FALSE` (now "absent") for "True negatives" (`TN`/`cr` cases) [2021-03]. 
+
+<!-- Development version: --> 
+
+The current development version (0.4.0.9001+) is available at <https://github.com/hneth/riskyr/>. 
+
+
+<!-- Previous version: --> 
+
+
+---------- 
+
 # riskyr 0.3.0
 
-**riskyr 0.3.0** is published [on CRAN](https://CRAN.R-project.org/package=riskyr) on March 23, 2021. 
+**riskyr 0.3.0** was released [on CRAN](https://CRAN.R-project.org/package=riskyr) on March\ 23, 2021. 
 
-Log of changes since last release:
+Changes since last release:
 
 
 ## Major changes
 
-- Added `plot_fnet()` for plotting _frequency nets_ (Binder et al., 2020) [2020-12]. 
+- Add `plot_fnet()` for plotting _frequency nets_ ([Binder et al., 2020](https://www.frontiersin.org/articles/10.3389/fpsyg.2020.00750/full)) [2020-12]. 
 
 
 ## Minor changes
 
 ### Changes to existing visualization functions 
 
-- Changed default setting of `mar_notes` in all plotting functions [2021-01]: 
+- Change default setting of `mar_notes` in all plotting functions [2021-01]: 
 Using `mar_notes = FALSE` as those details are not needed and can be distracting in visualizations. 
 
 - Change default arguments for `plot_area()` and `plot_tab()` [2019-01]:   
@@ -53,24 +129,26 @@ Add utility function to verify a range of two probability values (to check new a
 
 - Using colors of `pal` for fill colors of symbols in `plot_icon()` [2021-02]. 
 
-- Add color palettes [2019-01]:   
+- Add more color palettes [2019-01]:   
 
     - Add `pal_bwp` (a strict b+w color palette suited for printing purposes) and corresponding special cases to major plotting functions. 
     
     - Add `pal_unikn` (based on color definitions of the **unikn** package). 
 
 - Changes to color palettes [2019-01]:  
-Add a background color `pal[["bg"]]` to all palettes and plots (to preempt different system defaults).  
-Adopt `pal_mod` -- rather than `pal_mbw` -- as default color scheme `pal` (to highlight `cond_true` and `dec_pos` cases in default plots).  
+
+    - Add a background color `pal[["bg"]]` to all palettes and plots (to preempt different system defaults).  
+    
+    - Adopt `pal_mod` -- rather than `pal_mbw` -- as default color scheme `pal` (to highlight `cond_true` and `dec_pos` cases in default plots).  
 
 ### Details
 
-- Added reference to article on theoretical background ([Neth et al., 2021](https://doi.org/10.3389/fpsyg.2020.567817)).  
+- Add reference to article on theoretical background ([Neth et al., 2021](https://doi.org/10.3389/fpsyg.2020.567817)).  
 
 - Bug fix in `plot_prism()`: Allow plotting simple trees for `nchar(by) == 2`.
 
 - Bug fix in `plot_icons()` [2019-01]: 
-Enforce 2 different symbol types for icon arrays with a binary perspective (`by = cd` or `dc` or `ac`).   
+Enforced 2 different symbol types for icon arrays with a binary perspective (`by = cd` or `dc` or `ac`).   
 
 
 ---------- 
@@ -79,7 +157,7 @@ Enforce 2 different symbol types for icon arrays with a binary perspective (`by 
 
 **riskyr 0.2.0** was released [on CRAN](https://CRAN.R-project.org/package=riskyr) on January 03, 2019.
 
-Log of changes since last release:
+Changes since last release:  
 
 ## Major changes
 
@@ -89,7 +167,7 @@ Log of changes since last release:
 To use selected `riskyr` functions without the need for coding 
 an updated version of `riskyrApp` is available 
 at <https://github.com/hneth/riskyrApp/> (R Shiny code) and 
-at [http://riskyr.org/](http://134.34.54.61:3838/spds/riskyr/) (interactive online version). 
+at [https://riskyr.org/](https://riskyr.org/) (interactive online version). 
 
 - Using `pkgdown` [2018-12]:   
 Provide package documentation online at <https://hneth.github.io/riskyr/> (latest release version) and <https://hneth.github.io/riskyr/dev/> (current development version). 
@@ -113,13 +191,14 @@ a variant of `plot_area` that does not scale area sizes.
 - New `plot_bar` function [2018-08]:   
 Show scenario frequencies as vertical bars (in various configurations). 
 
+
 ### Under the hood
 
 - Create `plot_util.R` collection of graphical utility functions [2018-08]:   
 Define a new `box` object type and various functions for plotting, labeling, and linking them in graphs 
 (to remove dependencies on and limitations imposed by other packages). 
 
-- Updated `riskyr` function [2018-03]:   
+- Update `riskyr` function [2018-03]:   
 As an alternative to providing 3 essential frequencies, it is now possible to define a scenario from 4 essential frequencies (and check for consistency with given probabilities). 
 
 
@@ -127,7 +206,7 @@ As an alternative to providing 3 essential frequencies, it is now possible to de
 
 ### Changes to existing visualization functions 
 
-- Improved `plot_icons` function [2018-12]:   
+- Improve `plot_icons` function [2018-12]:   
 Show icons separated into 2 subsets by 3 perspectives (condition, decision, accuracy), using the same `by` argument as the other plotting functions.
 
 - `plot_curve` and `plot_plane` functions [2018-11]:   
@@ -196,29 +275,29 @@ Cast dice to display probabilistic (i.e., risk-related) start-up messages.
 
 ---------- 
 
-# References
+**References** 
 
 To cite **riskyr** in derivations and publications please use:
 
-- Neth, H., Gaisbauer, F., Gradwohl, N., & Gaissmaier, W. (2021). 
-riskyr: A toolbox for rendering risk literacy more transparent.  
-  Social Psychology and Decision Sciences, University of Konstanz, Germany. Computer software (R package version 0.3.0, March 23, 2021). 
+- Neth, H., Gaisbauer, F., Gradwohl, N., & Gaissmaier, W. (2022). 
+riskyr: Rendering Risk Literacy more Transparent.  
+  Social Psychology and Decision Sciences, University of Konstanz, Germany. Computer software (R package version 0.4.0, Aug. 15, 2022). 
   Retrieved from <https://CRAN.R-project.org/package=riskyr>.  
 
 <!-- Background article: -->
 
-The following article provides details on the conceptual and theoretical background: 
+The following **article** provides details on the conceptual and theoretical background: 
 
 - Neth, H., Gradwohl, N., Streeb, D., Keim, D.A., & Gaissmaier, W. (2021). 
-Perspectives on the 2x2 matrix: Solving semantically distinct problems based on a shared structure of binary contingencies. 
-_Frontiers in Psychology_, _11_, 567817. 
-doi: [10.3389/fpsyg.2020.567817](https://doi.org/10.3389/fpsyg.2020.567817) 
+Perspectives on the 2x2 matrix: Solving semantically distinct problems based on a shared structure of binary contingencies.  
+  _Frontiers in Psychology_, _11_, 567817. 
+  doi: [10.3389/fpsyg.2020.567817](https://doi.org/10.3389/fpsyg.2020.567817) 
 
 
-<!-- Update: -->
+<!-- footer: -->
 
 ---------- 
 
-(`NEWS.md` updated on 2021-03-23 by [hn](https://neth.de).) 
+[`NEWS.md` updated on 2022-08-15 by [hn](https://neth.de).] 
 
 <!-- eof -->

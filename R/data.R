@@ -1,7 +1,9 @@
 ## data.R | riskyr
-## 2018 12 20
+## 2022 08 11
 ## Document the scenarios of ./data
 ## -----------------------------------------------
+
+# (A) riskyr scenarios: -------
 
 #' A collection of riskyr scenarios from various sources (as df).
 #'
@@ -26,6 +28,8 @@
 #' The variables \code{scen_src} and \code{scen_apa}
 #' provide a scenario's source information.
 #'
+#' @family datasets
+#'
 #' @seealso
 #' \code{\link{scenarios}} contains all scenarios as \code{riskyr} objects;
 #' \code{\link{riskyr}} initializes a \code{riskyr} scenario;
@@ -37,5 +41,242 @@
 #' \code{\link{init_pal}} initializes color information.
 
 "df_scenarios"
+
+
+# (B) Cumulative risks: -------
+
+# (1) Data from Patient Information Brochure:
+#     Wie geht es nach dem Genbefund weiter?  6.Anhang (p. 100f.) ------
+
+# 1a. BRCA1: ----
+
+#' Cumulative risk of breast cancer in women with the BRCA1 mutation.
+#'
+#' \code{BRCA1} provides the cumulative risk of breast cancer
+#' in a population of women with the BRCA1 mutation
+#' as a function of their age (in years).
+#'
+#' @format A data frame (11 x 2).
+#'
+#' \code{x}: age (in years).
+#'
+#' \code{y}: cumulative risk of developing breast
+#' cancer in this (BRCA1) population.
+#'
+#' @family datasets
+#'
+#' @seealso
+#' \code{\link{plot_crisk}} plots cumulative risk curves.
+
+"BRCA1"
+
+
+# 1b. BRCA2: ----
+
+#' Cumulative risk of breast cancer in women with the BRCA2 mutation.
+#'
+#' \code{BRCA2} provides the cumulative risk of breast cancer
+#' in a population of women with the BRCA2 mutation
+#' as a function of their age (in years).
+#'
+#' @format A data frame (11 x 2).
+#'
+#' \code{x}: age (in years).
+#'
+#' \code{y}: cumulative risk of developing breast
+#' cancer in this (BRCA2) population.
+#'
+#' @family datasets
+#'
+#' @seealso
+#' \code{\link{plot_crisk}} plots cumulative risk curves.
+
+"BRCA2"
+
+
+# (3) Data for problems used in mamRiskViz studies: ------
+
+# 3a. mamRiskViz: Introductory task ----
+
+#' Cumulative risk curve I (introductory task).
+#'
+#' \code{t_I} provides the cumulative risk of
+#' some genetic risk factor for developing a disease
+#' in some target population as a function of age.
+#'
+#' @format A data frame (17 x 2).
+#'
+#' \code{age}: age (in years).
+#'
+#' \code{crisk_I}: cumulative risk of developing
+#' some disease in the target population.
+#'
+#' @family datasets
+#'
+#' @seealso
+#' \code{\link{plot_crisk}} plots cumulative risk curves.
+
+"t_I"
+
+
+# 3b. mamRiskViz: Main/transfer Task A ----
+
+#' Cumulative risk curve A (main/transfer task A).
+#'
+#' \code{t_A} provides the cumulative risk of
+#' some genetic risk factor for developing disease A
+#' in some target population as a function of age.
+#'
+#' @format A data frame (17 x 2).
+#'
+#' \code{age}: age (in years).
+#'
+#' \code{crisk_A}: cumulative risk of developing
+#' some disease A in the target population.
+#'
+#' @family datasets
+#'
+#' @seealso
+#' \code{\link{plot_crisk}} plots cumulative risk curves.
+
+"t_A"
+
+
+# 3c. mamRiskViz: Main/transfer Task B ----
+
+#' Cumulative risk curve B (main/transfer task B).
+#'
+#' \code{t_B} provides the cumulative risk of
+#' some genetic risk factor for developing disease B
+#' in some target population as a function of age.
+#'
+#' @format A data frame (17 x 2).
+#'
+#' \code{age}: age (in years).
+#'
+#' \code{crisk_B}: cumulative risk of developing
+#' some disease B in the target population.
+#'
+#' @family datasets
+#'
+#' @seealso
+#' \code{\link{plot_crisk}} plots cumulative risk curves.
+
+"t_B"
+
+
+# (4) Scientific data from Kuchenbaecker et al. (2017). JAMA: ------
+
+# 4a. Breast cancer risk with BRCA1: ------
+
+#' Cumulative risk of breast cancer in women with the BRCA1 mutation.
+#'
+#' \code{BRCA1_mam} provides the cumulative risk of breast cancer
+#' in a population of women with the BRCA1 mutation
+#' as a function of their age (in years).
+#'
+#' @source Based on Figure 2 (p. 2408) of
+#' Kuchenbaecker, K. B., Hopper, J. L., Barnes, D. R., Phillips, K. A., Mooij, T. M., Roos-Blom, M. J., ... & BRCA1 and BRCA2 Cohort Consortium (2017).
+#' Risks of breast, ovarian, and contralateral breast cancer for BRCA1 and BRCA2 mutation carriers. \emph{JAMA}, \emph{317} (23), 2402--2416.
+#' doi: 10.1001/jama.2017.7112
+#'
+#' @format A data frame (63 x 2).
+#'
+#' \code{age}: age (in years).
+#'
+#' \code{cumRisk}: cumulative risk of developing breast
+#' cancer in this (BRCA1) population.
+#'
+#' @family datasets
+#'
+#' @seealso
+#' \code{\link{plot_crisk}} plots cumulative risk curves.
+
+"BRCA1_mam"
+
+
+# 4b. Breast cancer risk with BRCA2: ------
+
+#' Cumulative risk of breast cancer in women with the BRCA2 mutation.
+#'
+#' \code{BRCA2_mam} provides the cumulative risk of breast cancer
+#' in a population of women with the BRCA2 mutation
+#' as a function of their age (in years).
+#'
+#' @source Based on Figure 2 (p. 2408) of
+#' Kuchenbaecker, K. B., Hopper, J. L., Barnes, D. R., Phillips, K. A., Mooij, T. M., Roos-Blom, M. J., ... & BRCA1 and BRCA2 Cohort Consortium (2017).
+#' Risks of breast, ovarian, and contralateral breast cancer for BRCA1 and BRCA2 mutation carriers. \emph{JAMA}, \emph{317} (23), 2402--2416.
+#' doi: 10.1001/jama.2017.7112
+#'
+#' @format A data frame (63 x 2).
+#'
+#' \code{age}: age (in years).
+#'
+#' \code{cumRisk}: cumulative risk of developing breast
+#' cancer in this (BRCA2) population.
+#'
+#' @family datasets
+#'
+#' @seealso
+#' \code{\link{plot_crisk}} plots cumulative risk curves.
+
+"BRCA2_mam"
+
+
+# 4c. Ovarian cancer risk with BRCA1: ------
+
+#' Cumulative risk of ovarian cancer in women with the BRCA1 mutation.
+#'
+#' \code{BRCA1_ova} provides the cumulative risk of ovarian cancer
+#' in a population of women with the BRCA1 mutation
+#' as a function of their age (in years).
+#'
+#' @source Based on Figure 2 (p. 2408) of
+#' Kuchenbaecker, K. B., Hopper, J. L., Barnes, D. R., Phillips, K. A., Mooij, T. M., Roos-Blom, M. J., ... & BRCA1 and BRCA2 Cohort Consortium (2017).
+#' Risks of breast, ovarian, and contralateral breast cancer for BRCA1 and BRCA2 mutation carriers. \emph{JAMA}, \emph{317} (23), 2402--2416.
+#' doi: 10.1001/jama.2017.7112
+#'
+#' @format A data frame (63 x 2).
+#'
+#' \code{age}: age (in years).
+#'
+#' \code{cumRisk}: cumulative risk of developing ovarian
+#' cancer in this (BRCA1) population.
+#'
+#' @family datasets
+#'
+#' @seealso
+#' \code{\link{plot_crisk}} plots cumulative risk curves.
+
+"BRCA1_ova"
+
+
+# 4d. Ovarian cancer risk with BRCA2: ------
+
+#' Cumulative risk of ovarian cancer in women with the BRCA2 mutation.
+#'
+#' \code{BRCA2_ova} provides the cumulative risk of ovarian cancer
+#' in a population of women with the BRCA2 mutation
+#' as a function of their age (in years).
+#'
+#' @source Based on Figure 2 (p. 2408) of
+#' Kuchenbaecker, K. B., Hopper, J. L., Barnes, D. R., Phillips, K. A., Mooij, T. M., Roos-Blom, M. J., ... & BRCA1 and BRCA2 Cohort Consortium (2017).
+#' Risks of breast, ovarian, and contralateral breast cancer for BRCA1 and BRCA2 mutation carriers. \emph{JAMA}, \emph{317} (23), 2402--2416.
+#' doi: 10.1001/jama.2017.7112
+#'
+#' @format A data frame (63 x 2).
+#'
+#' \code{age}: age (in years).
+#'
+#' \code{cumRisk}: cumulative risk of developing ovarian
+#' cancer in this (BRCA2) population.
+#'
+#' @family datasets
+#'
+#' @seealso
+#' \code{\link{plot_crisk}} plots cumulative risk curves.
+
+"BRCA2_ova"
+
 
 ## eof. ------------------------------------------

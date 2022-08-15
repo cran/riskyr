@@ -1,5 +1,5 @@
 ## plot_tab.R | riskyr
-## 2021 01 04
+## 2022 08 09
 ## Plot contingency/frequency table
 ## (based on plot_area.R).
 ## -----------------------------------------------
@@ -95,6 +95,11 @@
 #' @param round  A Boolean option specifying whether computed frequencies
 #' are rounded to integers. Default: \code{round = TRUE}.
 #'
+#' @param sample  Boolean value that determines whether frequency values
+#' are sampled from \code{N}, given the probability values of
+#' \code{prev}, \code{sens}, and \code{spec}.
+#' Default: \code{sample = FALSE}.
+#'
 #' @param brd_w  Border width for showing 2 perspective summaries
 #' on top and left borders of main area (as a proportion of area size)
 #' in a range \code{0 <= brd_w <= 1}.
@@ -166,8 +171,14 @@
 #' @param lbl_txt Default label set for text elements.
 #' Default: \code{lbl_txt = \link{txt}}.
 #'
-#' @param title_lbl Text label for current plot title.
-#' Default: \code{title_lbl = txt$scen_lbl}.
+#' @param main Text label for main plot title.
+#' Default: \code{main = txt$scen_lbl}.
+#'
+#' @param sub Text label for the subtitle of the plot (shown below the \code{main} title).
+#' Default: \code{sub = "type"} shows information on current plot type.
+#'
+#' @param title_lbl \strong{Deprecated} text label for current plot title.
+#' Replaced by \code{main}.
 #'
 #' @param cex_lbl Scaling factor for text labels (frequencies and headers).
 #' Default: \code{cex_lbl = .90}.
@@ -195,6 +206,10 @@
 #' # (2) Computing local freq and prob values:
 #' plot_tab(prev = .5, sens = 4/5, spec = 3/5, N = 10, f_lwd = 1)
 #'
+#' # (3) Rounding and sampling:
+#' plot_tab(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, round = FALSE)
+#' plot_tab(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, sample = TRUE)
+#'
 #' ## Plot versions:
 #' # by x p_split [yields (3 x 2) x 2] = 12 versions]:
 #' plot_tab(by = "cddc", p_split = "v", p_lbl = "def")  # v01 (see v07)
@@ -221,7 +236,7 @@
 #'
 #' ## Misc. options:
 #' plot_tab(area = "sq")        # area: square
-#' # plot_tab(title_lbl = "")     # no titles
+#' # plot_tab(main = "")     # no titles
 #' # plot_tab(mar_notes = TRUE)   # show margin notes
 #' plot_tab(by = "cddc", gaps = c(.08, .00), area = "sq")      # gaps
 #' # plot_tab(by = "cddc", gaps = c(.02, .08), p_split = "h")  # gaps
@@ -234,12 +249,12 @@
 #' # Custom text labels and colors:
 #' plot_tab(prev = .5, sens = 4/5, spec = 3/5, N = 10,
 #'          by = "cddc", p_split = "v", area = "no",
-#'          lbl_txt = txt_TF,  # custom text
+#'          main = "Main title", sub = "The subtitle", lbl_txt = txt_TF,  # custom text
 #'          f_lbl = "namnum", f_lbl_sep = ":\n", f_lbl_sum = "num", f_lbl_hd  = "nam",
 #'          col_pal = pal_vir, f_lwd = 3)  # custom colors
 #' plot_tab(prev = .5, sens = 3/5, spec = 4/5, N = 10,
 #'          by = "cddc", p_split = "h", area = "sq",
-#'          lbl_txt = txt_org,  # custom text
+#'          main = NA, sub = NA, lbl_txt = txt_org,  # custom text
 #'          f_lbl = "namnum", f_lbl_sep = ":\n", f_lbl_sum = "num", f_lbl_hd  = "nam",
 #'          col_pal = pal_kn, f_lwd = 1)  # custom colors
 #'
@@ -248,7 +263,7 @@
 #' # (1) p_split does not matter (except for selecting different prob links):
 #' plot_tab(by = "cddc", p_split = "v")  # v01 (see v07)
 #' plot_tab(by = "cddc", p_split = "h")  # v03 (see v05)
-#' #
+#'
 #' # (2) scale does not matter for dimensions (which are constant),
 #' #     BUT matters for values shown in prob links and on margins:
 #' plot_tab(N = 5, prev = .3, sens = .9, spec = .5,
@@ -296,8 +311,10 @@ plot_tab <- function(prev = num$prev,    # probabilities
                      area = "no",        # sq" (default: correcting x-values for aspect ratio of current plot) vs. "no" (NA, NULL, "fix", "hr")
                      scale = "p",        # in plot_area: "p": scale boxes by exact probabilities (default) vs. "f": scale boxes by (rounded or non-rounded) freq.
 
+                     round = TRUE,       # round freq values to integers? When not rounded: n_digits = 2 (currently fixed).
+                     sample = FALSE,     # sample freq values from probabilities?
+
                      # Freq boxes:
-                     round = TRUE,       # round freq to integers? (default: round = TRUE), when not rounded: n_digits = 2 (currently fixed).
                      f_lbl = "num",      # freq label of 4 SDT & N cells: "default" vs. "abb", "nam", "num", "namnum". (Set to NA/NULL to hide freq labels).
                      f_lbl_sep = NA,     # freq label separator (default: " = ", use ":\n" to add an extra line break)
                      f_lbl_sum = f_lbl,  # freq label of summary cells (bottom row and right column)
@@ -318,7 +335,9 @@ plot_tab <- function(prev = num$prev,    # probabilities
 
                      # Text and color:
                      lbl_txt = txt,      # labels and text elements
-                     title_lbl = txt$scen_lbl,  # main plot title
+                     main = txt$scen_lbl, # main title
+                     sub = "type",        # subtitle ("type" shows generic plot type info)
+                     title_lbl = NULL,    # DEPRECATED plot title, replaced by main
                      cex_lbl = .90,      # size of freq & text labels
                      cex_p_lbl = NA,     # size of prob labels (set to cex_lbl - .05 by default)
                      col_pal = pal,      # color palette
@@ -333,20 +352,21 @@ plot_tab <- function(prev = num$prev,    # probabilities
   ## (A) If a valid set of probabilities was provided:
   if (is_valid_prob_set(prev = prev, sens = sens, mirt = mirt, spec = spec, fart = fart, tol = .01)) {
 
-    ## (a) Compute the complete quintet of probabilities:
+    # (a) Compute the complete quintet of probabilities:
     prob_quintet <- comp_complete_prob_set(prev = prev, sens = sens, mirt = mirt, spec = spec, fart = fart)
     sens <- prob_quintet[2]  # gets sens (if not provided)
     mirt <- prob_quintet[3]  # gets mirt (if not provided)
     spec <- prob_quintet[4]  # gets spec (if not provided)
     fart <- prob_quintet[5]  # gets fart (if not provided)
 
-    ## (b) Compute LOCAL freq and prob based on current parameters (N and probabilities):
-    freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N, round = round)  # compute freq (default: round = TRUE)
-    prob <- comp_prob_prob(prev = prev, sens = sens, spec = spec)
+    # (b) Compute LOCAL freq and prob based on current parameters (N and probabilities):
+    freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N,
+                      round = round, sample = sample)              # key freq
+    prob <- comp_prob_prob(prev = prev, sens = sens, spec = spec)  # key prob
 
     # message("Computed local freq and prob to plot prism.")
 
-    ## (c) Compute cur.popu from computed frequencies (not needed):
+    # (c) Compute cur.popu from computed frequencies (not needed):
     # cur.popu <- comp_popu(hi = freq$hi, mi = freq$mi, fa = freq$fa, cr = freq$cr)  # compute cur.popu (from 4 essential frequencies)
     # message("Generated new population (cur.popu) to plot.")
 
@@ -560,10 +580,11 @@ plot_tab <- function(prev = num$prev,    # probabilities
 
   ## 4. Text labels: ----
 
-  # Plot title:
-  if (is.null(title_lbl)) { title_lbl <- "" }              # adjust NULL to "" (i.e., no title)
-  if (is.na(title_lbl)) { title_lbl <- lbl_txt$scen_lbl }  # use scen_lbl as default plot title
+  # Main and subtitle labels: Set to "" if NULL or NA:
+  if (is.null(main) || is.na(main)) { main <- "" }
+  if (is.null(sub) || is.na(sub)) { sub <- "" }
 
+  # Label sizes:
   if ( is.null(cex_lbl) ) { cex_lbl <- .001 }  # sensible zero
   if ( is.na(cex_lbl) ) { cex_lbl <- .90 }  # default size of cex
   if ( cex_lbl == 0 )  { cex_lbl <- .001 }  # other sensible zero
@@ -662,9 +683,9 @@ plot_tab <- function(prev = num$prev,    # probabilities
 
   ## (3) Define plot and margin areas: ----------
 
-  ## Define margin areas:
+  ## (A) Define margin areas:
 
-  if (nchar(title_lbl) > 0) { n_lines_top <- 2 } else { n_lines_top <- 0 }
+  if (nchar(main) > 0 | nchar(sub) > 0) { n_lines_top <- 2 } else { n_lines_top <- 0 }
   if (mar_notes) { n_lines_bot <- 3 } else { n_lines_bot <- 0 }
 
   par(mar = c(n_lines_bot, 1, n_lines_top, 1) + 0.1)  # margins; default: par("mar") = 5.1 4.1 4.1 2.1.
@@ -2004,22 +2025,39 @@ plot_tab <- function(prev = num$prev,    # probabilities
   # box_else <- make_box("else_box", 9, -2, b_w, b_h)  # define some arbitrary box
   # plot(box_else, col = "firebrick1", cex = 1/2, font = 2)     # plot box
 
+
   ## (5) Title: ------
 
-  # Define parts:
-  if (nchar(title_lbl) > 0) { title_lbl <- paste0(title_lbl, ":\n") }  # put on top (in separate line)
+  # Main title: Handle deprecated "title_lbl" argument: ----
 
-  if (title_lbl == "") {  # if title has been set to "":
-    type_lbl <- ""        # assume that no subtitle is desired either
-  } else {
-    type_lbl <- paste0(lbl["plot_tab_lbl"], " (by ", as.character(by), ")")  # plot name: Table/Contingency table/etc.
+  if (is.null(title_lbl) == FALSE){
+    message("Argument 'title_lbl' is deprecated. Please use 'main' instead.")
+    main <- title_lbl
   }
 
-  # Compose label:
-  cur_title_lbl <- paste0(title_lbl, type_lbl)
 
-  # Plot title:
-  title(cur_title_lbl, adj = 0, line = 0, font.main = 1, cex.main = 1.2)  # (left, not raised, normal font)
+  # Subtitle (2nd line): ----
+
+  if (sub == "type"){ # show default plot type info:
+      sub <- paste0(lbl["plot_tab_lbl"], " (by ", as.character(by), ")")  # plot name: confusion table / 2x2 matrix
+  }
+
+
+  # Combine title + subtitle: ----
+
+  if ( (main != "") & (sub == "") ){ # only main title:
+    cur_title_lbl <- main
+  } else if ( (main == "") & (sub != "") ){ # only subtitle:
+    cur_title_lbl <- sub
+  } else { # combine both:
+    cur_title_lbl <- paste0(main, ":\n", sub)  # add ":" and line break
+  }
+
+
+  # Plot title: ----
+
+  title(cur_title_lbl, adj = 0, line = 0, font.main = 1, cex.main = 1.2)  # (left, NOT raised (by +1), normal font)
+
 
 
   ## (6) Margins: ------
@@ -2050,7 +2088,7 @@ plot_tab <- function(prev = num$prev,    # probabilities
   # on.exit(par(opar))  # par(opar)  # restore original settings
   invisible() # restores par(opar)
 
-} # plot_tab end.
+} # plot_tab().
 
 
 ## (3) Check: ------
@@ -2089,7 +2127,7 @@ plot_tab <- function(prev = num$prev,    # probabilities
 #
 # ## Misc. options:
 # plot_tab(area = "sq")        # area: square
-# plot_tab(title_lbl = "")     # no titles
+# plot_tab(main = NA, sub = NA)  # no titles
 # plot_tab(mar_notes = TRUE)   # show margin notes
 #
 # plot_tab(by = "cddc", gaps = c(.08, .00), area = "sq")    # gaps

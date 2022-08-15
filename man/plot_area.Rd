@@ -16,6 +16,7 @@ plot_area(
   area = "sq",
   scale = "p",
   round = TRUE,
+  sample = FALSE,
   sum_w = 0.1,
   gaps = c(NA, NA),
   f_lbl = "num",
@@ -28,7 +29,9 @@ plot_area(
   col_p = c(grey(0.15, 0.99), "yellow", "yellow"),
   brd_dis = 0.06,
   lbl_txt = txt,
-  title_lbl = txt$scen_lbl,
+  main = txt$scen_lbl,
+  sub = "type",
+  title_lbl = NULL,
   cex_lbl = 0.9,
   cex_p_lbl = NA,
   col_pal = pal,
@@ -87,7 +90,7 @@ with 2 options:
 \item{area}{A character code specifying the shape of the main area,
 with 2 options:
   \enumerate{
-  \item \code{"sq"}: main area is scaled to square (default);
+  \item \code{"sq"}: main area is scaled to a square (default);
   \item \code{"no"}: no scaling (rectangular area fills plot size).
   }}
 
@@ -103,6 +106,11 @@ exact probability or by (rounded or non-rounded) frequency, with 2 options:
 
 \item{round}{A Boolean option specifying whether computed frequencies
 are rounded to integers. Default: \code{round = TRUE}.}
+
+\item{sample}{Boolean value that determines whether frequency values
+are sampled from \code{N}, given the probability values of
+\code{prev}, \code{sens}, and \code{spec}.
+Default: \code{sample = FALSE}.}
 
 \item{sum_w}{Border width of 2 perspective summaries
 (on top and left borders) of main area as a proportion of area size
@@ -179,8 +187,14 @@ Negative values show links outside of main area.}
 \item{lbl_txt}{Default label set for text elements.
 Default: \code{lbl_txt = \link{txt}}.}
 
-\item{title_lbl}{Text label for current plot title.
-Default: \code{title_lbl = txt$scen_lbl}.}
+\item{main}{Text label for main plot title.
+Default: \code{main = txt$scen_lbl}.}
+
+\item{sub}{Text label for plot subtitle (on 2nd line).
+Default: \code{sub = "type"} shows information on current plot type.}
+
+\item{title_lbl}{\strong{Deprecated} text label for current plot title.
+Replaced by \code{main}.}
 
 \item{cex_lbl}{Scaling factor for text labels (frequencies and headers).
 Default: \code{cex_lbl = .90}.}
@@ -223,17 +237,22 @@ and providing many additional options.
 }
 \examples{
 ## Basics:
+# (1) Using global prob and freq values:
 plot_area()  # default area plot,
 # same as:
 # plot_area(by = "cddc", p_split = "v", area = "sq", scale = "p")
 
-# Local freq and prob values:
+# (2) Providing values:
 plot_area(prev = .5, sens = 4/5, spec = 3/5, N = 10)
 
-# Customizing text and color:
+# (3) Rounding and sampling:
+plot_area(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "hr", round = FALSE)
+plot_area(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "hr", sample = TRUE, scale = "freq")
+
+# (4) Custom colors and text:
 plot_area(prev = .2, sens = 4/5, spec = 3/5, N = 10,
           by = "cddc", p_split = "v", scale = "p",
-          title_lbl = "Custom text and color:",
+          main = "Custom text and color:",
           lbl_txt = txt_org, f_lbl = "namnum",
           f_lbl_sep = ":\n", f_lwd = 2, col_pal = pal_rgb)
 
@@ -307,7 +326,7 @@ plot_area(sum_w =  1,         # top and left freq panels scaled to size of main 
 ## Plain and suggested plot versions:
 plot_area(sum_w = 0, f_lbl = "abb", p_lbl = NA)  # no compound indicators (on top/left)
 plot_area(gap = c(0, 0), sum_w = 0, f_lbl = "num", p_lbl = "num",  # no gaps, numeric labels
-          f_lwd = .5, col_pal = pal_bw, title_lbl = "Black-and-white")  # b+w print version
+          f_lwd = .5, col_pal = pal_bw, main = "Black-and-white")  # b+w print version
 # plot_area(f_lbl = "nam", p_lbl = NA, col_pal = pal_mod)  # plot with freq labels
 plot_area(f_lbl = "num", p_lbl = NA, col_pal = pal_rgb)  # no borders around boxes
 
@@ -321,6 +340,7 @@ plot_area(f_lbl = "num", p_lbl = NA, col_pal = pal_rgb)  # no borders around box
 Other visualization functions: 
 \code{\link{plot.riskyr}()},
 \code{\link{plot_bar}()},
+\code{\link{plot_crisk}()},
 \code{\link{plot_curve}()},
 \code{\link{plot_fnet}()},
 \code{\link{plot_icons}()},

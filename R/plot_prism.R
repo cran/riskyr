@@ -1,5 +1,5 @@
 ## plot_prism.R | riskyr
-## 2021 01 04
+## 2022 08 09
 ## Plot prism: Plot a network diagram of
 ## frequencies (nodes) and probabilities (edges).
 ## -----------------------------------------------
@@ -83,12 +83,12 @@
 #'   \item \code{"sq"}: frequency boxes are squares (scaled relative to N).
 #'   }
 #'
-#' @param scale  Scale probabilities and corresponding area dimensions either by
+#' @param scale  Scale probabilities and corresponding node dimensions either by
 #' exact probability or by (rounded or non-rounded) frequency, with 2 options:
 #'   \enumerate{
-#'   \item \code{"p"}: scale main area dimensions by exact probability (default);
+#'   \item \code{"p"}: scale node dimensions by exact probability (default);
 #'   \item \code{"f"}: re-compute probabilities from (rounded or non-rounded) frequencies
-#'   and scale main area dimensions by their frequency.
+#'   and scale node dimensions by their frequency.
 #'   }
 #'  Note: \code{scale} setting matters for the display of probability values and for
 #'  area plots with small population sizes \code{\link{N}} when \code{round = TRUE}.
@@ -96,7 +96,12 @@
 #' @param round  Boolean option specifying whether computed frequencies
 #' are rounded to integers. Default: \code{round = TRUE}.
 #'
-#' @param f_lbl  Type of label for showing frequency values in 4 main areas,
+#' @param sample  Boolean value that determines whether frequency values
+#' are sampled from \code{N}, given the probability values of
+#' \code{prev}, \code{sens}, and \code{spec}.
+#' Default: \code{sample = FALSE}.
+#'
+#' @param f_lbl  Type of label for showing frequency values in nodes,
 #' with 6 options:
 #'   \enumerate{
 #'   \item \code{"def"}: abbreviated names and frequency values;
@@ -107,7 +112,7 @@
 #'   \item \code{"no"}: no frequency labels (same for \code{f_lbl = NA} or \code{NULL}).
 #'   }
 #'
-#' @param f_lbl_sep  Label separator for main frequencies
+#' @param f_lbl_sep  Separator for frequency labels
 #' (used for \code{f_lbl = "def" OR "namnum"}).
 #' Use \code{f_lbl_sep = ":\n"} to add a line break between name and numeric value.
 #' Default: \code{f_lbl_sep = NA} (set to \code{" = "} or \code{":\n"} based on \code{f_lbl}).
@@ -150,8 +155,14 @@
 #' @param lbl_txt  Default label set for text elements.
 #' Default: \code{lbl_txt = \link{txt}}.
 #'
-#' @param title_lbl  Text label for current plot title.
-#' Default: \code{title_lbl = txt$scen_lbl}.
+#' @param main Text label for main plot title.
+#' Default: \code{main = txt$scen_lbl}.
+#'
+#' @param sub Text label for plot subtitle (on 2nd line).
+#' Default: \code{sub = "type"} shows information on current plot type.
+#'
+#' @param title_lbl \strong{Deprecated} text label for current plot title.
+#' Replaced by \code{main}.
 #'
 #' @param cex_lbl  Scaling factor for text labels (frequencies and headers).
 #' Default: \code{cex_lbl = .90}.
@@ -167,6 +178,7 @@
 #'
 #' @param ...  Other (graphical) parameters.
 #'
+#'
 #' @return Nothing (NULL).
 #'
 #' @examples
@@ -179,11 +191,14 @@
 #' #            p_lbl = "mix", arr_c = -2, cex_p_lbl = NA)
 #'
 #' # (2) Providing values:
-#' plot_prism(N = 10, prev = 1/2, sens = 4/5, spec = 3/5)
 #' plot_prism(N = 10, prev = 1/3, sens = 3/5, spec = 4/5, area = "hr")
 #' plot_prism(N = 10, prev = 1/4, sens = 3/5, spec = 2/5, area = "sq", mar_notes = TRUE)
 #'
-#' ## Custom color and text settings:
+#' # (3) Rounding and sampling:
+#' plot_prism(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "hr", round = FALSE)
+#' plot_prism(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "hr", sample = TRUE, scale = "freq")
+#'
+#' # (4) Custom colors and text:
 #' plot_prism(col_pal = pal_bw, f_lwd = .5, p_lwd = .5, lty = 2, # custom fbox color, prob links,
 #'            font = 3, cex_p_lbl = .75)                         # and text labels
 #'
@@ -291,12 +306,13 @@
 #'
 #' ## Plain plot versions:
 #' plot_prism(area = "no", f_lbl = "def", p_lbl = "num", col_pal = pal_mod, f_lwd = 1,
-#'            title_lbl = "", mar_notes = FALSE)  # remove titles and margin notes
-#' plot_prism(area = "no", f_lbl = "nam", p_lbl = "min", col_pal = pal_rgb)
-#' plot_prism(area = "no", f_lbl = "num", p_lbl = "num", col_pal = pal_kn)
+#'            main = NA, sub = NA, mar_notes = FALSE)  # remove titles and margin notes
+#' plot_prism(area = "no", f_lbl = "nam", p_lbl = "min",
+#'            main = NA, sub = "My subtitle", col_pal = pal_rgb)  # only subtitle
+#' plot_prism(area = "no", f_lbl = "num", p_lbl = "num", col_pal = pal_kn)  # default title & subtitle
 #'
-#' # plot_prism(area = "hr", f_lbl = "nam", f_lwd = .5, p_lwd = .5, col_pal = pal_bwp)
-#' plot_prism(area = "hr", f_lbl = "nam", f_lwd = .5, p_lbl = "num")
+#' plot_prism(area = "hr", f_lbl = "nam", f_lwd = .5, p_lwd = .5, col_pal = pal_bwp)
+#' plot_prism(area = "hr", f_lbl = "nam", f_lwd = .5, p_lbl = "num", main = NA, sub = NA)
 #'
 #' # plot_prism(area = "sq", f_lbl = "nam", p_lbl = NA, col_pal = pal_rgb)
 #' plot_prism(area = "sq", f_lbl = "def", f_lbl_sep = ":\n", p_lbl = NA, f_lwd = 1, col_pal = pal_kn)
@@ -354,7 +370,8 @@ plot_prism <- function(prev = num$prev,    # probabilities
                        by = "cddc",        # 2 perspectives (rows 2 and 4): each by = "cd"/"dc"/"ac"  (default: "cddc")
                        area = "no",        # "no" (default = NA, NULL, "fix") vs: "hr", "sq"
                        scale = "p",        # "f" vs. "p" (default)
-                       round = TRUE,       # round freq to integers? (default: round = TRUE), when not rounded: n_digits = 2 (currently fixed).
+                       round = TRUE,       # round freq values to integers? When not rounded: n_digits = 2 (currently fixed).
+                       sample = FALSE,     # sample freq values from probabilities?
 
                        # Freq boxes:
                        f_lbl = "num",      # freq labels: "def", "nam"/"num"/"namnum", "abb", or NA/NULL/"no" to hide freq labels.
@@ -371,7 +388,9 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
                        # Text and color:
                        lbl_txt = txt,      # labels and text elements
-                       title_lbl = txt$scen_lbl,  # main plot title
+                       main = txt$scen_lbl,  # main title
+                       sub = "type",         # subtitle ("type" shows generic plot type info)
+                       title_lbl = NULL,     # DEPRECATED plot title, replaced by main
                        cex_lbl = .90,      # size of freq & text labels.
                        cex_p_lbl = NA,     # size of prob labels (set to cex_lbl - .05 by default).
                        col_pal = pal,      # color palette
@@ -381,7 +400,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
                        ...                 # other (graphical) parameters (passed to plot_link and plot_ftype_label)
 ) {
 
-  ## (0) Compute new freq and prob objects (based on probability inputs): ----------
+  ## (0) Compute new freq and prob objects (based on probability inputs): --------
 
   ## (A) If a valid set of probabilities was provided:
   if (is_valid_prob_set(prev = prev, sens = sens, mirt = mirt, spec = spec, fart = fart, tol = .01)) {
@@ -394,8 +413,9 @@ plot_prism <- function(prev = num$prev,    # probabilities
     fart <- prob_quintet[5]  # gets fart (if not provided)
 
     # (b) Compute LOCAL freq and prob based on current parameters (N and probabilities):
-    freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N, round = round)  # compute freq (default: round = TRUE)
-    prob <- comp_prob_prob(prev = prev, sens = sens, spec = spec)
+    freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N,
+                      round = round, sample = sample)              # key freq
+    prob <- comp_prob_prob(prev = prev, sens = sens, spec = spec)  # key prob
 
     # message("Computed local freq and prob to plot prism.")
 
@@ -507,10 +527,12 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   ## 4. Text labels: ----
 
-  # Plot title:
-  if (is.null(title_lbl)) { title_lbl <- "" }              # adjust NULL to "" (i.e., no title)
-  if (is.na(title_lbl)) { title_lbl <- lbl_txt$scen_lbl }  # use scen_lbl as default plot title
+  # Default main and subtitle labels:
+  if (is.null(main)) { main <- txt$scen_lbl }
+  if (is.na(main))   { main <- "" }
+  if (is.null(sub) || is.na(sub)) { sub <- "" }
 
+  # Label sizes:
   if ( is.null(cex_lbl) ) { cex_lbl <- .001 }  # sensible zero
   if ( is.na(cex_lbl) ) { cex_lbl <- .90 }  # default size of cex
   if ( cex_lbl == 0 )  { cex_lbl <- .001 }  # other sensible zero
@@ -544,16 +566,16 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   ## (A) Define margin areas:
 
-  if (nchar(title_lbl) > 0) { n_lines_top <- 2 } else { n_lines_top <- 0 }
+  if (nchar(main) > 0 | nchar(sub) > 0) { n_lines_top <- 2 } else { n_lines_top <- 0 }
   if (mar_notes) { n_lines_bot <- 3 } else { n_lines_bot <- 0 }
 
   par(mar = c(n_lines_bot, 1, n_lines_top, 1) + 0.1)  # margins; default: par("mar") = 5.1 4.1 4.1 2.1.
   par(oma = c(0, 0, 0, 0) + 0.1)                      # outer margins; default: par("oma") = 0 0 0 0.
 
-  ## Axis label locations:
+  # Axis label locations:
   par(mgp = c(3, 1, 0)) # default: c(3, 1, 0)
 
-  ## Orientation of the tick mark labels (and corresponding mtext captions below):
+  # Orientation of the tick mark labels (and corresponding mtext captions below):
   par(las = 0)  # Options: parallel to the axis (0 = default), horizontal (1), perpendicular to the axis (2), vertical (3).
 
 
@@ -646,25 +668,24 @@ plot_prism <- function(prev = num$prev,    # probabilities
     b_h <- (1 * b_h_scale)  # basic box height
 
     # gold_ratio  <- 1.618  # a. golden ratio (= approx. 1.6180339887)
-    wide_screen <- 16/9     # b. 1.778
-    # compromise  <- 1.70   # c. 1.70
+    # wide_screen <- 16/9   # b. 1.778
+    compromise    <- 1.66   # c. 1.66
     # wider       <- 1.88   # d. 1.88 (wider than wide_screen)
 
-    # b_w <- comp_lx(b_h, mf = gold_ratio, corf = scale_x)  # a. gold_ratio + corrected for aspect ratio
-    b_w <- comp_lx(b_h, mf = wide_screen, corf = scale_x)   # b. wide_screen + corrected
-    # b_w <- comp_lx(b_h, mf = compromise, corf = scale_x)  # c. compromise + corrected
-    # b_w <- comp_lx(b_h, mf = wider, corf = scale_x)       # d. wider + corrected
+    # b_w <- comp_lx(b_h, mf = gold_ratio, corf = scale_x)   # a. gold_ratio + corrected for aspect ratio
+    # b_w <- comp_lx(b_h, mf = wide_screen, corf = scale_x)  # b. wide_screen + corrected
+    b_w <- comp_lx(b_h, mf = compromise, corf = scale_x)     # c. compromise + corrected
+    # b_w <- comp_lx(b_h, mf = wider, corf = scale_x)        # d. wider + corrected
 
     # b_w <- comp_lx(b_h, mf = 2, corf = scale_x)   # x. customized width
 
-  } else {
+  } else { # is.na(by_bot), (i.e., single tree):
 
     b_h <- 1
-    two_to_one <- 2.0
 
-    b_w <- comp_lx(b_h, mf = two_to_one, corf = scale_x)  # a. two_to_one + corrected for aspect ratio
-
-    b_w <- comp_lx(b_h, mf = 3.0, corf = scale_x)         # x. customized width (+++ here now +++)
+    # two_to_one <- 2.0
+    # b_w <- comp_lx(b_h, mf = two_to_one, corf = scale_x)  # a. two_to_one + corrected for aspect ratio
+    b_w <- comp_lx(b_h, mf = 1.9, corf = scale_x)           # x. customized width
 
   } # if ( !is.na(by_bot) ) etc.
 
@@ -1384,26 +1405,42 @@ plot_prism <- function(prev = num$prev,    # probabilities
 
   ## (6) Title: ------
 
-  # Define parts:
-  # if (is.null(title_lbl)) { title_lbl <- "" }  # adjust NULL to "" (i.e., no title)
-  # if (is.na(title_lbl)) { title_lbl <- lbl_txt$scen_lbl }  # use scen_lbl as default plot title
-  if (nchar(title_lbl) > 0) { title_lbl <- paste0(title_lbl, ":\n") }  # put on top (in separate line)
+  # Main title: Handle deprecated "title_lbl" argument: ----
 
-  if (title_lbl == "") {  # if title has been set to "":
-    type_lbl <- ""        # assume that no subtitle is desired either
-  } else {
-    if ( !is.na(by_bot) ) {
-      type_lbl <- paste0(lbl["plot_prism_lbl"], " (by ", as.character(by), ")")  # plot name: prism/network/double tree.
-    } else {
-      type_lbl <- paste0(lbl["plot_tree_lbl"], " (by ", as.character(by), ")")  # plot name: tree/double tree.
-    } # if ( !is.na(by_bot) )
+  if (is.null(title_lbl) == FALSE){
+    message("Argument 'title_lbl' is deprecated. Please use 'main' instead.")
+    main <- title_lbl
   }
 
-  # Compose label:
-  cur_title_lbl <- paste0(title_lbl, type_lbl)
 
-  # Plot title:
+  # Subtitle (2nd line): ----
+
+  if (sub == "type"){ # show default plot type info:
+
+    if ( !is.na(by_bot) ) {
+      sub <- paste0(lbl["plot_prism_lbl"], " (by ", as.character(by), ")")  # plot name: prism/network/double tree.
+    } else {
+      sub <- paste0(lbl["plot_tree_lbl"], " (by ", as.character(by), ")")  # plot name: tree/double tree.
+    } # if ( !is.na(by_bot) )
+
+  }
+
+
+  # Combine title + subtitle: ----
+
+  if ( (main != "") & (sub == "") ){ # only main title:
+    cur_title_lbl <- main
+  } else if ( (main == "") & (sub != "") ){ # only subtitle:
+    cur_title_lbl <- sub
+  } else { # combine both:
+    cur_title_lbl <- paste0(main, ":\n", sub)  # add ":" and line break
+  }
+
+
+  # Plot title: ----
+
   title(cur_title_lbl, adj = 0, line = 0, font.main = 1, cex.main = 1.2)  # (left, NOT raised (by +1), normal font)
+
 
 
   ## (7) Margins: ------
@@ -1428,7 +1465,7 @@ plot_prism <- function(prev = num$prev,    # probabilities
   # on.exit(par(opar))  # par(opar)  # restore original settings
   invisible() # restores par(opar)
 
-} # plot_prism end.
+} # plot_prism().
 
 
 ## Check: ------
@@ -1700,8 +1737,14 @@ read_by <- function(by){
 ## (12) Re-shuffle x positions of 4 SDT boxes by 1st perspective (by_top)
 ##      so that prob-links from level 2 to 3 do not cross.
 
+
+## Done: ------
+
+# - Deprecated title_lbl and replaced by main
+# - Allowed setting (and removing) subtitle
+
 ## ToDo: ------
 
-## - etc.
+# etc.
 
 ## eof. ----------

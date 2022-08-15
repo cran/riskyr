@@ -1,5 +1,5 @@
 ## init_pal.R | riskyr
-## 2020 03 21
+## 2021 12 10
 ## Define custom color palettes (pal):
 ## -----------------------------------------------
 ## pal contains defaults for user inputs.
@@ -289,8 +289,8 @@ n_colors <- length(pal_def)  # number of colors for which defaults are currently
 #' the condition is FALSE, provided that the decision is negative).
 #'
 #' @param txt_col Color used for text labels.
+#' @param bg_col Background color of plot (used to set \code{par(bg = bg_col)}).
 #' @param brd_col Color used for borders (e.g., around bars or boxes).
-#' @param bg_col  Background color of plot (used to set \code{par(bg = bg_col)}).
 #'
 #' @examples
 #' init_pal()          # => define and return a vector of current (default) colors
@@ -343,8 +343,8 @@ init_pal <- function(N_col = pal_def["N"],          # population N
                      NPV_col = pal_def["npv"],      # negative predictive values
                      ## Text labels and borders:
                      txt_col = pal_def["txt"],      # text labels
-                     brd_col = pal_def["brd"],      # borders
-                     bg_col = pal_def["bg"]         # background
+                     bg_col = pal_def["bg"],        # background
+                     brd_col = pal_def["brd"]       # borders
 ) {
 
   ## 1. Initialize pal as a VECTOR:
@@ -506,6 +506,7 @@ pal <- init_pal()  ## apply
 #' pal_org["hi"]  # shows the current color for hits (true positives, TP)
 #' pal_org["hi"] <- "gold" # defines a new color for hits (true positives, TP)
 #'
+#' @family color palettes
 #' @family lists containing current scenario information
 #'
 #' @seealso
@@ -541,6 +542,7 @@ pal_org <- pal  # copy pal
 #' pal_bw["hi"]  # shows the current color for hits (true positives, TP)
 #' pal_bw["hi"] <- "gold" # defines a new color for hits (true positives, TP)
 #'
+#' @family color palettes
 #' @family lists containing current scenario information
 #'
 #' @seealso
@@ -607,6 +609,7 @@ pal_bw <- init_pal(N_col = grey(.95, .99),     # nearly white
 #' pal_bwp["hi"]  # shows the current color for hits (true positives, TP)
 #' pal_bwp["hi"] <- "gold" # defines a new color for hits (true positives, TP)
 #'
+#' @family color palettes
 #' @family lists containing current scenario information
 #'
 #' @seealso
@@ -615,17 +618,17 @@ pal_bw <- init_pal(N_col = grey(.95, .99),     # nearly white
 #'
 #' @export
 
-pal_bwp <- init_pal(N_col = my_white,          # grey(.95, .99), # nearly white
+pal_bwp <- init_pal(N_col = my_white,           # grey(.95, .99), # nearly white
                     cond_true_col =  my_white,  # grey(.90, .99), # darker white
                     cond_false_col = my_white,  # grey(.80, .99), # darker white
                     dec_pos_col = my_white,  # grey(.85, .99),  # darker white
                     dec_neg_col = my_white,  # grey(.70, .99),  # darker white
                     dec_cor_col = my_white,  # grey(.75, .99),  # darker white
                     dec_err_col = my_white,  # grey(.60, .99),  # darker white
-                    hi_col = my_white,  # grey(.80, .99),    # brighter 1
-                    mi_col = my_white,  # grey(.60, .99),    # darker 1
-                    fa_col = my_white,  # grey(.50, .99),    # darker 2
-                    cr_col = my_white,  # grey(.70, .99),    # brighter 2
+                    hi_col = my_white,   # grey(.80, .99),    # brighter 1
+                    mi_col = my_white,   # grey(.60, .99),    # darker 1
+                    fa_col = my_white,   # grey(.50, .99),    # darker 2
+                    cr_col = my_white,   # grey(.70, .99),    # brighter 2
                     PPV_col = my_black,  # grey(.60, .99),   # medium grey
                     NPV_col = my_black,  # grey(.45, .99),   # darker grey
                     txt_col = my_black,  # grey(0, .99),     # black
@@ -655,6 +658,7 @@ pal_bwp <- init_pal(N_col = my_white,          # grey(.95, .99), # nearly white
 #' pal_rgb["hi"]  # shows the current color for hits (true positives, TP)
 #' pal_rgb["hi"] <- "gold" # defines a new color for hits (true positives, TP)
 #'
+#' @family color palettes
 #' @family lists containing current scenario information
 #'
 #' @seealso
@@ -690,6 +694,7 @@ pal_rgb <- init_pal(N_col = grey(.95, .99),     # nearly white
 ## Note: Check http://colorbrewer2.org for alternatives:
 ## http://colorbrewer2.org/?type=qualitative&scheme=Paired&n=4
 
+
 ## pal_mod: A modern (green/blue/orange) color palette: --------
 
 #' Modern color palette (in green/blue/orange).
@@ -707,6 +712,7 @@ pal_rgb <- init_pal(N_col = grey(.95, .99),     # nearly white
 #' pal_mod["hi"]  # shows the current color for hits (true positives, TP)
 #' pal_mod["hi"] <- "gold" # defines a new color for hits (true positives, TP)
 #'
+#' @family color palettes
 #' @family lists containing current scenario information
 #'
 #' @seealso
@@ -715,11 +721,11 @@ pal_rgb <- init_pal(N_col = grey(.95, .99),     # nearly white
 #'
 #' @export
 
-pal_mod <- init_pal(N_col = grey(.90, .99),  # "wheat3", nearly white
-                    cond_true_col = my_yellow, # col_sand_mid, # grey(.80, .99), # "wheat3", #
+pal_mod <- init_pal(N_col = grey(.90, .99),     # "wheat3", nearly white
+                    cond_true_col = my_yellow,  # col_sand_mid, # grey(.80, .99), # "wheat3", #
                     cond_false_col = grey(.75, .99), # col_sand_mid, # "wheat4"
-                    dec_pos_col = col_orange_1, # my_orange, # col_red_1, # grey(.85, .99), # col_grey_1,
-                    dec_neg_col = grey(.65, .99), # col_grey_2,
+                    dec_pos_col = col_orange_1,      # my_orange, # col_red_1, # grey(.85, .99), # col_grey_1,
+                    dec_neg_col = grey(.65, .99),    # col_grey_2,
                     dec_cor_col = my_green,
                     dec_err_col = my_blue,
                     hi_col = col_green_1,
@@ -738,6 +744,7 @@ pal_mod <- init_pal(N_col = grey(.90, .99),  # "wheat3", nearly white
 
 ## Use pal_mod color scheme (as default):
 # pal <- pal_mod
+
 
 ## pal_mbw: A reduced modern (green/blue/bw) color palette: --------
 
@@ -758,6 +765,7 @@ pal_mod <- init_pal(N_col = grey(.90, .99),  # "wheat3", nearly white
 #' pal_mbw["hi"]  # shows the current color for hits (true positives, TP)
 #' pal_mbw["hi"] <- "gold" # defines a new color for hits (true positives, TP)
 #'
+#' @family color palettes
 #' @family lists containing current scenario information
 #'
 #' @seealso
@@ -811,6 +819,7 @@ pal_mbw <- init_pal(N_col = grey(.90, .99),  # "wheat3", nearly white
 #' pal_kn["hi"]  # shows the current color for hits (true positives, TP)
 #' pal_kn["hi"] <- "grey" # defines a new color for hits (true positives, TP)
 #'
+#' @family color palettes
 #' @family lists containing current scenario information
 #'
 #' @seealso
@@ -844,6 +853,7 @@ pal_kn <- init_pal(N_col = grey(.95, .99),     # nearly white
 ## Use uni.kn color scheme (as default):
 # pal <- pal_kn
 
+
 ## pal_unikn:  A unikn palette: --------
 
 #' Alternative color palette for unikn.
@@ -861,6 +871,7 @@ pal_kn <- init_pal(N_col = grey(.95, .99),     # nearly white
 #' pal_unikn["hi"]  # shows the current color for hits (true positives, TP)
 #' pal_unikn["hi"] <- "grey" # defines a new color for hits (true positives, TP)
 #'
+#' @family color palettes
 #' @family lists containing current scenario information
 #'
 #' @seealso
@@ -893,6 +904,7 @@ pal_unikn <- init_pal(N_col = grey(.95, 1),   # nearly white
 
 ## Use pal_unikn color scheme (as default):
 # pal <- pal_unikn
+
 
 ## pal_vir: A viridis color palette: ----------
 
@@ -930,6 +942,7 @@ vir_12 <- c("#440154FF", "#482173FF", "#433E85FF", "#38598CFF",
 #' pal_vir["hi"]  # shows the current color for hits (true positives, TP)
 #' pal_vir["hi"] <- "green3" # defines a new color for hits (true positives, TP)
 #'
+#' @family color palettes
 #' @family lists containing current scenario information
 #'
 #' @seealso
@@ -974,10 +987,90 @@ pal <- pal_mod
 # pal <- pal_bwp
 # pal <- pal_unikn
 
-## (*) Done: ----------
 
-## - Clean up code.        [2018 09 01]
-## - Add some pre-defined color palettes.
+## Define a crisk color palette: --------
+
+# Define a mixed color palette:
+pal_mix <- c("deepskyblue", "deeppink",
+             col_green_1, col_green_2, col_orange_1, col_orange_2,
+             col_blue_1, col_blue_2, col_blue_3, col_blue_4,
+             col_red_1, col_red_2,
+             col_sand_light, col_sand_mid, col_sand_dark,
+             my_whitish, my_bluish, my_yellow, my_orange)
+
+names(pal_mix) <- c("deepskyblue", "deeppink", "lightgreen", "green", "lightorange", "orange",
+                    "blue1", "blue2", "blue3", "blue4",
+                    "red1", "red2",
+                    "sand1", "sand2", "sand3",
+                    "my_whitish", "my_bluish", "my_yellow", "my_orange")
+
+# unikn::seecol(pal_mix)
+
+# Select pal_crisk colors:
+pal_crisk_select <- c(pal_mix["deepskyblue"], pal_mix["red2"],
+                      "black", "grey50", pal_mix["deeppink"],
+                      pal_mix["sand2"], pal_mix["my_yellow"],
+                      pal_mix["blue4"], pal_mix["my_orange"], pal_mix["green"])
+
+names(pal_crisk_select) <- c("cum", "rinc",
+                             "txt", "aux", "high",
+                             "pas", "rem",
+                             "delta", "poly", "popu")
+
+pal_crisk_select["poly"] <- pal_crisk_select["cum"]  # make "poly"" same color as "cum"
+
+# unikn::seecol(pal_crisk_select)
+
+
+# pal_crisk: Documentation and definition:
+
+#' Color palette for cumulative risk curve.
+#'
+#' \code{pal_crisk} defines a default color palette
+#' for the \code{\link{plot_crisk}} function
+#' (as a named vector).
+#'
+#' Color names and referents in plots
+#' generated by \code{\link{plot_crisk}}:
+#'
+#' \enumerate{
+#' \item \code{"cum"}: Cumulative risk curve
+#' \item \code{"rinc"}: Relative risk increments
+#'
+#' \item \code{"txt"}: Text labels
+#' \item \code{"aux"}: Auxiliary labels and lines
+#' \item \code{"high"}: Highlighting elements
+#'
+#' \item \code{"pas"}: Past/passed risk
+#' \item \code{"rem"}: Remaining risk
+#'
+#' \item \code{"delta"}: Delta-X- and -Y increments
+#' \item \code{"poly"}: Polygon of increments
+#' \item \code{"popu"}: Population partitions
+#' }
+#'
+#' @examples
+#' pal_crisk  # show color palette (and names)
+#'
+#' @family color palettes
+#'
+#' @seealso
+#' \code{\link{plot_crisk}} plots cumulative risk curves;
+#' \code{\link{pal}} contains current color information;
+#' \code{\link{init_pal}} initializes color information.
+#'
+#' @export
+
+pal_crisk <- pal_crisk_select
+
+# +++ here now +++
+
+# unikn::seecol(pal_crisk)
+# knitr::kable(pal_crisk, caption = "The `pal_crisk` color palette.")
+
+
+
+## (*) Done: ----------
 
 ## - Addressed limitation: [2019 01 23]
 ##   Lack of an explicit background color (e.g., "white" or NA by default).

@@ -1,5 +1,5 @@
 ## plot_icons.R | riskyr
-## 2021 02 07
+## 2022 08 09
 ## plot_icons: Plot a variety of icon arrays.
 ## -----------------------------------------------
 
@@ -77,6 +77,11 @@
 #' If N is 100,000 or greater it is reduced to 10,000
 #' for the array types if the frequencies allow it.
 #'
+#' @param sample  Boolean value that determines whether frequency values
+#' are sampled from \code{N}, given the probability values of
+#' \code{prev}, \code{sens}, and \code{spec}.
+#' Default: \code{sample = FALSE}.
+#'
 #' @param arr_type The icons can be arranged in different ways
 #' resulting in different types of displays:
 #'
@@ -133,14 +138,14 @@
 #' (i.e., hi, mi, fa, and cr) are plotted.
 #' Default: \code{ident_order = c("hi", "mi", "fa", "cr")}
 #'
-#' @param icon_types Specifies the appearance of the icons as a vector.
+#' @param icon_types specifies the appearance of the icons as a vector.
 #' Default: \code{icon_types = 11} (i.e., squares with border).
 #' Accepts values from 1 to 25 (see \code{?points}).
 #'
-#' @param icon_size Manually specifies the size of the icons via \code{cex}
+#' @param icon_size specifies the size of the icons via \code{cex}
 #' Default: \code{icon_size = NULL} for automatic calculation.
 #'
-#' @param icon_brd_lwd Specifies the border width of icons (if applicable).
+#' @param icon_brd_lwd specifies the border width of icons (if applicable).
 #' Default: \code{icon_brd_lwd = 1.5}. Set to \code{NA} for no border.
 #'
 #' @param block_d  The distance between blocks.
@@ -176,8 +181,14 @@
 #' @param lbl_txt  Default label set for text elements.
 #' Default: \code{lbl_txt = \link{txt}}.
 #'
-#' @param title_lbl  Text label for current plot title.
-#' Default: \code{title_lbl = txt$scen_lbl}.
+#' @param main Text label for main plot title.
+#' Default: \code{main = txt$scen_lbl}.
+#'
+#' @param sub Text label for plot subtitle (on 2nd line).
+#' Default: \code{sub = "type"} shows information on current plot type.
+#'
+#' @param title_lbl \strong{Deprecated} text label for current plot title.
+#' Replaced by \code{main}.
 #'
 #' @param cex_lbl  Scaling factor for text labels.
 #' Default: \code{cex_lbl = .90}.
@@ -196,8 +207,12 @@
 #' @return Nothing (NULL).
 #'
 #' @examples
+#' # Basics:
 #' plot_icons(N = 1000)  # icon array with default settings (arr_type = "array")
 #' plot_icons(arr_type = "shuffledarray", N = 1000)  # icon array with shuffled IDs
+#'
+#' # Sampling:
+#' plot_icons(N = 1000, prev = 1/2, sens = 2/3, spec = 6/7, sample = TRUE)
 #'
 #' # array types:
 #' plot_icons(arr_type = "mosaic",    N = 1000)  # areas as in mosaic plot
@@ -208,9 +223,9 @@
 #'
 #' # by:
 #' plot_icons(N = 1000, by = "all")  # hi, mi, fa, cr (TP, FN, FP, TN) cases
-#' plot_icons(N = 1000, by = "cd", title_lbl = "Cases by condition")  # (hi + mi) vs. (fa + cr)
-#' plot_icons(N = 1000, by = "dc", title_lbl = "Cases by decision")   # (hi + fa) vs. (mi + cr)
-#' plot_icons(N = 1000, by = "ac", title_lbl = "Cases by accuracy")   # (hi + cr) vs. (fa + mi)
+#' plot_icons(N = 1000, by = "cd", main = "Cases by condition")  # (hi + mi) vs. (fa + cr)
+#' plot_icons(N = 1000, by = "dc", main = "Cases by decision")   # (hi + fa) vs. (mi + cr)
+#' plot_icons(N = 1000, by = "ac", main = "Cases by accuracy")   # (hi + cr) vs. (fa + mi)
 #'
 #' # Custom icon types and colors:
 #' plot_icons(N = 800, arr_type = "array", icon_types = c(21, 22, 23, 24),
@@ -224,14 +239,13 @@
 #'
 #' # Text and color options:
 #' plot_icons(N = 1000, prev = .5, sens = .5, spec = .5, arr_type = "shuffledarray",
-#'            title_lbl = "", lbl_txt = txt_TF, col_pal = pal_vir, mar_notes = TRUE)
+#'            main = "My title", sub = NA, lbl_txt = txt_TF, col_pal = pal_vir, mar_notes = TRUE)
 #'
 #' plot_icons(N = 1000, prev = .5, sens = .5, spec = .5, arr_type = "shuffledarray",
-#'            title_lbl = "Green vs. red", col_pal = pal_rgb, transparency = .5)
+#'            main = "Green vs. red", col_pal = pal_rgb, transparency = .5)
 #'
 #' @family visualization functions
 #'
-#' @importFrom graphics par
 #' @importFrom graphics plot
 #' @importFrom graphics axis
 #' @importFrom graphics grid
@@ -249,6 +263,9 @@ plot_icons <- function(prev = num$prev,             # probabilities
                        sens = num$sens, mirt = NA,
                        spec = num$spec, fart = NA,  # was: num$fart,
                        N = freq$N,                  # ONLY freq used
+
+                       # round = TRUE,      # round freq values to integers? When not rounded: n_digits = 2 (currently fixed).
+                       sample = FALSE,      # sample freq values from probabilities?
 
                        # Key option:
                        arr_type = "array",  # needs to be specified if random position but nonrandom ident.
@@ -275,7 +292,9 @@ plot_icons <- function(prev = num$prev,             # probabilities
 
                        # Text and color:
                        lbl_txt = txt,  # labels and text elements
-                       title_lbl = txt$scen_lbl,  # main plot title
+                       main = txt$scen_lbl,  # main title
+                       sub = "type",         # subtitle ("type" shows generic plot type info)
+                       title_lbl = NULL,     # DEPRECATED plot title, replaced by main
                        # type_lbls = lbl_txt[c("hi_lbl", "mi_lbl", "fa_lbl", "cr_lbl")],  # 4 SDT cases/combinations
                        cex_lbl = .90,        # size of text labels
 
@@ -300,21 +319,16 @@ plot_icons <- function(prev = num$prev,             # probabilities
   show_legend <- TRUE  # default
   # show_legend <- FALSE  # debugging
 
+
   ## (2) Define plot and margin areas: ----------
 
-  ## Define margin areas:
-  if (show_legend){
-    n_lines_mar <- 3 + 2  # to accommodate legend
-  } else {
-    n_lines_mar <- 3  # no legend
-  }
-  n_lines_oma <- 0
-  par(mar = c(n_lines_mar, 1, 3, 1) + 0.1)  # margins; default: par("mar") = 5.1 4.1 4.1 2.1.
-  par(oma = c(n_lines_oma, 0, 0, 0) + 0.1)  # outer margins; default: par("oma") = 0 0 0 0.
+  # Moved down (see "par(mar" below)!
+
 
   ## (3) Key options and parameters: ----------
 
-  # (a) Get current SDT case labels from lbl_txt:
+  # (a) Get current SDT case labels from lbl_txt: ----
+
   type_lbls = lbl_txt[c("hi_lbl", "mi_lbl", "fa_lbl", "cr_lbl")]  # 4 SDT cases/combinations
 
   # Set default of by perspective:
@@ -322,7 +336,9 @@ plot_icons <- function(prev = num$prev,             # probabilities
     by <- "all"  # default
   }
 
+
   # (b) Get current colors from col_pal: ----
+
   if (by == "all") {
 
     icon_col <- col_pal[ident_order]  # use one color for each usual arr_type.
@@ -360,7 +376,7 @@ plot_icons <- function(prev = num$prev,             # probabilities
 
   ## Increase robustness by anticipating and correcting common entry errors: ------
 
-  ## 1. arr_type:
+  ## 1. arr_type: ----
   if ( !is.null(arr_type) && !is.na(arr_type) ) {
     arr_type <- tolower(arr_type)  # express arr_type in lowercase
   }
@@ -396,11 +412,17 @@ plot_icons <- function(prev = num$prev,             # probabilities
 
   }
 
+
   ## 3. Plot title: ----
-  if (is.null(title_lbl)) { title_lbl <- "" }              # adjust NULL to "" (i.e., no title)
-  if (is.na(title_lbl)) { title_lbl <- lbl_txt$scen_lbl }  # use scen_lbl as default plot title
+
+  # Default main and subtitle labels:
+  if (is.null(main)) { main <- txt$scen_lbl }
+  if (is.na(main))   { main <- "" }
+  if (is.null(sub) || is.na(sub)) { sub <- "" }
+
 
   ## 4. Additional parameters (currently fixed): ----
+
   xlim = c(0, 1)   # xlim and ylim should currently remain fixed
   ylim = c(0, 1)
   cex = icon_size  # if NULL, cex will be calculated on demand
@@ -441,7 +463,7 @@ plot_icons <- function(prev = num$prev,             # probabilities
 
   ## A0.3: Different routes to col_vec and pch.vec  ------
 
-  # A0.3.1: Calculation from probabilities  ------
+  ## A0.3.1: Calculation from probabilities  ------
 
   ## (A) If a valid set of probabilities was provided:
   if (is_valid_prob_set(prev = prev, sens = sens, mirt = mirt,
@@ -455,7 +477,8 @@ plot_icons <- function(prev = num$prev,             # probabilities
     fart <- prob_quintet[5] # gets fart (if not provided)
 
     # (b) Compute cur_freq and popu based on current parameters (N and probabilities):
-    cur_freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N, round = TRUE) # compute cur_freq (with round = TRUE).
+    cur_freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N,
+                          round = TRUE, sample = sample)  # key freq (with round = TRUE).
 
   } else { # A0.3.2: Using existing frequencies:
 
@@ -979,6 +1002,7 @@ plot_icons <- function(prev = num$prev,             # probabilities
   }  # end A3 and A4 (fixed positions).
 
 
+
   ## B. Plotting ----------
 
   ## TODO: Add text!
@@ -992,17 +1016,24 @@ plot_icons <- function(prev = num$prev,             # probabilities
     icon_brd_lwd <- 1        # (to keep original symbol size)
   }
 
+
   ## Plot setup: ------
 
-  ## (A) Define margin areas:
+  ## (a) Define margin areas: ----
 
-  if (nchar(title_lbl) > 0) { n_lines_top <- 3 } else { n_lines_top <- 1 }
-  if (mar_notes) { n_lines_bot <- 5 } else { n_lines_bot <- 2 }
+  # Beware: Values DIFFER from those in other plot_ functions:
+
+  if (nchar(main) > 0 | nchar(sub) > 0) { n_lines_top <- 3 } else { n_lines_top <- 1 }
+  if (mar_notes) { n_lines_bot <- 3 } else { n_lines_bot <- 0 }
+
+  # Accomodate legend:
+  if (show_legend){ n_lines_bot <- n_lines_bot + 2 }
 
   par(mar = c(n_lines_bot, 1, n_lines_top, 1) + 0.1)  # margins; default: par("mar") = 5.1 4.1 4.1 2.1.
-  par(oma = c(0, 0, 0, 0) + 0.1)                      # outer margins; default: par("oma") = 0 0 0 0.
+  par(oma = c(0, 0, 0, 0) + 0.1)  # outer margins; default: par("oma") = 0 0 0 0.
 
-  ## (B) Plot setup:
+
+  ## (b) Plot setup: ----
 
   plot(x = 1,
        xlim = xlim, ylim = ylim,
@@ -1067,20 +1098,36 @@ plot_icons <- function(prev = num$prev,             # probabilities
 
   ## Title: -----
 
-  # Define parts:
-  if (nchar(title_lbl) > 0) { title_lbl <- paste0(title_lbl, ":\n") }  # put on top (in separate line)
+  # Main title: Handle deprecated "title_lbl" argument: ----
 
-  if (title_lbl == "") {  # if title has been set to "":
-    type_lbl <- ""        # assume that no subtitle is desired either
-  } else {
-    type_lbl <- paste0(lbl["plot_icons_lbl"])  # , "(N = ", N, ")") # plot name: icon array.
+  if (is.null(title_lbl) == FALSE){
+    message("Argument 'title_lbl' is deprecated. Please use 'main' instead.")
+    main <- title_lbl
   }
 
-  # Compose label:
-  cur_title_lbl <- paste0(title_lbl, type_lbl)
 
-  # Plot title:
-  title(cur_title_lbl, adj = 0, line = +1, font.main = 1, cex.main = 1.2)  # (left, raised by +1, normal font)
+  # Subtitle (2nd line): ----
+
+  if (sub == "type"){ # show default plot type info:
+    sub <- paste0(lbl["plot_icons_lbl"])  # , "(N = ", N, ")") # plot name: icon array / waffle plot / Zahlengitter.
+  }
+
+
+  # Combine title + subtitle: ----
+
+  if ( (main != "") & (sub == "") ){ # only main title:
+    cur_title_lbl <- main
+  } else if ( (main == "") & (sub != "") ){ # only subtitle:
+    cur_title_lbl <- sub
+  } else { # combine both:
+    cur_title_lbl <- paste0(main, ":\n", sub)  # add ":" and line break
+  }
+
+
+  # Plot title: ----
+
+  # Beware: Values DIFFER from those in other plot_ functions:
+  title(cur_title_lbl, adj = 0, line = 1, font.main = 1, cex.main = 1.2)  # (left, HERE: raised (by +1), normal font)
 
 
   ## Margins: ------
@@ -1110,7 +1157,7 @@ plot_icons <- function(prev = num$prev,             # probabilities
   # on.exit(par(opar))  # par(opar)  # restore original settings
   invisible() # restores par(opar)
 
-} # plot_icons end.
+} # plot_icons().
 
 
 ## Check: -------

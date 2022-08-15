@@ -1,11 +1,11 @@
 ## init_freq_num.R | riskyr
-## 2021 03 20
-## Compute all current frequencies (freq) based on num
-## (using only the 4 necessary parameters of num):
+## 2021 03 25
+## Compute current key frequencies (freq) based on num
+## (using only 4 necessary parameters of num):
 ## -----------------------------------------------
 
-## (1) Initialize all frequencies as a list (of NA values) freq: ---------
-##     Currently 11 frequencies (4 essential ones):
+## (1) Initialize key frequencies as a list (of NA values) freq: ---------
+##     Currently 11 key frequencies (4 essential ones):
 
 ## init_freq Definition: ----
 
@@ -41,17 +41,17 @@ init_freq <- function() {
     "cr" = NA  # true negative
   )
 
-  ## Return entire list of 11 freq:
+  ## Return 11 key freq (as list):
   return(freq)
 
 }
 
 ## Check:
 # init_freq()          # initializes empty freq
-# length(init_freq())  # =>  11 frequencies
+# length(init_freq())  # 11 key frequencies
 
 
-## (2) Compute all frequencies from 3 essential probabilities: --------
+## (2) Compute key frequencies from 3 essential probabilities: --------
 
 ## comp_freq: Documentation ------
 
@@ -61,7 +61,7 @@ init_freq <- function() {
 #' as rounded integers) given 3 basic probabilities --
 #' \code{\link{prev}}, \code{\link{sens}}, and \code{\link{spec}} --
 #' for a population of \code{\link{N}} individuals.
-#' It returns a list of 11 frequencies \code{\link{freq}}
+#' It returns a list of 11 key frequencies \code{\link{freq}}
 #' as its output.
 #'
 #' In addition to \code{\link{prev}}, both
@@ -187,8 +187,11 @@ init_freq <- function() {
 #'
 #'    }
 #'
-#'    Note: When frequencies are rounded (by \code{round = TRUE} in \code{\link{comp_freq}}),
-#'    probabilities computed from \code{\link{freq}} may differ from exact probabilities.
+#'    Beware of rounding and sampling issues!
+#'    If frequencies are rounded (by \code{round = TRUE} in \code{\link{comp_freq}})
+#'    or sampled from probabilities (by \code{sample = TRUE}),
+#'    then any probabilities computed from \code{\link{freq}} may differ
+#'    from original and exact probabilities.
 #'
 #' }
 #'
@@ -212,45 +215,56 @@ init_freq <- function() {
 #' If \code{\link{N}} is unknown (\code{NA}),
 #' a suitable minimum value is computed by \code{\link{comp_min_N}}.
 #'
-#' @param round  Boolean value that determines whether frequencies are
-#' rounded to the nearest integer. Default: \code{round = TRUE}.
+#' @param round  Boolean value that determines whether frequency values
+#' are rounded to the nearest integer.
+#' Default: \code{round = TRUE}.
 #'
 #' Note: Removed \code{n_digits} parameter:  Number of digits to which frequency values
 #' are to be rounded when \code{round = FALSE}.
 #' Default: \code{n_digits = 5}.
 #'
-#' @return A list \code{\link{freq}} containing 11 frequency values.
+#' @param sample  Boolean value that determines whether frequency values
+#' are sampled from \code{N}, given the probability values of
+#' \code{prev}, \code{sens}, and \code{spec}.
+#' Default: \code{sample = FALSE}.
+#'
+#' Note: Sampling uses \code{sample()} and returns integer values.
+#'
+#' @return A list \code{\link{freq}} containing 11 key frequency values.
 #'
 #' @examples
-#' comp_freq()                  # => ok, using current defaults
-#' length(comp_freq())          # => 11
+#' comp_freq()          # ok, using current defaults
+#' length(comp_freq())  # 11 key frequencies
 #'
-#' # Rounding effects:
-#' comp_freq(prev = .5, sens = .5, spec = .5, N = 1)   # => yields fa = 1 (see ?round for reason)
-#' comp_freq(prev = .1, sens = .9, spec = .8, N = 10)  # => 1 hit (TP, rounded)
-#' comp_freq(prev = .1, sens = .9, spec = .8, N = 10, round = FALSE)    # => hi = .9
-#' comp_freq(prev = 1/3, sens = 6/7, spec = 2/3, N = 1, round = FALSE)  # => hi = 0.2857143
+#' # Rounding:
+#' comp_freq(prev = .5, sens = .5, spec = .5, N = 1)   # yields fa = 1 (see ?round for reason)
+#' comp_freq(prev = .1, sens = .9, spec = .8, N = 10)  # 1 hit (TP, rounded)
+#' comp_freq(prev = .1, sens = .9, spec = .8, N = 10, round = FALSE)    # hi = .9
+#' comp_freq(prev = 1/3, sens = 6/7, spec = 2/3, N = 1, round = FALSE)  # hi = 0.2857143
+#'
+#' # Sampling (from probabilistic description):
+#' comp_freq_prob(prev = .5, sens = .5, spec = .5, N = 100, sample = TRUE)  # freq values vary
 #'
 #' # Extreme cases:
-#' comp_freq(prev = 1, sens = 1, spec = 1, 100)  # => ok, N hits (TP)
-#' comp_freq(prev = 1, sens = 1, spec = 0, 100)  # => ok, N hits
-#' comp_freq(prev = 1, sens = 0, spec = 1, 100)  # => ok, N misses (FN)
-#' comp_freq(prev = 1, sens = 0, spec = 0, 100)  # => ok, N misses
-#' comp_freq(prev = 0, sens = 1, spec = 1, 100)  # => ok, N correct rejections (TN)
-#' comp_freq(prev = 0, sens = 1, spec = 0, 100)  # => ok, N false alarms (FP)
+#' comp_freq(prev = 1, sens = 1, spec = 1, 100)  # ok, N hits (TP)
+#' comp_freq(prev = 1, sens = 1, spec = 0, 100)  # ok, N hits
+#' comp_freq(prev = 1, sens = 0, spec = 1, 100)  # ok, N misses (FN)
+#' comp_freq(prev = 1, sens = 0, spec = 0, 100)  # ok, N misses
+#' comp_freq(prev = 0, sens = 1, spec = 1, 100)  # ok, N correct rejections (TN)
+#' comp_freq(prev = 0, sens = 1, spec = 0, 100)  # ok, N false alarms (FP)
 #'
 #' # Watch out for:
-#' comp_freq(prev = 1, sens = 1, spec = 1, N = NA)  # => ok, but warning that N = 1 was computed
-#' comp_freq(prev = 1, sens = 1, spec = 1, N =  0)  # => ok, but all 0 + warning (extreme case: N hits)
-#' comp_freq(prev = .5, sens = .5, spec = .5, N = 10, round = TRUE)   # => ok, rounded (see mi and fa)
-#' comp_freq(prev = .5, sens = .5, spec = .5, N = 10, round = FALSE)  # => ok, not rounded
+#' comp_freq(prev = 1, sens = 1, spec = 1, N = NA)  # ok, but warning that N = 1 was computed
+#' comp_freq(prev = 1, sens = 1, spec = 1, N =  0)  # ok, but all 0 + warning (extreme case: N hits)
+#' comp_freq(prev = .5, sens = .5, spec = .5, N = 10, round = TRUE)   # ok, rounded (see mi and fa)
+#' comp_freq(prev = .5, sens = .5, spec = .5, N = 10, round = FALSE)  # ok, not rounded
 #'
 #' # Ways to fail:
-#' comp_freq(prev = NA,  sens = 1, spec = 1,  100)   # => NAs + warning (prev NA)
-#' comp_freq(prev = 1,  sens = NA, spec = 1,  100)   # => NAs + warning (sens NA)
-#' comp_freq(prev = 1,  sens = 1,  spec = NA, 100)   # => NAs + warning (spec NA)
-#' comp_freq(prev = 8,  sens = 1,  spec = 1,  100)   # => NAs + warning (prev beyond range)
-#' comp_freq(prev = 1,  sens = 8,  spec = 1,  100)   # => NAs + warning (sens beyond range)
+#' comp_freq(prev = NA,  sens = 1, spec = 1,  100)   # NAs + warning (prev NA)
+#' comp_freq(prev = 1,  sens = NA, spec = 1,  100)   # NAs + warning (sens NA)
+#' comp_freq(prev = 1,  sens = 1,  spec = NA, 100)   # NAs + warning (spec NA)
+#' comp_freq(prev = 8,  sens = 1,  spec = 1,  100)   # NAs + warning (prev beyond range)
+#' comp_freq(prev = 1,  sens = 8,  spec = 1,  100)   # NAs + warning (sens beyond range)
 #'
 #' @family functions computing frequencies
 #'
@@ -271,9 +285,10 @@ init_freq <- function() {
 ## comp_freq: Definition --------
 
 comp_freq <- function(prev = num$prev, sens = num$sens, spec = num$spec, # 3 essential probabilities (NOT: mirt, fart)
-                      N = num$N,      # default N
-                      round = TRUE    # should freq be rounded to integers? (default: round = TRUE)
-                      # n_digits = 5  # digits to which non-rounded freq are rounded (REMOVED: only round values SHOWN, not computed!)
+                      N = num$N,       # default N
+                      round = TRUE,    # round freq values to integers?
+                      # n_digits = 5,  # digits to which non-rounded freq are rounded (REMOVED: only round values SHOWN, not computed!)
+                      sample = FALSE   # sample freq values from probabilities?
 ) {
 
   ## (0) Initialize freq:
@@ -299,32 +314,57 @@ comp_freq <- function(prev = num$prev, sens = num$sens, spec = num$spec, # 3 ess
       warning(paste0("Unknown population size N. A suitable minimum value of N = ", N, " was computed."))
     }
 
-    ## (5) Set or compute all values of freq:
-    freq$N <- N # copy N from argument OR num (input)
+    ## (5) Main: Determine values of freq: ------
+    freq$N <- N  # copy N from argument OR num (input)
+    # sample <- FALSE  # sample freq with essential prob [+++ here now +++]
 
-    # (a) Number of cond_true vs. cond_false cases (by condition):
-    if (round) {
-      freq$cond_true <- round((N * prev), 0)  # 1a. cond_true  = N x prev [rounded to nearest integer]
-    } else {
-      freq$cond_true <- (N * prev)            # 1b. cond_true  = N x prev [not rounded]
-    }
-    freq$cond_false <- (N - freq$cond_true)   # 2. cond_false = complement of cond_true (to N)
+    if (!sample){ # NO sampling (default):
 
-    # (b) Number of 4 SDT combinations:
-    if (round) {
-      freq$hi <- round((sens * freq$cond_true), 0)   # a1. N of hi [rounded to nearest integer]
-    } else {
-      freq$hi <- (sens * freq$cond_true)             # a2. N of hi [not rounded]
-    }
-    freq$mi <- (freq$cond_true - freq$hi)            # b.  N of mi = complement of hi (to cond_true)
+      # (5a): Using exact probability values (i.e., no sampling): ----
 
-    if (round) {
-      freq$cr <- round((spec * freq$cond_false), 0)  # c1. N of cr [rounded to nearest integer]
-    } else {
-      freq$cr <- (spec * freq$cond_false)            # c2. N of cr [not rounded]
-    }
-    freq$fa <- (freq$cond_false - freq$cr)           # d.  N of fa - complement of cr (to cond_false)
+      # A. In 2 stages:
+      # (a) Number of cond_true vs. cond_false cases (by condition):
+      if (round) {
+        freq$cond_true <- round((N * prev), 0)  # 1a. cond_true  = N x prev [rounded to nearest integer]
+      } else {
+        freq$cond_true <- (N * prev)            # 1b. cond_true  = N x prev [not rounded]
+      }
+      freq$cond_false <- (N - freq$cond_true)   # 2. cond_false = complement of cond_true (to N)
 
+      # (b) Values of 4 SDT combinations/cases/cells:
+      if (round) {
+        freq$hi <- round((sens * freq$cond_true), 0)   # a1. N of hi [rounded to nearest integer]
+      } else {
+        freq$hi <- (sens * freq$cond_true)             # a2. N of hi [not rounded]
+      }
+      freq$mi <- (freq$cond_true - freq$hi)            # b.  N of mi = complement of hi (to cond_true)
+
+      if (round) {
+        freq$cr <- round((spec * freq$cond_false), 0)  # c1. N of cr [rounded to nearest integer]
+      } else {
+        freq$cr <- (spec * freq$cond_false)            # c2. N of cr [not rounded]
+      }
+      freq$fa <- (freq$cond_false - freq$cr)           # d.  N of fa - complement of cr (to cond_false)
+
+    } else { # sample() from N by prev, sens, and spec:
+
+      # (5b): Sampling by probability values: ----
+
+      # a. Sampling cond_true from N with prev:
+      freq$cond_true  <- sum(sample(x = c(1, 0), size = N, replace = TRUE, prob = c(prev, 1-prev)))
+      freq$cond_false <- (N - freq$cond_true)  # derived as complement
+
+      # b. Sampling hi from cond_true with sens:
+      freq$hi <- sum(sample(x = c(1, 0), size = freq$cond_true, replace = TRUE, prob = c(sens, 1-sens)))
+      freq$mi <- (freq$cond_true - freq$hi)  # derived as complement
+
+      # c. Sampling cr from cond_false with spec:
+      freq$cr <- sum(sample(x = c(1, 0), size = freq$cond_false, replace = TRUE, prob = c(spec, 1-spec)))
+      freq$fa <- (freq$cond_false - freq$cr)  # derived as complement
+
+    } # else sample.
+
+    # B. Derived values:
     # (c) Number of positive vs. negative decisions (by decision):
     freq$dec_pos <- freq$hi + freq$fa  # 1. positive decisions (true & false positives)
     freq$dec_neg <- freq$mi + freq$cr  # 2. negative decisions (false & true negatives)
@@ -333,20 +373,21 @@ comp_freq <- function(prev = num$prev, sens = num$sens, spec = num$spec, # 3 ess
     freq$dec_cor <- freq$hi + freq$cr  # N of correct decisions
     freq$dec_err <- freq$mi + freq$fa  # N of erroneous decisions
 
-    ## (6) Check current frequencies for consistency:
+
+    ## (6) Check current frequency values for consistency:
     tol <- .0001  # tolerance threshold for mismatch of sums
 
     if (#isTRUE(all.equal(freq$N, (freq$hi + freq$mi + freq$fa + freq$cr), tolerance = tol)) &&
-        (abs(freq$N - (freq$hi + freq$mi + freq$fa + freq$cr)) > tol) ||
-        (abs(freq$cond_true - (freq$hi + freq$mi)) > tol)             ||
-        (abs(freq$cond_false - (freq$fa + freq$cr)) > tol)            ||
-        # (abs(dec_pos - (hi + fa)) > tol)               ||  # (computed as such above)
-        # (abs(dec_neg - (mi + cr)) > tol)               ||  # (computed as such above)
-        # (abs(dec_cor - (hi + cr)) > tol)               ||  # (computed as such above)
-        # (abs(dec_err - (mi + fa)) > tol)               ||  # (computed as such above)
-        (abs(freq$N - (freq$cond_true + freq$cond_false)) > tol)      ||
-        (abs(freq$N - (freq$dec_pos + freq$dec_neg)) > tol)           ||
-        (abs(freq$N - (freq$dec_cor + freq$dec_err)) > tol)           ) {
+      (abs(freq$N - (freq$hi + freq$mi + freq$fa + freq$cr)) > tol) ||
+      (abs(freq$cond_true - (freq$hi + freq$mi)) > tol)             ||
+      (abs(freq$cond_false - (freq$fa + freq$cr)) > tol)            ||
+      # (abs(dec_pos - (hi + fa)) > tol)               ||  # (computed as such above)
+      # (abs(dec_neg - (mi + cr)) > tol)               ||  # (computed as such above)
+      # (abs(dec_cor - (hi + cr)) > tol)               ||  # (computed as such above)
+      # (abs(dec_err - (mi + fa)) > tol)               ||  # (computed as such above)
+      (abs(freq$N - (freq$cond_true + freq$cond_false)) > tol)      ||
+      (abs(freq$N - (freq$dec_pos + freq$dec_neg)) > tol)           ||
+      (abs(freq$N - (freq$dec_cor + freq$dec_err)) > tol)           ) {
 
       warning("Current frequencies do NOT add up to N.")
     }
@@ -364,37 +405,37 @@ comp_freq <- function(prev = num$prev, sens = num$sens, spec = num$spec, # 3 ess
 
 ## Check:
 
-# comp_freq()                  # => ok, using current defaults
-# length(comp_freq())          # => 11
+# comp_freq()                  # ok, using current defaults
+# length(comp_freq())          # 11
 #
 # # Rounding effects:
-# comp_freq(prev = .5, sens = .5, spec = .5, N = 1)  # => yields fa = 1 (see ?round for reason)
-# comp_freq(prev = .1, sens = .9, spec = .8, N = 10)  # => 1 hit (TP, rounded)
-# comp_freq(prev = .1, sens = .9, spec = .8, N = 10, round = FALSE)  # => .9 hit
-# comp_freq(prev = 1/3, sens = 6/7, spec = 2/3, N = 1, round = FALSE)  # => hi = 0.2857143
-# # comp_freq(prev = 1/3, sens = 6/7, spec = 2/3, N = 1, round = FALSE, n_digits = 3)  # => hi = 0.286 # Removed n_digits.
-# # comp_freq(prev = 1/3, sens = 6/7, spec = 2/3, N = 1, round = FALSE, n_digits = 1)  # => hi = 0.3   # Removed n_digits.
+# comp_freq(prev = .5, sens = .5, spec = .5, N = 1)   # yields fa = 1 (see ?round for reason)
+# comp_freq(prev = .1, sens = .9, spec = .8, N = 10)  # 1 hit (TP, rounded)
+# comp_freq(prev = .1, sens = .9, spec = .8, N = 10, round = FALSE)  # .9 hit
+# comp_freq(prev = 1/3, sens = 6/7, spec = 2/3, N = 1, round = FALSE)  # hi = 0.2857143
+# # comp_freq(prev = 1/3, sens = 6/7, spec = 2/3, N = 1, round = FALSE, n_digits = 3)  # hi = 0.286 # Removed n_digits.
+# # comp_freq(prev = 1/3, sens = 6/7, spec = 2/3, N = 1, round = FALSE, n_digits = 1)  # hi = 0.3   # Removed n_digits.
 #
 # # Extreme cases:
-# comp_freq(prev = 1, sens = 1, spec = 1, 100)  # => ok, N hits (TP)
-# comp_freq(prev = 1, sens = 1, spec = 0, 100)  # => ok, N hits
-# comp_freq(prev = 1, sens = 0, spec = 1, 100)  # => ok, N misses (FN)
-# comp_freq(prev = 1, sens = 0, spec = 0, 100)  # => ok, N misses
-# comp_freq(prev = 0, sens = 1, spec = 1, 100)  # => ok, N correct rejections (TN)
-# comp_freq(prev = 0, sens = 1, spec = 0, 100)  # => ok, N false alarms (FP)
+# comp_freq(prev = 1, sens = 1, spec = 1, 100)  # ok, N hits (TP)
+# comp_freq(prev = 1, sens = 1, spec = 0, 100)  # ok, N hits
+# comp_freq(prev = 1, sens = 0, spec = 1, 100)  # ok, N misses (FN)
+# comp_freq(prev = 1, sens = 0, spec = 0, 100)  # ok, N misses
+# comp_freq(prev = 0, sens = 1, spec = 1, 100)  # ok, N correct rejections (TN)
+# comp_freq(prev = 0, sens = 1, spec = 0, 100)  # ok, N false alarms (FP)
 #
 # # Watch out for:
-# comp_freq(prev = 1, sens = 1, spec = 1, N = NA)  # => ok, but warning that N = 1 was computed
-# comp_freq(prev = 1, sens = 1, spec = 1, N =  0)  # => ok, but all 0 + warning (extreme case: N hits)
-# comp_freq(prev = .5, sens = .5, spec = .5, N = 10, round = TRUE)   # => ok, but rounded (increasing errors: mi and fa)
-# comp_freq(prev = .5, sens = .5, spec = .5, N = 10, round = FALSE)  # => ok, but not rounded
+# comp_freq(prev = 1, sens = 1, spec = 1, N = NA)  # ok, but warning that N = 1 was computed
+# comp_freq(prev = 1, sens = 1, spec = 1, N =  0)  # ok, but all 0 + warning (extreme case: N hits)
+# comp_freq(prev = .5, sens = .5, spec = .5, N = 10, round = TRUE)   # ok, but rounded (increasing errors: mi and fa)
+# comp_freq(prev = .5, sens = .5, spec = .5, N = 10, round = FALSE)  # ok, but not rounded
 #
 # # Ways to fail:
-# comp_freq(prev = NA,  sens = 1, spec = 1,  100)  # => NAs + warning (prev NA)
-# comp_freq(prev = 1,  sens = NA, spec = 1,  100)  # => NAs + warning (sens NA)
-# comp_freq(prev = 1,  sens = 1,  spec = NA, 100)  # => NAs + warning (spec NA)
-# comp_freq(prev = 8,  sens = 1,  spec = 1,  100)  # => NAs + warning (prev beyond range)
-# comp_freq(prev = 1,  sens = 8,  spec = 1,  100)  # => NAs + warning (sens beyond range)
+# comp_freq(prev = NA,  sens = 1, spec = 1,  100)  # NAs + warning (prev NA)
+# comp_freq(prev = 1,  sens = NA, spec = 1,  100)  # NAs + warning (sens NA)
+# comp_freq(prev = 1,  sens = 1,  spec = NA, 100)  # NAs + warning (spec NA)
+# comp_freq(prev = 8,  sens = 1,  spec = 1,  100)  # NAs + warning (prev beyond range)
+# comp_freq(prev = 1,  sens = 8,  spec = 1,  100)  # NAs + warning (sens beyond range)
 
 
 ## (3) Apply to initialize freq: ----------
@@ -404,7 +445,7 @@ comp_freq <- function(prev = num$prev, sens = num$sens, spec = num$spec, # 3 ess
 #' List current frequency information.
 #'
 #' \code{freq} is a list of named numeric variables
-#' containing 11 frequencies:
+#' containing 11 key frequencies (and their values):
 #'
 #' \enumerate{
 #'
@@ -462,10 +503,10 @@ comp_freq <- function(prev = num$prev, sens = num$sens, spec = num$spec, # 3 ess
 #' \code{\link{plot_icons}}.
 #'
 #' @examples
-#' freq <- comp_freq()  # => initialize freq to default parameters
-#' freq                 # => show current values
-#' length(freq)         # => 11 known frequencies
-#' names(freq)          # => show names of known frequencies
+#' freq <- comp_freq()  # initialize freq to default parameters
+#' freq                 # show current values
+#' length(freq)         # 11 known frequencies
+#' names(freq)          # show names of known frequencies
 #'
 #' @family lists containing current scenario information
 #'
@@ -485,12 +526,12 @@ comp_freq <- function(prev = num$prev, sens = num$sens, spec = num$spec, # 3 ess
 
 ## freq: Definition --------
 
-freq <- comp_freq()  # => initialize freq to default parameters
+freq <- comp_freq()  # initialize freq to default parameters
 
 ## Check:
-# freq               # => show current values
-# length(freq)       # => 11 known frequencies
-# names(freq)        # => show names of known frequencies
+# freq               # show current values
+# length(freq)       # 11 known frequencies
+# names(freq)        # show names of known frequencies
 
 
 
@@ -532,12 +573,12 @@ comp_freq_type <- function(fname, lbl_txt = txt) {
 # comp_freq_type("cr")
 
 ## Using alternative text labels:
-# comp_freq_type("cond_true", lbl_txt = txt_TF) # => "Truth"
-# comp_freq_type("dec_pos", lbl_txt = txt_TF)   # => "Test"
+# comp_freq_type("cond_true", lbl_txt = txt_TF) # "Truth"
+# comp_freq_type("dec_pos", lbl_txt = txt_TF)   # "Test"
 
 ## Note:
-# comp_freq_type(N)        # => typeless (as function requires name, NOT a value)
-# comp_freq_type("false")  # => typeless (as full name is required)
+# comp_freq_type(N)        # typeless (as function requires name, NOT a value)
+# comp_freq_type("false")  # typeless (as full name is required)
 
 
 
@@ -622,10 +663,10 @@ comp_freq_col <- function(fname,
 
 ## (*) Done: -----------
 
-## - Clean up code [2021 03 20].
+## - etc.
 
 ## (+) ToDo: -----------
 
-## - ...
+## - etc.
 
 ## eof. ------------------------------------------

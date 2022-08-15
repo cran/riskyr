@@ -11,6 +11,7 @@ plot_icons(
   spec = num$spec,
   fart = NA,
   N = freq$N,
+  sample = FALSE,
   arr_type = "array",
   by = "all",
   ident_order = c("hi", "mi", "fa", "cr"),
@@ -26,7 +27,9 @@ plot_icons(
   fill_array = "left",
   fill_blocks = "rowwise",
   lbl_txt = txt,
-  title_lbl = txt$scen_lbl,
+  main = txt$scen_lbl,
+  sub = "type",
+  title_lbl = NULL,
   cex_lbl = 0.9,
   col_pal = pal,
   transparency = 0.5,
@@ -62,6 +65,11 @@ of a positive decision provided that the condition is \code{FALSE}).
 A suitable value of \code{\link{N}} is computed, if not provided.
 If N is 100,000 or greater it is reduced to 10,000
 for the array types if the frequencies allow it.}
+
+\item{sample}{Boolean value that determines whether frequency values
+are sampled from \code{N}, given the probability values of
+\code{prev}, \code{sens}, and \code{spec}.
+Default: \code{sample = FALSE}.}
 
 \item{arr_type}{The icons can be arranged in different ways
 resulting in different types of displays:
@@ -119,14 +127,14 @@ with 4 options:
 (i.e., hi, mi, fa, and cr) are plotted.
 Default: \code{ident_order = c("hi", "mi", "fa", "cr")}}
 
-\item{icon_types}{Specifies the appearance of the icons as a vector.
+\item{icon_types}{specifies the appearance of the icons as a vector.
 Default: \code{icon_types = 11} (i.e., squares with border).
 Accepts values from 1 to 25 (see \code{?points}).}
 
-\item{icon_size}{Manually specifies the size of the icons via \code{cex}
+\item{icon_size}{specifies the size of the icons via \code{cex}
 Default: \code{icon_size = NULL} for automatic calculation.}
 
-\item{icon_brd_lwd}{Specifies the border width of icons (if applicable).
+\item{icon_brd_lwd}{specifies the border width of icons (if applicable).
 Default: \code{icon_brd_lwd = 1.5}. Set to \code{NA} for no border.}
 
 \item{block_d}{The distance between blocks.
@@ -162,8 +170,14 @@ Generic text and color options:}
 \item{lbl_txt}{Default label set for text elements.
 Default: \code{lbl_txt = \link{txt}}.}
 
-\item{title_lbl}{Text label for current plot title.
-Default: \code{title_lbl = txt$scen_lbl}.}
+\item{main}{Text label for main plot title.
+Default: \code{main = txt$scen_lbl}.}
+
+\item{sub}{Text label for plot subtitle (on 2nd line).
+Default: \code{sub = "type"} shows information on current plot type.}
+
+\item{title_lbl}{\strong{Deprecated} text label for current plot title.
+Replaced by \code{main}.}
 
 \item{cex_lbl}{Scaling factor for text labels.
 Default: \code{cex_lbl = .90}.}
@@ -201,8 +215,12 @@ By default, \code{\link{comp_freq}} rounds frequencies to nearest integers
 to avoid decimal values in \code{\link{freq}}.
 }
 \examples{
+# Basics:
 plot_icons(N = 1000)  # icon array with default settings (arr_type = "array")
 plot_icons(arr_type = "shuffledarray", N = 1000)  # icon array with shuffled IDs
+
+# Sampling:
+plot_icons(N = 1000, prev = 1/2, sens = 2/3, spec = 6/7, sample = TRUE)
 
 # array types:
 plot_icons(arr_type = "mosaic",    N = 1000)  # areas as in mosaic plot
@@ -213,9 +231,9 @@ plot_icons(arr_type = "scatter",   N = 1000)  # icons randomly scattered
 
 # by:
 plot_icons(N = 1000, by = "all")  # hi, mi, fa, cr (TP, FN, FP, TN) cases
-plot_icons(N = 1000, by = "cd", title_lbl = "Cases by condition")  # (hi + mi) vs. (fa + cr)
-plot_icons(N = 1000, by = "dc", title_lbl = "Cases by decision")   # (hi + fa) vs. (mi + cr)
-plot_icons(N = 1000, by = "ac", title_lbl = "Cases by accuracy")   # (hi + cr) vs. (fa + mi)
+plot_icons(N = 1000, by = "cd", main = "Cases by condition")  # (hi + mi) vs. (fa + cr)
+plot_icons(N = 1000, by = "dc", main = "Cases by decision")   # (hi + fa) vs. (mi + cr)
+plot_icons(N = 1000, by = "ac", main = "Cases by accuracy")   # (hi + cr) vs. (fa + mi)
 
 # Custom icon types and colors:
 plot_icons(N = 800, arr_type = "array", icon_types = c(21, 22, 23, 24),
@@ -229,10 +247,10 @@ plot_icons(N = 800, arr_type = "fillequal", icon_types = c(21, 22, 22, 21),
 
 # Text and color options:
 plot_icons(N = 1000, prev = .5, sens = .5, spec = .5, arr_type = "shuffledarray",
-           title_lbl = "", lbl_txt = txt_TF, col_pal = pal_vir, mar_notes = TRUE)
+           main = "My title", sub = NA, lbl_txt = txt_TF, col_pal = pal_vir, mar_notes = TRUE)
 
 plot_icons(N = 1000, prev = .5, sens = .5, spec = .5, arr_type = "shuffledarray",
-           title_lbl = "Green vs. red", col_pal = pal_rgb, transparency = .5)
+           main = "Green vs. red", col_pal = pal_rgb, transparency = .5)
 
 }
 \seealso{
@@ -240,6 +258,7 @@ Other visualization functions:
 \code{\link{plot.riskyr}()},
 \code{\link{plot_area}()},
 \code{\link{plot_bar}()},
+\code{\link{plot_crisk}()},
 \code{\link{plot_curve}()},
 \code{\link{plot_fnet}()},
 \code{\link{plot_mosaic}()},

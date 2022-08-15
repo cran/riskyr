@@ -15,11 +15,14 @@ plot_bar(
   dir = 1,
   scale = "f",
   round = TRUE,
+  sample = FALSE,
   f_lbl = "num",
   f_lwd = 1,
   lty = 0,
   lbl_txt = txt,
-  title_lbl = txt$scen_lbl,
+  main = txt$scen_lbl,
+  sub = "type",
+  title_lbl = NULL,
   col_pal = pal,
   mar_notes = FALSE,
   ...
@@ -83,6 +86,11 @@ when \code{round = FALSE}, both settings yield the same bar heights.}
 are to be rounded to integers.
 Default: \code{round = TRUE}.}
 
+\item{sample}{Boolean value that determines whether frequency values
+are sampled from \code{N}, given the probability values of
+\code{prev}, \code{sens}, and \code{spec}.
+Default: \code{sample = FALSE}.}
+
 \item{f_lbl}{Type of frequency labels, as character code with the following options:
 \enumerate{
   \item \code{f_lbl = "nam"}: names;
@@ -105,8 +113,14 @@ Default: \code{lty = 0} (i.e., no line).}
 \item{lbl_txt}{Current text information (for labels, titles, etc.).
 Default: \code{lbl_txt = \link{txt}} (see \code{\link{init_txt}}).}
 
-\item{title_lbl}{Text label for current plot title.
-Default: \code{title_lbl = txt$scen_lbl}.}
+\item{main}{Text label for main plot title.
+Default: \code{main = txt$scen_lbl}.}
+
+\item{sub}{Text label for plot subtitle (on 2nd line).
+Default: \code{sub = "type"} shows information on current plot type.}
+
+\item{title_lbl}{\strong{Deprecated} text label for current plot title.
+Replaced by \code{main}.}
 
 \item{col_pal}{Current color palette.
 Default: \code{col_pal = \link{pal}} (see \code{\link{init_pal}}).}
@@ -159,25 +173,32 @@ for related functions.
 }
 \examples{
 # Basics:
-plot_bar(prev = .33, sens = .75, spec = .66, title_lbl = "Test 1")
-plot_bar(N = 1000, prev = .33, sens = .75, spec = .60,
-         title_lbl = "Test 2")  # by "all" (default)
+# (1) Using global prob and freq values:
+plot_bar()
+
+# (2) Providing values:
+plot_bar(prev = .33, sens = .75, spec = .66, main = "Test 1")
+plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, main = "Test 2")  # by "all" (default)
+
+# (3) Rounding and sampling:
+plot_bar(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "hr", round = FALSE)
+plot_bar(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "hr", sample = TRUE, scale = "freq")
 
 # Perspectives (by):
 # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "cd",
-#          title_lbl = "Test 3a")  # by condition
+#          main = "Test 3a")  # by condition
 plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "cd", dir = 2,
-         title_lbl = "Test 3b", f_lbl = "num")  # bi-directional
+         main = "Test 3b", f_lbl = "num")  # bi-directional
 
 # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "dc",
-#          title_lbl = "Test 4a")  # by decision
+#          main = "Test 4a")  # by decision
 plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "dc", dir = 2,
-         title_lbl = "Test 4b", f_lbl = "num")  # bi-directional
+         main = "Test 4b", f_lbl = "num")  # bi-directional
 
 # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "ac",
-#          title_lbl = "Test 5a")  # by accuracy
+#          main = "Test 5a")  # by accuracy
 plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "ac", dir = 2,
-         title_lbl = "Test 5b", f_lbl = "num")  # bi-directional
+         main = "Test 5b", f_lbl = "num")  # bi-directional
 
 # Customize colors and text:
 plot_bar(dir = 1, f_lbl = "num", col_pal = pal_org)
@@ -193,16 +214,16 @@ plot_bar(f_lbl = "num")  # numeric value only
 # Scaling and rounding effects:
 plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
          scale = "f", round = TRUE,
-         title_lbl = "Rounding (1)") # => Scale by freq and round freq.
+         main = "Rounding (1)") # => Scale by freq and round freq.
 plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
          scale = "p", round = TRUE,
-         title_lbl = "Rounding (2)") # => Scale by prob and round freq.
+         main = "Rounding (2)") # => Scale by prob and round freq.
 plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
          scale = "f", round = FALSE,
-         title_lbl = "Rounding (3)") # => Scale by freq and do NOT round freq.
+         main = "Rounding (3)") # => Scale by freq and do NOT round freq.
 plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
          scale = "p", round = FALSE,
-         title_lbl = "Rounding (4)") # => Scale by prob and do NOT round freq.
+         main = "Rounding (4)") # => Scale by prob and do NOT round freq.
 
 }
 \seealso{
@@ -217,6 +238,7 @@ plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
 Other visualization functions: 
 \code{\link{plot.riskyr}()},
 \code{\link{plot_area}()},
+\code{\link{plot_crisk}()},
 \code{\link{plot_curve}()},
 \code{\link{plot_fnet}()},
 \code{\link{plot_icons}()},

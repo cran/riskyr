@@ -38,7 +38,9 @@ riskyr(
   scen_lng = txt$scen_lng,
   scen_txt = txt$scen_txt,
   scen_src = txt$scen_src,
-  scen_apa = txt$scen_apa
+  scen_apa = txt$scen_apa,
+  round = TRUE,
+  sample = FALSE
 )
 }
 \arguments{
@@ -129,6 +131,21 @@ Options: \code{"en"} for English, \code{"de"} for German.}
 
 \item{scen_apa}{Source information for the current scenario
 according to the American Psychological Association (APA style).}
+
+\item{round}{Boolean value that determines whether frequency values
+are rounded to the nearest integer.
+Default: \code{round = TRUE}.
+
+Note: Only rounding when using \code{\link{comp_freq_prob}}
+(i.e., computing \code{\link{freq}} from \code{\link{prob}} description).}
+
+\item{sample}{Boolean value that determines whether frequency values
+are sampled from \code{N}, given the probability values of
+\code{prev}, \code{sens}, and \code{spec}.
+Default: \code{sample = FALSE}.
+
+Note: Only sampling when using \code{\link{comp_freq_prob}}
+(i.e., computing \code{\link{freq}} from \code{\link{prob}} description).}
 }
 \value{
 An object of class "riskyr" describing a risk-related scenario.
@@ -195,12 +212,16 @@ plot(hustosis)
 summary(scen_reoffend)
 plot(scen_reoffend)
 
-# 2 ways of defining the same scenario: -----
+# 2 ways of defining the same scenario:
 s1 <- riskyr(prev = .5, sens = .5, spec = .5, N = 100)  # s1: define by 3 prob & N
 s2 <- riskyr(hi = 25, mi = 25, fa = 25, cr = 25)        # s2: same scenario by 4 freq
 all.equal(s1, s2)  # should be TRUE
 
-# Ways to work: -----
+# Rounding and sampling:
+s3 <- riskyr(prev = 1/3, sens = 2/3, spec = 6/7, N = 100, round = FALSE)  # s3: w/o rounding
+s4 <- riskyr(prev = 1/3, sens = 2/3, spec = 6/7, N = 100, sample = TRUE)  # s4: with sampling
+
+# Note:
 riskyr(prev = .5, sens = .5, spec = .5, hi = 25, mi = 25, fa = 25, cr = 25)  # works (consistent)
 riskyr(prev = .5, sens = .5, spec = .5, hi = 25, mi = 25, fa = 25)           # works (ignores freq)
 
@@ -216,7 +237,6 @@ riskyr(prev = .5, sens = .5, spec = .5, hi = 25, mi = 25, fa = 25)           # w
 
 Other riskyr scenario functions: 
 \code{\link{plot.riskyr}()},
-\code{\link{read_popu}()},
 \code{\link{summary.riskyr}()}
 
 Other functions initializing scenario information: 

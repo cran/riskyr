@@ -1,5 +1,5 @@
 ## plot_bar.R | riskyr
-## 2021 01 04
+## 2022 08 09
 ## -----------------------------------------------
 
 ## Plot bar (a family of) charts that express freq types as lengths ------
@@ -77,13 +77,13 @@
 #' of a positive decision provided that the condition is \code{FALSE}).
 #' \code{fart} is optional when its complement \code{spec} is provided.
 #'
-#' @param N  The number of individuals in the population.
+#' @param N The number of individuals in the population.
 #' (This value is not represented in the plot,
 #' but used when new frequency information \code{\link{freq}}
 #' and a new population table \code{\link{popu}}
 #' are computed from scratch from current probabilities.)
 #'
-#' @param by  A character code specifying the perspective
+#' @param by A character code specifying the perspective
 #' (or the dimension by which the population is split into 2 subsets)
 #' with the following options:
 #'   \enumerate{
@@ -93,25 +93,30 @@
 #'   \item \code{by = "all"} combines perspectives (5 bars, default).
 #'   }
 #'
-#' @param dir  Number of directions in which bars are plotted.
+#' @param dir Number of directions in which bars are plotted.
 #' Options:
 #' \enumerate{
 #'   \item \code{dir = 1}: uni-directional bars (all up, default);
 #'   \item \code{dir = 2}: bi-directional bars (up vs. down).
 #'   }
 #'
-#' @param scale  Scale the heights of bars either
+#' @param scale Scale the heights of bars either
 #' by current frequencies (\code{scale = "f"}) or
 #' by exact probabilities (\code{scale = "p"}).
 #' Default: \code{scale = "f"}.
 #' For large population sizes \code{\link{N}} and
 #' when \code{round = FALSE}, both settings yield the same bar heights.
 #'
-#' @param round  Boolean option specifying whether computed frequencies
+#' @param round Boolean option specifying whether computed frequencies
 #' are to be rounded to integers.
 #' Default: \code{round = TRUE}.
 #'
-#' @param f_lbl  Type of frequency labels, as character code with the following options:
+#' @param sample Boolean value that determines whether frequency values
+#' are sampled from \code{N}, given the probability values of
+#' \code{prev}, \code{sens}, and \code{spec}.
+#' Default: \code{sample = FALSE}.
+#'
+#' @param f_lbl Type of frequency labels, as character code with the following options:
 #' \enumerate{
 #'   \item \code{f_lbl = "nam"}: names;
 #'   \item \code{f_lbl = "num"}: numeric values (default);
@@ -120,52 +125,65 @@
 #'   \item \code{f_lbl = "any"}: abbreviated names and numeric values (abb = num).
 #'   }
 #'
-#' @param f_lwd  Line width of frequency box (border).
+#' @param f_lwd Line width of frequency box (border).
 #' Values of \code{NA/NULL/0} set \code{lwd} to
 #' invisible \code{tiny_lwd <- .001} and \code{lty <- 0} (\code{"blank"}).
 #' Default: \code{f_lwd = 1}.
 #'
-#' @param lty  Line type of frequency box (border).
+#' @param lty Line type of frequency box (border).
 #' Values of \code{NA/NULL/0} set \code{lty} to
 #' \code{lty <- 0}.
 #' Default: \code{lty = 0} (i.e., no line).
 #'
-#' @param title_lbl  Text label for current plot title.
-#' Default: \code{title_lbl = txt$scen_lbl}.
+#' @param main Text label for main plot title.
+#' Default: \code{main = txt$scen_lbl}.
 #'
-#' @param lbl_txt  Current text information (for labels, titles, etc.).
+#' @param sub Text label for plot subtitle (on 2nd line).
+#' Default: \code{sub = "type"} shows information on current plot type.
+#'
+#' @param title_lbl \strong{Deprecated} text label for current plot title.
+#' Replaced by \code{main}.
+#'
+#' @param lbl_txt Current text information (for labels, titles, etc.).
 #' Default: \code{lbl_txt = \link{txt}} (see \code{\link{init_txt}}).
 #'
-#' @param col_pal  Current color palette.
+#' @param col_pal Current color palette.
 #' Default: \code{col_pal = \link{pal}} (see \code{\link{init_pal}}).
 #'
-#' @param mar_notes  Boolean option for showing margin notes.
+#' @param mar_notes Boolean option for showing margin notes.
 #' Default: \code{mar_notes = FALSE}.
 #'
-#' @param ...  Other (graphical) parameters
+#' @param ... Other (graphical) parameters
 #' (e.g., \code{cex}, \code{font}, \code{lty}, etc.).
 #'
 #' @examples
 #' # Basics:
-#' plot_bar(prev = .33, sens = .75, spec = .66, title_lbl = "Test 1")
-#' plot_bar(N = 1000, prev = .33, sens = .75, spec = .60,
-#'          title_lbl = "Test 2")  # by "all" (default)
+#' # (1) Using global prob and freq values:
+#' plot_bar()
+#'
+#' # (2) Providing values:
+#' plot_bar(prev = .33, sens = .75, spec = .66, main = "Test 1")
+#' plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, main = "Test 2")  # by "all" (default)
+#'
+#' # (3) Rounding and sampling:
+#' plot_bar(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "hr", round = FALSE)
+#' plot_bar(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "hr", sample = TRUE, scale = "freq")
 #'
 #' # Perspectives (by):
 #' # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "cd",
-#' #          title_lbl = "Test 3a")  # by condition
+#' #          main = "Test 3a")  # by condition
 #' plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "cd", dir = 2,
-#'          title_lbl = "Test 3b", f_lbl = "num")  # bi-directional
+#'          main = "Test 3b", f_lbl = "num")  # bi-directional
 #'
 #' # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "dc",
-#' #          title_lbl = "Test 4a")  # by decision
+#' #          main = "Test 4a")  # by decision
 #' plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "dc", dir = 2,
-#'          title_lbl = "Test 4b", f_lbl = "num")  # bi-directional
+#'          main = "Test 4b", f_lbl = "num")  # bi-directional
 #'
 #' # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "ac",
-#' #          title_lbl = "Test 5a")  # by accuracy
+#' #          main = "Test 5a")  # by accuracy
 #' plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "ac", dir = 2,
-#'          title_lbl = "Test 5b", f_lbl = "num")  # bi-directional
+#'          main = "Test 5b", f_lbl = "num")  # bi-directional
 #'
 #' # Customize colors and text:
 #' plot_bar(dir = 1, f_lbl = "num", col_pal = pal_org)
@@ -181,16 +199,16 @@
 #' # Scaling and rounding effects:
 #' plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
 #'          scale = "f", round = TRUE,
-#'          title_lbl = "Rounding (1)") # => Scale by freq and round freq.
+#'          main = "Rounding (1)") # => Scale by freq and round freq.
 #' plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
 #'          scale = "p", round = TRUE,
-#'          title_lbl = "Rounding (2)") # => Scale by prob and round freq.
+#'          main = "Rounding (2)") # => Scale by prob and round freq.
 #' plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
 #'          scale = "f", round = FALSE,
-#'          title_lbl = "Rounding (3)") # => Scale by freq and do NOT round freq.
+#'          main = "Rounding (3)") # => Scale by freq and do NOT round freq.
 #' plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
 #'          scale = "p", round = FALSE,
-#'          title_lbl = "Rounding (4)") # => Scale by prob and do NOT round freq.
+#'          main = "Rounding (4)") # => Scale by prob and do NOT round freq.
 #'
 #' @importFrom graphics par
 #' @importFrom graphics plot
@@ -229,10 +247,11 @@ plot_bar <- function(prev = num$prev,             # probabilities
                      N = num$N,                   # population size N
 
                      # Specific options:
-                     by = "all",     # perspective: "cd"...condition, "dc"...decision; "ac" accuracy, default: "all".
+                     by = "all",     # perspective: "cd"...condition, "dc"...decision; "ac" accuracy, default: "all"
                      dir = 1,        # directions: 1 (default) vs. 2
-                     scale = "f",    # scale bars: "f" ... freq (default), "p" ... prob.
-                     round = TRUE,   # round freq to integers? (default: round = TRUE).
+                     scale = "f",    # scale bars: "f" ... freq (default), "p" ... prob
+                     round = TRUE,   # round freq values to integers? (default: round = TRUE)
+                     sample = FALSE, # sample freq values from probabilities?
 
                      # Freq boxes:
                      f_lbl = "num",  # type of freq labels: "nam"/"num"/"abb", NA/NULL/"no", or "default" (fname = fnum).
@@ -240,9 +259,11 @@ plot_bar <- function(prev = num$prev,             # probabilities
                      lty = 0,        # default line type (0: no line, 1: solid line, etc.)
 
                      # Text and color:
-                     lbl_txt = txt,             # labels and text elements
-                     title_lbl = txt$scen_lbl,  # main plot title
-                     col_pal = pal,             # color palette
+                     lbl_txt = txt,        # labels and text elements
+                     main = txt$scen_lbl,  # main title
+                     sub = "type",         # subtitle ("type" shows generic plot type info)
+                     title_lbl = NULL,     # DEPRECATED plot title, replaced by main
+                     col_pal = pal,        # color palette
 
                      # Generic options:
                      mar_notes = FALSE,    # show margin notes?
@@ -317,18 +338,19 @@ plot_bar <- function(prev = num$prev,             # probabilities
   ## (A) If a valid set of probabilities was provided:
   if (is_valid_prob_set(prev = prev, sens = sens, mirt = mirt, spec = spec, fart = fart, tol = .01)) {
 
-    ## (a) Compute the complete quintet of probabilities:
+    # (a) Compute the complete quintet of probabilities:
     prob_quintet <- comp_complete_prob_set(prev, sens, mirt, spec, fart)
     sens <- prob_quintet[2]  # gets sens (if not provided)
     mirt <- prob_quintet[3]  # gets mirt (if not provided)
     spec <- prob_quintet[4]  # gets spec (if not provided)
     fart <- prob_quintet[5]  # gets fart (if not provided)
 
-    ## (b) Compute freq based on current parameters (N and probabilities):
-    freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N, round = round)  # compute freq (default: round = TRUE)
-    # n_digits = n_digits_bar)  # Removed n_digits parameter in comp_freq!
+    # (b) Compute LOCAL freq and prob based on current parameters (N and probabilities):
+    freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N,
+                      round = round, sample = sample)              # key freq
+    prob <- comp_prob_prob(prev = prev, sens = sens, spec = spec)  # key prob
 
-    ## (c) Assign (only needed) elements based on freq:
+    # (c) Assign (only needed) elements based on freq:
     hi  <- freq$hi
     mi  <- freq$mi
     fa  <- freq$fa
@@ -340,11 +362,14 @@ plot_bar <- function(prev = num$prev,             # probabilities
 
   } # if (is_valid_prob_set...)
 
+
   ## (2) Text labels: --------
 
-  # Plot title:
-  if (is.null(title_lbl)) { title_lbl <- "" }              # adjust NULL to "" (i.e., no title)
-  if (is.na(title_lbl)) { title_lbl <- lbl_txt$scen_lbl }  # use scen_lbl as default plot title
+  # Default main and subtitle labels:
+  if (is.null(main)) { main <- txt$scen_lbl }
+  if (is.na(main))   { main <- "" }
+  if (is.null(sub) || is.na(sub)) { sub <- "" }
+
 
   ## (3) Colors / color palettes: -------
 
@@ -358,11 +383,12 @@ plot_bar <- function(prev = num$prev,             # probabilities
     if (lty == 0) {lty <- 1}
   }
 
+
   ## (4) Define plot and margin areas: --------
 
   ## Define margin areas:
 
-  if (nchar(title_lbl) > 0) { n_lines_top <- 3 } else { n_lines_top <- 0 }
+  if (nchar(main) > 0 | nchar(sub) > 0) { n_lines_top <- 2 } else { n_lines_top <- 0 }
   if (mar_notes) { n_lines_bot <- 3 } else { n_lines_bot <- 1 }
 
   par(mar = c(n_lines_bot, 2, n_lines_top, 1) + 0.1)  # margins; default: par("mar") = 5.1 4.1 4.1 2.1.
@@ -487,13 +513,16 @@ plot_bar <- function(prev = num$prev,             # probabilities
             box_y  = n_y,
             box_lx = b_lx,
             box_ly = n_ly,
-            lbl_txt = lbl_txt, col_pal = col_pal,
-            lbl_type = f_lbl, lwd = f_lwd, lty = lty,
+            lbl_txt = lbl_txt,
+            col_pal = col_pal,
+            lbl_type = f_lbl,
+            lwd = f_lwd,
+            lty = lty,
             ...)
 
   # Label N column:
   plot_ftype_label("N", n_x, y_min, pos = 1,
-                   col = pal["txt"], # col = comp_freq_col("N"),
+                   lbl_txt = lbl_txt, col = pal["txt"], # col = comp_freq_col("N"),
                    ...)
 
   ##     (c) Define 4 SDT cases/cells: ----
@@ -535,7 +564,7 @@ plot_bar <- function(prev = num$prev,             # probabilities
 
   # Label SDT column:
   plot_ftype_label("hi", hi_x, y_min, pos = 1,
-                   col = pal["txt"],
+                   lbl_txt = lbl_txt, col = pal["txt"],
                    # col = comp_freq_col("hi"),
                    ...)
 
@@ -647,7 +676,7 @@ plot_bar <- function(prev = num$prev,             # probabilities
 
     # Label cond column:
     plot_ftype_label("cond_true", cond_true_x, y_min, pos = 1,
-                     col = pal["txt"],
+                     lbl_txt = lbl_txt, col = pal["txt"],
                      # col = comp_freq_col("cond_true"),
                      ...)
 
@@ -698,7 +727,7 @@ plot_bar <- function(prev = num$prev,             # probabilities
 
     # Label dec column:
     plot_ftype_label("dec_pos", dec_pos_x, y_min, pos = 1,
-                     col = pal["txt"],
+                     lbl_txt = lbl_txt, col = pal["txt"],
                      # col = comp_freq_col("dec_pos"),
                      ...)
 
@@ -749,7 +778,7 @@ plot_bar <- function(prev = num$prev,             # probabilities
 
     # Label acc column:
     plot_ftype_label("dec_cor", dec_cor_x, y_min, pos = 1,
-                     col = pal["txt"],
+                     lbl_txt = lbl_txt, col = pal["txt"],
                      # col = comp_freq_col("dec_cor"),
                      ...)
 
@@ -863,7 +892,7 @@ plot_bar <- function(prev = num$prev,             # probabilities
 
     # Label cond column:
     plot_ftype_label("cond_true", cond_true_x, y_min, pos = 1,
-                     col = pal["txt"],
+                     lbl_txt = lbl_txt, col = pal["txt"],
                      # col = comp_freq_col("cond_true"),
                      ...)
 
@@ -977,7 +1006,7 @@ plot_bar <- function(prev = num$prev,             # probabilities
 
     # Label dec column:
     plot_ftype_label("dec_pos", dec_pos_x, y_min, pos = 1,
-                     col = pal["txt"],
+                     lbl_txt = lbl_txt, col = pal["txt"],
                      # col = comp_freq_col("dec_pos"),
                      ...)
 
@@ -1092,7 +1121,7 @@ plot_bar <- function(prev = num$prev,             # probabilities
 
     # Label acc column:
     plot_ftype_label("dec_cor", dec_cor_x, y_min, pos = 1,
-                     col = pal["txt"],
+                     lbl_txt = lbl_txt, col = pal["txt"],
                      # col = comp_freq_col("dec_cor"),
                      ...)
 
@@ -1128,20 +1157,36 @@ plot_bar <- function(prev = num$prev,             # probabilities
 
   ## (8) Title: ------
 
-  # Define parts:
-  if (nchar(title_lbl) > 0) { title_lbl <- paste0(title_lbl, ":\n") }  # put on top (in separate line)
+  # Main title: Handle deprecated "title_lbl" argument: ----
 
-  if (title_lbl == "") {  # if title has been set to "":
-    type_lbl <- ""        # assume that no subtitle is desired either
-  } else {
-    type_lbl <- paste0("Bar plot of frequencies (by ", as.character(by), ")")  # plot name: Bar/etc.
+  if (is.null(title_lbl) == FALSE){
+    message("Argument 'title_lbl' is deprecated. Please use 'main' instead.")
+    main <- title_lbl
   }
 
-  # Compose label:
-  cur_title_lbl <- paste0(title_lbl, type_lbl)
 
-  # Plot title:
-  title(cur_title_lbl, adj = 0, line = +1, font.main = 1, cex.main = 1.2)  # (left, raised by +1, normal font)
+  # Subtitle (2nd line): ----
+
+  if (sub == "type"){ # show default plot type info:
+    sub <- paste0("Bar plot of frequencies (by ", as.character(by), ")")  # plot name: Bar plot/frequency bars.
+  }
+
+
+  # Combine title + subtitle: ----
+
+  if ( (main != "") & (sub == "") ){ # only main title:
+    cur_title_lbl <- main
+  } else if ( (main == "") & (sub != "") ){ # only subtitle:
+    cur_title_lbl <- sub
+  } else { # combine both:
+    cur_title_lbl <- paste0(main, ":\n", sub)  # add ":" and line break
+  }
+
+
+  # Plot title: ----
+
+  title(cur_title_lbl, adj = 0, line = 0, font.main = 1, cex.main = 1.2)  # (left, NOT raised (by +1), normal font)
+
 
 
   ## (9) Margins: ------
@@ -1173,45 +1218,45 @@ plot_bar <- function(prev = num$prev,             # probabilities
   # on.exit(par(opar))  # par(opar)  # restore original settings
   invisible()# restores par(opar)
 
-} # plot_bar end.
+} # plot_bar().
 
 
 ## Check: ------
 ## Basics:
-# plot_bar(prev = .33, sens = .75, spec = .66, title_lbl = "Test 1")
+# plot_bar(prev = .33, sens = .75, spec = .66, main = "Test 1")
 #
 # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60,
-#          title_lbl = "Test 2")  # by "all" (default)
+#          main = "Test 2")  # by "all" (default)
 #
 ## Perspectives:
 # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "cd",
-#          title_lbl = "Test 3a")  # by condition
+#          main = "Test 3a")  # by condition
 # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "cd", dir = 2,
-#          title_lbl = "Test 3b")  # bi-directional
+#          main = "Test 3b")  # bi-directional
 #
 # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "dc",
-#          title_lbl = "Test 4a")  # by decision
+#          main = "Test 4a")  # by decision
 # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "dc", dir = 2,
-#          title_lbl = "Test 4b")  # bi-directional
+#          main = "Test 4b")  # bi-directional
 #
 # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "ac",
-#          title_lbl = "Test 5a")  # by accuracy
+#          main = "Test 5a")  # by accuracy
 # plot_bar(N = 1000, prev = .33, sens = .75, spec = .60, by = "ac", dir = 2,
-#        title_lbl = "Test 5b", f_lbl = "num")  # bi-directional
+#          main = "Test 5b", f_lbl = "num")  # bi-directional
 #
 ## Scaling and rounding effects:
 # plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
 #          scale = "f", round = TRUE,
-#          title_lbl = "Rounding (1)") # => Scale by freq and round freq.
+#          main = "Rounding (1)") # => Scale by freq and round freq.
 # plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
 #          scale = "p", round = TRUE,
-#          title_lbl = "Rounding (2)") # => Scale by prob and round freq.
+#          main = "Rounding (2)") # => Scale by prob and round freq.
 # plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
 #          scale = "f", round = FALSE,
-#          title_lbl = "Rounding (3)") # => Scale by freq and do NOT round freq.
+#          main = "Rounding (3)") # => Scale by freq and do NOT round freq.
 # plot_bar(N = 3, prev = .1, sens = .7, spec = .6, dir = 2,
 #          scale = "p", round = FALSE,
-#          title_lbl = "Rounding (4)") # => Scale by prob and do NOT round freq.
+#          main = "Rounding (4)") # => Scale by prob and do NOT round freq.
 #
 ## f_lbl: different types of freq labels:
 # plot_bar(f_lbl = "nam")  # name only
@@ -1241,9 +1286,10 @@ plot_bar <- function(prev = num$prev,             # probabilities
 # weighted accuracy \code{w.acc} in \code{\link{comp_accu_freq}}.
 # Default: \code{w_acc = .50}.
 
+
 ## (*) Done: ----------
 
-## - ...
+## - Replace title_lbl by main and sub.
 
 ## (+) ToDo: ----------
 

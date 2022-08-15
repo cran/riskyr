@@ -1,5 +1,5 @@
 ## plot_fnet.R | riskyr
-## 2021 01 08
+## 2022 08 09
 ## Plot frequency net from Binder et al. (2020):
 ## See doi: 10.3389/fpsyg.2020.00750
 ## -----------------------------------------------
@@ -110,6 +110,11 @@
 #' @param round  Boolean option specifying whether computed frequencies
 #' are rounded to integers. Default: \code{round = TRUE}.
 #'
+#' @param sample  Boolean value that determines whether frequency values
+#' are sampled from \code{N}, given the probability values of
+#' \code{prev}, \code{sens}, and \code{spec}.
+#' Default: \code{sample = FALSE}.
+#'
 #' @param f_lbl  Type of label for showing frequency values in 4 main areas,
 #' with 6 options:
 #'   \enumerate{
@@ -167,8 +172,14 @@
 #' @param lbl_txt  Default label set for text elements.
 #' Default: \code{lbl_txt = \link{txt}}.
 #'
-#' @param title_lbl  Text label for current plot title.
-#' Default: \code{title_lbl = txt$scen_lbl}.
+#' @param main Text label for main plot title.
+#' Default: \code{main = txt$scen_lbl}.
+#'
+#' @param sub Text label for plot subtitle (on 2nd line).
+#' Default: \code{sub = "type"} shows information on current plot type.
+#'
+#' @param title_lbl \strong{Deprecated} text label for current plot title.
+#' Replaced by \code{main}.
 #'
 #' @param cex_lbl  Scaling factor for text labels (frequencies and headers).
 #' Default: \code{cex_lbl = .90}.
@@ -196,6 +207,10 @@
 #'
 #' # B. Providing values:
 #' plot_fnet(N = 10000, prev = .02, sens = .8, spec = .9)  # Binder et al. (2020, Fig. 3)
+#'
+#' # C. Rounding and sampling:
+#' plot_fnet(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "sq", round = FALSE)
+#' plot_fnet(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "sq", sample = TRUE, scale = "freq")
 #'
 #' # Variants:
 #' plot_fnet(N = 10000, prev = .02, sens = .8, spec = .9, by = "cdac")
@@ -304,7 +319,7 @@
 #'
 #' ## Plain plot versions:
 #' plot_fnet(area = "no", f_lbl = "def", p_lbl = "num", col_pal = pal_mod, f_lwd = 1,
-#'           title_lbl = "", mar_notes = FALSE)  # remove titles and margin notes
+#'           main = "", mar_notes = FALSE)  # remove titles and margin notes
 #' plot_fnet(area = "no", f_lbl = "nam", p_lbl = "min", col_pal = pal_rgb)
 #'
 #' plot_fnet(area = "sq", f_lbl = "nam", p_lbl = "num", col_pal = pal_rgb)
@@ -364,7 +379,8 @@ plot_fnet <- function(prev = num$prev,    # probabilities
                       by = "cddc",        # 2 perspectives (rows 2 and 4): each by = "cd"/"dc"/"ac"  (default: "cddc")
                       area = "no",        # "no" (default = NA, NULL, "fix") vs: "sq"
                       scale = "p",        # "f" vs. "p" (default)
-                      round = TRUE,       # round freq to integers? (default: round = TRUE), when not rounded: n_digits = 2 (currently fixed).
+                      round = TRUE,       # round freq values to integers? When not rounded: n_digits = 2 (currently fixed).
+                      sample = FALSE,     # sample freq values from probabilities?
 
                       # Freq boxes:
                       f_lbl = "num",      # freq labels: "def", "nam"/"num"/"namnum", "abb", or NA/NULL/"no" to hide freq labels.
@@ -382,7 +398,9 @@ plot_fnet <- function(prev = num$prev,    # probabilities
 
                       # Text and color:
                       lbl_txt = txt,      # labels and text elements
-                      title_lbl = txt$scen_lbl,  # main plot title
+                      main = txt$scen_lbl,  # main title
+                      sub = "type",         # subtitle ("type" shows generic plot type info)
+                      title_lbl = NULL,     # DEPRECATED plot title, replaced by main
                       cex_lbl = .90,      # size of freq & text labels.
                       cex_p_lbl = NA,     # size of prob labels (set to cex_lbl - .05 by default).
                       col_pal = pal,      # color palette
@@ -397,20 +415,21 @@ plot_fnet <- function(prev = num$prev,    # probabilities
   ## (A) If a valid set of probabilities was provided:
   if (is_valid_prob_set(prev = prev, sens = sens, mirt = mirt, spec = spec, fart = fart, tol = .01)) {
 
-    ## (a) Compute the complete quintet of probabilities:
+    # (a) Compute the complete quintet of probabilities:
     prob_quintet <- comp_complete_prob_set(prev = prev, sens = sens, mirt = mirt, spec = spec, fart = fart)
     sens <- prob_quintet[2]  # gets sens (if not provided)
     mirt <- prob_quintet[3]  # gets mirt (if not provided)
     spec <- prob_quintet[4]  # gets spec (if not provided)
     fart <- prob_quintet[5]  # gets fart (if not provided)
 
-    ## (b) Compute LOCAL freq and prob based on current parameters (N and probabilities):
-    freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N, round = round)  # compute freq (default: round = TRUE)
-    prob <- comp_prob_prob(prev = prev, sens = sens, spec = spec)
+    # (b) Compute LOCAL freq and prob based on current parameters (N and probabilities):
+    freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N,
+                      round = round, sample = sample)              # key freq
+    prob <- comp_prob_prob(prev = prev, sens = sens, spec = spec)  # key prob
 
     # message("Computed local freq and prob to plot prism.")
 
-    ## (c) Compute cur.popu from computed frequencies (not needed):
+    # (c) Compute cur.popu from computed frequencies (not needed):
     # cur.popu <- comp_popu(hi = freq$hi, mi = freq$mi, fa = freq$fa, cr = freq$cr)  # compute cur.popu (from 4 essential frequencies)
     # message("Generated new population (cur.popu) to plot.")
 
@@ -518,10 +537,12 @@ plot_fnet <- function(prev = num$prev,    # probabilities
 
   ## 4. Text labels: ----
 
-  # Plot title:
-  if (is.null(title_lbl)) { title_lbl <- "" }              # adjust NULL to "" (i.e., no title)
-  if (is.na(title_lbl)) { title_lbl <- lbl_txt$scen_lbl }  # use scen_lbl as default plot title
+  # Default main and subtitle labels:
+  if (is.null(main)) { main <- txt$scen_lbl }
+  if (is.na(main))   { main <- "" }
+  if (is.null(sub) || is.na(sub)) { sub <- "" }
 
+  # Label sizes:
   if ( is.null(cex_lbl) ) { cex_lbl <- .001 }  # sensible zero
   if ( is.na(cex_lbl) ) { cex_lbl <- .90 }  # default size of cex
   if ( cex_lbl == 0 )  { cex_lbl <- .001 }  # other sensible zero
@@ -555,7 +576,7 @@ plot_fnet <- function(prev = num$prev,    # probabilities
 
   ## (A) Define margin areas:
 
-  if (nchar(title_lbl) > 0) { n_lines_top <- 2 } else { n_lines_top <- 0 }
+  if (nchar(main) > 0 | nchar(sub) > 0) { n_lines_top <- 2 } else { n_lines_top <- 0 }
   if (mar_notes) { n_lines_bot <- 3 } else { n_lines_bot <- 0 }
 
   par(mar = c(n_lines_bot, 1, n_lines_top, 1) + 0.1)  # margins; default: par("mar") = 5.1 4.1 4.1 2.1.
@@ -1559,26 +1580,42 @@ plot_fnet <- function(prev = num$prev,    # probabilities
 
   ## (6) Title: ------
 
-  # Define parts:
-  # if (is.null(title_lbl)) { title_lbl <- "" }  # adjust NULL to "" (i.e., no title)
-  # if (is.na(title_lbl)) { title_lbl <- lbl_txt$scen_lbl }  # use scen_lbl as default plot title
-  if (nchar(title_lbl) > 0) { title_lbl <- paste0(title_lbl, ":\n") }  # put on top (in separate line)
+  # Main title: Handle deprecated "title_lbl" argument: ----
 
-  if (title_lbl == "") {  # if title has been set to "":
-    type_lbl <- ""        # assume that no subtitle is desired either
-  } else {
-    if ( !is.na(by_bot) ) {
-      type_lbl <- paste0(lbl["plot_fnet_lbl"], " (by ", as.character(by), ")")  # plot name: frequency net.
-    } else {
-      type_lbl <- paste0(lbl["plot_tree_lbl"], " (by ", as.character(by), ")")  # plot name: frequency tree.
-    } # if ( !is.na(by_bot) )
+  if (is.null(title_lbl) == FALSE){
+    message("Argument 'title_lbl' is deprecated. Please use 'main' instead.")
+    main <- title_lbl
   }
 
-  # Compose label:
-  cur_title_lbl <- paste0(title_lbl, type_lbl)
 
-  # Plot title:
+  # Subtitle (2nd line): ----
+
+  if (sub == "type"){ # show default plot type info:
+
+    if ( !is.na(by_bot) ) {
+      sub <- paste0(lbl["plot_fnet_lbl"], " (by ", as.character(by), ")")  # plot name: frequency net..
+    } else {
+      sub <- paste0(lbl["plot_tree_lbl"], " (by ", as.character(by), ")")  # plot name: tree/frequency tree.
+    } # if ( !is.na(by_bot) )
+
+  }
+
+
+  # Combine title + subtitle: ----
+
+  if ( (main != "") & (sub == "") ){ # only main title:
+    cur_title_lbl <- main
+  } else if ( (main == "") & (sub != "") ){ # only subtitle:
+    cur_title_lbl <- sub
+  } else { # combine both:
+    cur_title_lbl <- paste0(main, ":\n", sub)  # add ":" and line break
+  }
+
+
+  # Plot title: ----
+
   title(cur_title_lbl, adj = 0, line = 0, font.main = 1, cex.main = 1.2)  # (left, NOT raised (by +1), normal font)
+
 
 
   ## (7) Margins: ------
@@ -1604,7 +1641,7 @@ plot_fnet <- function(prev = num$prev,    # probabilities
   # on.exit(par(opar))  # par(opar)  # restore original settings
   invisible() # restores par(opar)
 
-} # plot_fnet end.
+} # plot_fnet().
 
 
 ## Check: ------

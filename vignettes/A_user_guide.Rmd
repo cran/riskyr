@@ -1,7 +1,7 @@
 ---
 title: "riskyr User Guide"
 author: "Hansjörg Neth, SPDS, uni.kn"
-date: "2021 03 23"
+date: "2021 03 31"
 output: 
   rmarkdown::html_vignette: 
     fig_caption: yes
@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 )
 
 # URLs:
-url_riskyr_org <- "http://134.34.54.61:3838/spds/riskyr/" # Note: "http://riskyr.org/" redirects there.
+url_riskyr_org <- "https://riskyr.org/"
 ```
 
 <!-- Motto: --> 
@@ -543,12 +543,12 @@ New York, NY: Penguin.
 - Gigerenzer, G., & Gaissmaier, W. (2011). 
 Heuristic decision making. 
 _Annual Review of Psychology_, _62_, 451--482. 
-([Available online](https://www.annualreviews.org/doi/10.1146/annurev-psych-120709-145346)) 
+([Available online](https://doi.org/10.1146/annurev-psych-120709-145346)) 
 
 - Gigerenzer, G., Gaissmaier, W., Kurz-Milcke, E., Schwartz, L., & Woloshin, S. (2007). 
 Helping doctors and patients make sense of health statistics. 
 _Psychological Science in the Public Interest_, _8_, 53--96. 
-([Available online](https://journals.sagepub.com/doi/10.1111/j.1539-6053.2008.00033.x)) 
+([Available online](https://doi.org/10.1111/j.1539-6053.2008.00033.x))
 
 - Gigerenzer, G., & Hoffrage, U. (1995). 
 How to improve Bayesian reasoning without instruction: Frequency formats. 
@@ -569,7 +569,7 @@ _Cognition_, _84_, 343--352.
 - Hoffrage, U., Krauss, S., Martignon, L., & Gigerenzer, G. (2015). 
 Natural frequencies improve Bayesian reasoning in simple and complex inference tasks. 
 _Frontiers in Psychology_, _6_, 1473. 
-([Available online]( https://doi.org/10.3389/fpsyg.2015.01473)) 
+([Available online](https://doi.org/10.3389/fpsyg.2015.01473)) 
 
 - Hoffrage, U., Lindsey, S., Hertwig, R., & Gigerenzer, G. (2000). 
 Communicating statistical information. 
@@ -601,7 +601,7 @@ Heuristics: Tools for an uncertain world.
 In R. Scott & S. Kosslyn (Eds.), _Emerging trends in the social and behavioral sciences_. 
 New York, NY: Wiley Online Library. 
 doi: [10.1002/9781118900772.etrds0394](https://doi.org/10.1002/9781118900772.etrds0394) 
-([Available online](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.726.1656&rep=rep1&type=pdf))  
+([Available online](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.726.1656&rep=rep1&type=pdf))  
 
 - Neth, H., Gradwohl, N., Streeb, D., Keim, D.A., & Gaissmaier, W. (2021). 
 Perspectives on the 2x2 matrix: Solving semantically distinct problems based on a shared structure of binary contingencies. 
@@ -635,7 +635,7 @@ Type:                    | Version:           | URL:                           |
 :------------------------|:-------------------|:-------------------------------|
 A. **riskyr** (R package): | [Release version](https://CRAN.R-project.org/package=riskyr)  | <https://CRAN.R-project.org/package=riskyr> |
     &nbsp;               | [Development version](https://github.com/hneth/riskyr/)         | <https://github.com/hneth/riskyr/> | 
-B. **riskyrApp** (R Shiny code): | [Online version](`r url_riskyr_org`)                    | [http://riskyr.org/](`r url_riskyr_org`) | 
+B. **riskyrApp** (R Shiny code): | [Online version](`r url_riskyr_org`)                    | [https://riskyr.org/](`r url_riskyr_org`) | 
     &nbsp;               | [Development version](https://github.com/hneth/riskyrApp/)      | <https://github.com/hneth/riskyrApp/> | 
 C. Online documentation: | [Release version](https://hneth.github.io/riskyr/)              | <https://hneth.github.io/riskyr/> | 
     &nbsp;               | [Development version](https://hneth.github.io/riskyr/dev/)      | <https://hneth.github.io/riskyr/dev/> | 

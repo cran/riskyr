@@ -20,6 +20,7 @@ plot_fnet(
   area = "no",
   scale = "p",
   round = TRUE,
+  sample = FALSE,
   f_lbl = "num",
   f_lbl_sep = NA,
   f_lwd = 0,
@@ -29,7 +30,9 @@ plot_fnet(
   arr_c = NA,
   joint_p = TRUE,
   lbl_txt = txt,
-  title_lbl = txt$scen_lbl,
+  main = txt$scen_lbl,
+  sub = "type",
+  title_lbl = NULL,
   cex_lbl = 0.9,
   cex_p_lbl = NA,
   col_pal = pal,
@@ -108,6 +111,11 @@ exact probability or by (rounded or non-rounded) frequency, with 2 options:
 \item{round}{Boolean option specifying whether computed frequencies
 are rounded to integers. Default: \code{round = TRUE}.}
 
+\item{sample}{Boolean value that determines whether frequency values
+are sampled from \code{N}, given the probability values of
+\code{prev}, \code{sens}, and \code{spec}.
+Default: \code{sample = FALSE}.}
+
 \item{f_lbl}{Type of label for showing frequency values in 4 main areas,
 with 6 options:
   \enumerate{
@@ -165,8 +173,14 @@ Default: \code{joint_p = TRUE}.}
 \item{lbl_txt}{Default label set for text elements.
 Default: \code{lbl_txt = \link{txt}}.}
 
-\item{title_lbl}{Text label for current plot title.
-Default: \code{title_lbl = txt$scen_lbl}.}
+\item{main}{Text label for main plot title.
+Default: \code{main = txt$scen_lbl}.}
+
+\item{sub}{Text label for plot subtitle (on 2nd line).
+Default: \code{sub = "type"} shows information on current plot type.}
+
+\item{title_lbl}{\strong{Deprecated} text label for current plot title.
+Replaced by \code{main}.}
 
 \item{cex_lbl}{Scaling factor for text labels (frequencies and headers).
 Default: \code{cex_lbl = .90}.}
@@ -227,6 +241,10 @@ plot_fnet()  # default frequency net, same as:
 
 # B. Providing values:
 plot_fnet(N = 10000, prev = .02, sens = .8, spec = .9)  # Binder et al. (2020, Fig. 3)
+
+# C. Rounding and sampling:
+plot_fnet(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "sq", round = FALSE)
+plot_fnet(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "sq", sample = TRUE, scale = "freq")
 
 # Variants:
 plot_fnet(N = 10000, prev = .02, sens = .8, spec = .9, by = "cdac")
@@ -335,7 +353,7 @@ plot_fnet(by = "cd", joint_p = FALSE)      # tree without joint probability link
 
 ## Plain plot versions:
 plot_fnet(area = "no", f_lbl = "def", p_lbl = "num", col_pal = pal_mod, f_lwd = 1,
-          title_lbl = "", mar_notes = FALSE)  # remove titles and margin notes
+          main = "", mar_notes = FALSE)  # remove titles and margin notes
 plot_fnet(area = "no", f_lbl = "nam", p_lbl = "min", col_pal = pal_rgb)
 
 plot_fnet(area = "sq", f_lbl = "nam", p_lbl = "num", col_pal = pal_rgb)
@@ -364,6 +382,7 @@ Other visualization functions:
 \code{\link{plot.riskyr}()},
 \code{\link{plot_area}()},
 \code{\link{plot_bar}()},
+\code{\link{plot_crisk}()},
 \code{\link{plot_curve}()},
 \code{\link{plot_icons}()},
 \code{\link{plot_mosaic}()},

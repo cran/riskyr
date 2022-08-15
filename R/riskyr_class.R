@@ -1,5 +1,5 @@
 ## riskyr_class.R | riskyr
-## 2021 01 04
+## 2022 08 09
 ## Define riskyr class and corresponding methods
 ## -----------------------------------------------
 
@@ -14,6 +14,7 @@
 
 # scenario2 <- df_scenarios[2, ]  # get scenario 2 of df_scenarios
 # class(scenario2) <- "riskyr"
+
 
 ## (1) Function to create diagnostic riskyr scenarios: ------
 
@@ -112,11 +113,8 @@
 #' A suitable value of \code{\link{N}} is computed, if not provided.
 #'
 #' @param hi The number of hits \code{\link{hi}} (or true positives).
-#'
 #' @param mi The number of misses \code{\link{mi}} (or false negatives).
-#'
 #' @param fa The number of false alarms \code{\link{fa}} (or false positives).
-#'
 #' @param cr The number of correct rejections \code{\link{cr}} (or true negatives).
 #'
 #' Details and source information:
@@ -131,6 +129,21 @@
 #'
 #' @param scen_apa Source information for the current scenario
 #' according to the American Psychological Association (APA style).
+#'
+#' @param round  Boolean value that determines whether frequency values
+#' are rounded to the nearest integer.
+#' Default: \code{round = TRUE}.
+#'
+#' Note: Only rounding when using \code{\link{comp_freq_prob}}
+#' (i.e., computing \code{\link{freq}} from \code{\link{prob}} description).
+#'
+#' @param sample  Boolean value that determines whether frequency values
+#' are sampled from \code{N}, given the probability values of
+#' \code{prev}, \code{sens}, and \code{spec}.
+#' Default: \code{sample = FALSE}.
+#'
+#' Note: Only sampling when using \code{\link{comp_freq_prob}}
+#' (i.e., computing \code{\link{freq}} from \code{\link{prob}} description).
 #'
 #' @examples
 #' # Defining scenarios: -----
@@ -163,12 +176,16 @@
 #' summary(scen_reoffend)
 #' plot(scen_reoffend)
 #'
-#' # 2 ways of defining the same scenario: -----
+#' # 2 ways of defining the same scenario:
 #' s1 <- riskyr(prev = .5, sens = .5, spec = .5, N = 100)  # s1: define by 3 prob & N
 #' s2 <- riskyr(hi = 25, mi = 25, fa = 25, cr = 25)        # s2: same scenario by 4 freq
 #' all.equal(s1, s2)  # should be TRUE
 #'
-#' # Ways to work: -----
+#' # Rounding and sampling:
+#' s3 <- riskyr(prev = 1/3, sens = 2/3, spec = 6/7, N = 100, round = FALSE)  # s3: w/o rounding
+#' s4 <- riskyr(prev = 1/3, sens = 2/3, spec = 6/7, N = 100, sample = TRUE)  # s4: with sampling
+#'
+#' # Note:
 #' riskyr(prev = .5, sens = .5, spec = .5, hi = 25, mi = 25, fa = 25, cr = 25)  # works (consistent)
 #' riskyr(prev = .5, sens = .5, spec = .5, hi = 25, mi = 25, fa = 25)           # works (ignores freq)
 #'
@@ -204,7 +221,7 @@ riskyr <- function(#
   # c. by accuracy:
   acc_lbl = txt$acc_lbl,
   dec_cor_lbl = txt$dec_cor_lbl, dec_err_lbl = txt$dec_err_lbl,
-  # (3) 4 SDT cases:
+  # (3) 4 SDT cases/cells/combinations:
   sdt_lbl = txt$sdt_lbl,
   hi_lbl = txt$hi_lbl, mi_lbl = txt$mi_lbl,
   fa_lbl = txt$fa_lbl, cr_lbl = txt$cr_lbl,
@@ -220,7 +237,10 @@ riskyr <- function(#
   scen_lng = txt$scen_lng,
   scen_txt = txt$scen_txt,
   scen_src = txt$scen_src,
-  scen_apa = txt$scen_apa
+  scen_apa = txt$scen_apa,
+  # (7) Creating freq from prob (by description):
+  round = TRUE,   # round freq values to integers?
+  sample = FALSE  # sample freq values from probabilities?
 ) {
 
   ## (0): Initialize some stuff: ------
@@ -232,15 +252,15 @@ riskyr <- function(#
 
   if (!any(is.na(c(hi, mi, fa, cr)))) {  # all four frequencies are provided:
 
-    ## (a) Checking consistency of N: -----
+    # (a) Check consistency of N: -----
 
-    if (is.na(N)) {  # check, whether N is NA.
+    if (is.na(N)) { # check, whether N is NA:
 
       N <- sum(c(hi, mi, fa, cr))  # set N to sum of frequencies.
 
-    } else {  # N is provided:
+    } else { # N is provided:
 
-      ## check, whether N matches the sum of frequencies:
+      # check, whether N matches the sum of frequencies:
       N.sum <- sum(c(hi, mi, fa, cr))
 
       if (N != N.sum) {
@@ -253,13 +273,12 @@ riskyr <- function(#
       }
     }
 
-    ## (b) Calculate the probabilities: -----
-
+    # (b) Compute probabilities: -----
     probs_calc <- comp_prob_freq(hi, mi, fa, cr)
     probs      <- c(probs_calc$prev, probs_calc$sens, probs_calc$mirt, probs_calc$spec, probs_calc$fart)
-    need_probs <- FALSE  # set flag that probs are no longer needed
+    need_probs <- FALSE  # flag that probs are no longer needed
 
-    ## (c) Calculate ALL frequencies from 4 essential frequencies:
+    # (c) Calculate key frequencies from 4 essential frequencies:
     freqs <- comp_freq_freq(hi, mi, fa, cr)
 
   } else {  # if not all 4 essential frequencies are provided:
@@ -277,14 +296,14 @@ riskyr <- function(#
                         spec = spec, fart = fart,
                         tol = .01)) {  # a valid set of probabilities is provided:
 
-    ## (a) Compute the complete quintet of probabilities:
+    # (a) Compute the complete quintet of probabilities:
     prob_quintet <- comp_complete_prob_set(prev, sens, mirt = NA, spec, fart)
     # sens <- prob_quintet[2] # gets sens (if not provided)
     # mirt <- prob_quintet[3] # gets mirt (if not provided)
     # spec <- prob_quintet[4] # gets spec (if not provided)
     # fart <- prob_quintet[5] # gets fart (if not provided)
 
-    ## (b) If frequencies have been provided, test whether the probabilities match:
+    # (b) If frequencies have been provided, test whether the probabilities match:
     if (!any(is.na(probs))) { # if probs has been calculated:
 
       if (!is.null(prob_quintet)) {  # check, whether prob_quintet has been calculated.
@@ -299,19 +318,22 @@ riskyr <- function(#
 
     } else {  # if no frequencies have been provided (probs is NA): ------
 
-      ## (c) Set probs to the computed prob quintet:
+      # (c) Set probs to the computed prob quintet:
       probs <- prob_quintet
 
-      ## (d) if no N has been provided:
+      # (d) if no N has been provided:
       if (is.na(N)) {
 
         N <- comp_min_N(prev = probs[1], sens = probs[2], spec = probs[4],
                         min_freq = 1)  # calculate a suitable N.
       }
 
-      ## (e) Calculate the frequencies from probabilities:
+      # (e) Calculate frequencies from probabilities (by description):
       freqs <- comp_freq_prob(prev = probs[1], sens = probs[2], mirt = probs[3],
-                              spec = probs[4], probs[5], N = N)
+                              spec = probs[4], probs[5], N = N,
+                              round = round,   # round freq values to integers?
+                              sample = sample  # sample freq values from probabilities?
+      )
 
     }
   } # if (is_valid_prob_set(...
@@ -326,6 +348,7 @@ riskyr <- function(#
     }
   }
 
+
   ## Case_4: Something is missing: ------
 
   # if (is.na(freqs)) {
@@ -335,10 +358,11 @@ riskyr <- function(#
   # if (is.na(probs)) {
   #   warning("Probabilities were not provided or could not be computed.")
   # }
+  #
+  # prob_quintet <- probs  # both should be the same by now (not needed?).
 
-  ## prob_quintet <- probs  # both should be the same by now (not needed?).
 
-  ## Define object (scenario) as a list: ------
+  ## Define riskyr scenario object (as a list): ------
 
   object <- list(#
     # (1) Scenario text:
@@ -378,22 +402,26 @@ riskyr <- function(#
 
   return(object)
 
-} # riskyr end.
+} # riskyr().
 
 
-## Check: ----------
+## Check: -------
 # test.obj <- riskyr()  # initialize with default parameters
 # names(test.obj)
 
 ## 2 ways to define the same scenario:
-# s1 <- riskyr(prev = .5, sens = .5, spec = .5, N = 100)  # define s1
+# s1 <- riskyr(prev = .5, sens = .5, spec = .5, N = 100)  # s1
 # s2 <- riskyr(hi = 25, mi = 25, fa = 25, cr = 25)        # s2: same in terms of freq
 # all.equal(s1, s2)  # should be TRUE
-
-## Ways to work:
+#
+## Rounding and sampling:
+# s3 <- riskyr(prev = 1/3, sens = 2/3, spec = 6/7, N = 100, round = FALSE)  # s3: w/o rounding
+# s4 <- riskyr(prev = 1/3, sens = 2/3, spec = 6/7, N = 100, sample = TRUE)  # s4: with sampling
+#
+## Note:
 # riskyr(prev = .5, sens = .5, spec = .5, hi = 25, mi = 25, fa = 25, cr = 25)  # works (consistent)
 # riskyr(prev = .5, sens = .5, spec = .5, hi = 25, mi = 25, fa = 25)           # works (ignores freq)
-
+#
 ## Watch out for:
 # riskyr(hi = 25, mi = 25, fa = 25, cr = 25, N = 101)  # warn: use sum of freq
 # riskyr(prev = .4, sens = .5, spec = .5, hi = 25, mi = 25, fa = 25, cr = 25)  # warn: use freq
@@ -411,7 +439,8 @@ riskyr <- function(#
 # #     collapse = ", "))
 
 
-## 2. scenarios: Define scenarios as a list of riskyr objects -----------
+
+## (B) Create scenarios: Define scenarios as a list of riskyr objects -----------
 
 ## Note: Convert the data frame df_scenarios into a list "scenarios"
 ##       of riskyr objects:
@@ -575,7 +604,10 @@ for (i in 1:nrow(df_scenarios)) {  # for each scenario i in df_scenarios:
 # length(scenarios)
 # scenarios$n25  # => shows elements of a scenario
 
-## (B) Handle riskyr objects: ------------------
+
+
+## (C) Handle riskyr objects: ------------------
+
 
 ## 1. plot.riskyr function: -------
 
@@ -587,6 +619,7 @@ for (i in 1:nrow(df_scenarios)) {  # for each scenario i in df_scenarios:
 # test_fun(N = 100, blubb = 5, prev = .7)
 #
 ## ok.
+
 
 ## plot.riskyr Documentation: ------
 
@@ -602,6 +635,12 @@ for (i in 1:nrow(df_scenarios)) {  # for each scenario i in df_scenarios:
 #' Pre-defined \code{\link{scenarios}} are also of type "riskyr".
 #'
 #' @param type The type of plot to be generated.
+#'
+#' @param main Text label for main plot title.
+#' Default: \code{main = NULL} (using \code{x$scen_lbl} per default).
+#'
+#' @param sub Text label for plot subtitle (on 2nd line).
+#' Default: \code{sub = NULL} (using \code{sub = "type"} shows plot type).
 #'
 #' The following plot types are currently available:
 #'
@@ -665,21 +704,20 @@ for (i in 1:nrow(df_scenarios)) {  # for each scenario i in df_scenarios:
 
 ## plot.riskyr Definition: ------
 
-plot.riskyr <- function(x = NULL,        # require riskyr scenario
+plot.riskyr <- function(x = NULL,        # a riskyr scenario
                         type = "prism",  # default type
                         # by = "cddc",   # default perspective
-                        ...              # other type and display parameters in plot_xxx functions
+                        main = NULL,     # main title
+                        sub = NULL,      # subtitle
+                        ...              # other parameters (passed to plot_xxx functions)
 ) {
 
-  ## Note: Most other functions (except for plot_icons) currently lack the ellipsis.
-  ## Therefore, these functions will throw an exception when unnecessary parameters are passed.
-
-  ## (1) Increase robustness: ----------
+  ## (1) Increase robustness: ------
 
   type <- tolower(type)  # ensure lowercase
 
   # Test type argument:
-  if (!type %in% c(#
+  if (all(type %in% c(#
     # plot_prism:
     "prism", "fprism", "tree", "ftree", "dtree", "double tree",
     # plot_fnet:
@@ -695,7 +733,7 @@ plot.riskyr <- function(x = NULL,        # require riskyr scenario
     # plot_curve:
     "curve", "curves",
     # plot_plane:
-    "plane", "planes", "cube")) {
+    "plane", "planes", "cube")) == FALSE) {
 
     message("Unknown plot type (in plot.riskyr): Using type = 'prism'.")
     type <- "prism"
@@ -715,7 +753,8 @@ plot.riskyr <- function(x = NULL,        # require riskyr scenario
   #   }
   # }
 
-  ## (2) Use text info of scenario x for current txt information: ----------
+
+  ## (2) Use text info of scenario x for current txt information: ------
 
   x_txt <- init_txt(scen_lbl = x$scen_lbl,
 
@@ -746,9 +785,14 @@ plot.riskyr <- function(x = NULL,        # require riskyr scenario
                     scen_lng = x$scen_lng
   )
 
-  ## (3) Call plotting functions: ----------
+  # Set default main title:
+  if (is.null(main) & (nchar(x$scen_lbl) > 0)){
+    main <- x$scen_lbl
+  }
 
-  ## 1. Table / contingency/confusion/frequency table / tab plot:
+  ## (3) Call plotting functions: ------
+
+  # 1. Table/contingency/confusion/frequency table/tab plot: ----
   if ((substr(type, 1, 3) == "tab") || (type == "ftab") || (type == "ctab")) {
 
     plot_tab(prev = x$prev,
@@ -757,13 +801,15 @@ plot.riskyr <- function(x = NULL,        # require riskyr scenario
              N = x$N,
              # Options:
              lbl_txt = x_txt,
-             title_lbl = x$scen_lbl,
+             main = main,
+             sub = sub,
              ...
     )
 
   } # if (type == "tab")
 
-  ## 2. Area / mosaic plot / unit square:
+
+  # 2. Area / mosaic plot / unit square: ----
   if ((substr(type, 1, 4) == "area") || (type == "farea") ||
       (substr(type, 1, 6) == "mosaic") ||
       (substr(type, 1, 4) == "unit")) {  # "mosaic"
@@ -774,13 +820,15 @@ plot.riskyr <- function(x = NULL,        # require riskyr scenario
               N = x$N,
               # Options:
               lbl_txt = x_txt,
-              title_lbl = x$scen_lbl,
+              main = main,
+              sub = sub,
               ...
     )
 
   } # if (type == "area")
 
-  ## 3. Icon array:
+
+  # 3. Icon array: ----
   if (substr(type, 1, 4) == "icon") {
 
     plot_icons(prev = x$prev,             # probabilities
@@ -788,17 +836,20 @@ plot.riskyr <- function(x = NULL,        # require riskyr scenario
                spec = x$spec, fart = NA,  # was: num$fart,
                N = x$N,    # ONLY freq used (so far)
                # Options:
-               title_lbl = x$scen_lbl,
+               # lbl_txt = x_txt, # Do NOT pass for icons!
+               main = main,
+               sub = sub,
                type_lbls = x[c("hi_lbl", "mi_lbl", "fa_lbl", "cr_lbl")],
                ...
     )
 
   } #  if (type == "icon")
 
-  ## 4a. Prism plot (tree/double tree):
+
+  # 4. Prism plot (tree/double tree): ----
   if ((substr(type, 1, 5) == "prism") || (substr(type, 1, 6) == "fprism") ||
       (substr(type, 1, 4) == "tree")  || (substr(type, 1, 5) == "ftree") ||
-      (substr(type, 1, 6) == "double")  || (substr(type, 1, 5) == "dtree")) {
+      (substr(type, 1, 6) == "double") || (substr(type, 1, 5) == "dtree")) {
 
     plot_prism(prev = x$prev,
                sens = x$sens, mirt = NA,
@@ -806,13 +857,15 @@ plot.riskyr <- function(x = NULL,        # require riskyr scenario
                N = x$N,
                # Options:
                lbl_txt = x_txt,
-               title_lbl = x$scen_lbl,
+               main = main,
+               sub = sub,
                ...
     )
 
   } # if (type == "prism")
 
-  ## 4b. Frequency net plot (fnet):
+
+  # 5. Frequency net plot (fnet): ----
   if ((type == "frequency net") ||
       (substr(type, 1, 3) == "net") || (substr(type, 1, 4) == "fnet")) {
 
@@ -822,13 +875,14 @@ plot.riskyr <- function(x = NULL,        # require riskyr scenario
               N = x$N,
               # Options:
               lbl_txt = x_txt,
-              title_lbl = x$scen_lbl,
+              main = main,
+              sub = sub,
               ...
     )
 
   } # if (type == "fnet")
 
-  ## 5. Bar plot / frequency bars:
+  # 6. Bar plot / frequency bars: ----
   if ((substr(type, 1, 3) == "bar") || (substr(type, 1, 4) == "fbar")) {
 
     plot_bar(prev = x$prev,
@@ -837,37 +891,47 @@ plot.riskyr <- function(x = NULL,        # require riskyr scenario
              N = x$N,
              # Options:
              lbl_txt = x_txt,
-             title_lbl = x$scen_lbl,
+             main = main,
+             sub = sub,
              ...
     )
 
   } # if (type == "bar")
 
-  ## 6. Curve of probabilities:
+
+  # 7. Curve of probabilities: ----
   if (substr(type, 1, 5) == "curve") {
 
     plot_curve(prev = x$prev,             # probabilities (3 essential, 2 optional)
                sens = x$sens, mirt = NA,
                spec = x$spec, fart = NA,
                # Options:
-               title_lbl = x$scen_lbl,
+               lbl_txt = x_txt,
+               main = main,
+               sub = sub,
                ...
     )
   } # if (type == "curve")
 
-  ## 7. Plane/cube of probabilities:
+
+  # 8. Plane/cube of probabilities: ----
   if ((substr(type, 1, 5) == "plane") || (substr(type, 1, 4) == "cube")) {
 
     plot_plane(prev = x$prev,             # probabilities (3 essential, 2 optional)
                sens = x$sens, mirt = NA,
                spec = x$spec, fart = NA,
                # Options:
-               title_lbl = x$scen_lbl, # plot title label
+               lbl_txt = x_txt,
+               main = main,
+               sub = sub,
                ...
     )
   } # if (type == "plane")
 
-} # plot.riskyr end.
+
+  ## Currently NO output. ------
+
+} # plot.riskyr().
 
 
 ## Check: ------
@@ -930,7 +994,9 @@ plot.riskyr <- function(x = NULL,        # require riskyr scenario
 # Replaced by \code{\link{plot_area}}, but see \code{\link{plot_mosaic}} for further options.
 
 
-## 2. summary.riskyr function: ------------------
+
+
+## 2a. summary.riskyr function: ------------------
 
 ## (a) Create a summary object:
 
@@ -1052,10 +1118,10 @@ summary.riskyr <- function(object = NULL, summarize = "all", ...) {
 
   return(obj.sum)
 
-}
+} # summary.riskyr().
 
 
-## 4. print.summary.riskyr function: ------------------
+## 2b. print.summary.riskyr function: ------------------
 
 ## Create print function corresponding to summary object:
 
@@ -1167,7 +1233,7 @@ print.summary.riskyr <- function(x = NULL, ...) {
 # summary(scenario2, summarize = "accu")
 
 
-## (C) Demo: Typical user interaction / session: ----------
+## (D) Demo: Typical user interaction / session: ----------
 
 ## 1. Defining and viewing a scenario: -----------
 ## see Vignette of riskyr primer
@@ -1230,149 +1296,16 @@ print.summary.riskyr <- function(x = NULL, ...) {
 # plot(scenarios$n10, type = "planes", what = "PPV")
 
 
-## (3) Read riskyr scenario from a population (popu, given as data frame) ----------
-
-## read_popu: Documentation: ------
-
-#' Read a population (given as data frame) into a riskyr scenario.
-#'
-#' \code{read_popu} interprets a data frame \code{df}
-#' (that contains individual observations of some population)
-#' and returns a scenario of class \code{"riskyr"}.
-#'
-#' Note that \code{df} needs to be structured according to
-#' the \code{\link{popu}} created by \code{\link{comp_popu}}.
-#'
-#' @return An object of class "riskyr" describing a risk-related scenario.
-#'
-#' @param df A data frame providing a population \code{\link{popu}}
-#' of individuals, which are identified on at least
-#' 2 binary variables and classified into 4 cases in a 3rd variable.
-#' Default: \code{df = \link{popu}} (as data frame).
-#'
-#' @param ix_by_top Index of variable (column) providing the 1st (top) perspective (in df).
-#' Default: \code{ix_by_top = 1} (1st column).
-#' @param ix_by_bot Index of variable (column) providing the 2nd (bot) perspective (in df).
-#' Default: \code{ix_by_bot = 2} (2nd column).
-#' @param ix_sdt Index of variable (column) providing a classification into 4 cases (in df).
-#' Default: \code{ix_by_bot = 3} (3rd column).
-#'
-#' @param hi_lbl Variable label of cases classified as hi (TP).
-#' @param mi_lbl Variable label of cases classified as mi (FN).
-#' @param fa_lbl Variable label of cases classified as fa (FP).
-#' @param cr_lbl Variable label of cases classified as cr (TN).
-#'
-#' @param ... Additional parameters (to be passed to \code{\link{riskyr}} function).
-#'
-#' @examples
-#' # Generating and interpreting different scenario types:
-#'
-#' # (A) Diagnostic/screening scenario (using default labels): ------
-#' popu_diag <- comp_popu(hi = 4, mi = 1, fa = 2, cr = 3)
-#' # popu_diag
-#' scen_diag <- read_popu(popu_diag, scen_lbl = "Diagnostics", popu_lbl = "Population tested")
-#' plot(scen_diag, type = "prism", area = "no", f_lbl = "namnum")
-#'
-#' # (B) Intervention/treatment scenario: ------
-#' popu_treat <- comp_popu(hi = 80, mi = 20, fa = 45, cr = 55,
-#'                         cond_lbl = "Treatment", cond_true_lbl = "pill", cond_false_lbl = "placebo",
-#'                         dec_lbl = "Health status", dec_pos_lbl = "healthy", dec_neg_lbl = "sick")
-#' # popu_treat
-#' scen_treat <- read_popu(popu_treat, scen_lbl = "Treatment", popu_lbl = "Population treated")
-#' plot(scen_treat, type = "prism", area = "sq", f_lbl = "namnum", p_lbl = "num")
-#' plot(scen_treat, type = "icon", lbl_txt = txt_org, col_pal = pal_org)
-#'
-#' # (C) Prevention scenario (e.g., vaccination): ------
-#' popu_vacc <- comp_popu(hi = 960, mi = 40, fa = 880, cr = 120,
-#'                        cond_lbl = "Vaccination", cond_true_lbl = "yes", cond_false_lbl = "no",
-#'                        dec_lbl = "Disease", dec_pos_lbl = "no flu", dec_neg_lbl = "flu")
-#' # popu_vacc
-#' scen_vacc <- read_popu(popu_vacc, scen_lbl = "Prevention", popu_lbl = "Population vaccinated")
-#' plot(scen_vacc, type = "prism", area = "sq", f_lbl = "namnum", col_pal = pal_bw, p_lbl = "num")
-#'
-#' @family riskyr scenario functions
-#'
-#' @seealso
-#' the corresponding data frame \code{\link{popu}};
-#' the corresponding generating function \code{\link{comp_popu}};
-#' \code{\link{riskyr}} initializes a \code{riskyr} scenario.
-#'
-#' @export
-
-## read_popu: Definition ----------
-
-read_popu <- function(df = popu,  # df (as population with 3+ columns, see comp_popu)
-                      ix_by_top = 1, ix_by_bot = 2, ix_sdt = 3,  # indices of by_top, by_bot, and sdt cols in df
-                      # text labels (from txt):
-                      hi_lbl = txt$hi_lbl, mi_lbl = txt$mi_lbl, fa_lbl = txt$fa_lbl, cr_lbl = txt$cr_lbl,
-                      ...) {
-
-  sdt_cases <- df[ , ix_sdt]
-
-  n_hi <- length(sdt_cases[sdt_cases == hi_lbl])
-  n_mi <- length(sdt_cases[sdt_cases == mi_lbl])
-  n_fa <- length(sdt_cases[sdt_cases == fa_lbl])
-  n_cr <- length(sdt_cases[sdt_cases == cr_lbl])
-
-  # Labels:
-  cond_lbl <- names(df)[ix_by_top]
-  cond_true_lbl  <- levels(df[ , ix_by_top])[1]
-  cond_false_lbl <- levels(df[ , ix_by_top])[2]
-
-  dec_lbl <- names(df)[ix_by_bot]
-  dec_pos_lbl <- levels(df[ , ix_by_bot])[1]
-  dec_neg_lbl <- levels(df[ , ix_by_bot])[2]
-
-  sdt_lbl <- names(df)[ix_sdt]
-
-  # Create riskyr scenario:
-  scen <- riskyr(hi = n_hi, mi = n_mi, fa = n_fa, cr = n_cr,
-                 cond_lbl = cond_lbl, cond_true_lbl = cond_true_lbl, cond_false_lbl = cond_false_lbl,
-                 dec_lbl = dec_lbl, dec_pos_lbl = dec_pos_lbl, dec_neg_lbl = dec_neg_lbl,
-                 sdt_lbl = sdt_lbl,
-                 ...)
-
-  return(scen)
-
-}
-
-## Check: ----------
-
-# ## Generating and interpreting different scenario types:
-#
-# # (A) Diagnostic/screening scenario (using default labels): ------
-# popu_diag <- comp_popu(hi = 4, mi = 1, fa = 2, cr = 3)
-# # popu_diag
-# scen_diag <- read_popu(popu_diag, scen_lbl = "Diagnostics", popu_lbl = "Population tested")
-# plot(scen_diag, type = "prism", area = "no", f_lbl = "namnum")
-#
-# # (B) Intervention/treatment scenario: ------
-# popu_treat <- comp_popu(hi = 80, mi = 20, fa = 45, cr = 55,
-#                         cond_lbl = "Treatment", cond_true_lbl = "pill", cond_false_lbl = "placebo",
-#                         dec_lbl = "Health status", dec_pos_lbl = "healthy", dec_neg_lbl = "sick")
-# # popu_treat
-# scen_treat <- read_popu(popu_treat, scen_lbl = "Treatment", popu_lbl = "Population treated")
-# plot(scen_treat, type = "prism", area = "hr", f_lbl = "namnum", col_pal = "whitesmoke", f_lwd = 1)
-# plot(scen_treat, type = "icon")
-#
-# # (C) Prevention scenario (e.g., vaccination): ------
-# popu_vacc <- comp_popu(hi = 960, mi = 40, fa = 880, cr = 120,
-#                        cond_lbl = "Vaccination", cond_true_lbl = "yes", cond_false_lbl = "no",
-#                        dec_lbl = "Disease", dec_pos_lbl = "no flu", dec_neg_lbl = "flu")
-# # popu_vacc
-# scen_vacc <- read_popu(popu_vacc, scen_lbl = "Prevention", popu_lbl = "Population vaccinated")
-# plot(scen_vacc, type = "prism", area = "sq", f_lbl = "namnum", col_pal = pal_bw, p_lbl = "num")
 
 ## (*) Done: ----------
 
-## - Clean up code.  [2018 08 22].
-## - Remove retired functions (otree, fnet/ofnet, omosaic). [2018 12 21]
-## - Update scenario data (and order). [2018 12 20]
+## - etc.
 
 ## (+) ToDo: ----------
 
-## - allow riskyr() to take different kinds of inputs (prob, freq, ...),
+## - Flexible inputs: Allow riskyr() to take different kinds of inputs (prob, freq, ...),
 ##   until a full object is created.
-## - allow incomplete riskyr scenarios (e.g., 1 branch of tree)
+
+## - Allow incomplete riskyr scenarios (e.g., 1 branch of tree)
 
 ## eof. ------------------------------------------

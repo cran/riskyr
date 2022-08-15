@@ -1,5 +1,5 @@
 ## plot_area.R | riskyr
-## 2021 01 04
+## 2022 08 09
 ## Plot area diagram (replacing plot_mosaic.R).
 ## -----------------------------------------------
 
@@ -27,36 +27,36 @@
 #' by removing the dependency on the R packages \code{vcd} and \code{grid}
 #' and providing many additional options.
 #'
-#' @param prev  The condition's prevalence \code{\link{prev}}
+#' @param prev The condition's prevalence \code{\link{prev}}
 #' (i.e., the probability of condition being \code{TRUE}).
 #'
-#' @param sens  The decision's sensitivity \code{\link{sens}}
+#' @param sens The decision's sensitivity \code{\link{sens}}
 #' (i.e., the conditional probability of a positive decision
 #' provided that the condition is \code{TRUE}).
 #' \code{sens} is optional when its complement \code{mirt} is provided.
 #'
-#' @param mirt  The decision's miss rate \code{\link{mirt}}
+#' @param mirt The decision's miss rate \code{\link{mirt}}
 #' (i.e., the conditional probability of a negative decision
 #' provided that the condition is \code{TRUE}).
 #' \code{mirt} is optional when its complement \code{sens} is provided.
 #'
-#' @param spec  The decision's specificity value \code{\link{spec}}
+#' @param spec The decision's specificity value \code{\link{spec}}
 #' (i.e., the conditional probability
 #' of a negative decision provided that the condition is \code{FALSE}).
 #' \code{spec} is optional when its complement \code{fart} is provided.
 #'
-#' @param fart  The decision's false alarm rate \code{\link{fart}}
+#' @param fart The decision's false alarm rate \code{\link{fart}}
 #' (i.e., the conditional probability
 #' of a positive decision provided that the condition is \code{FALSE}).
 #' \code{fart} is optional when its complement \code{spec} is provided.
 #'
-#' @param N  The number of individuals in the population.
+#' @param N The number of individuals in the population.
 #' A suitable value of \code{\link{N}} is computed, if not provided.
 #' Note: \code{\link{N}} is not represented in the plot,
 #' but used for computing frequency information \code{\link{freq}}
 #' from current probabilities \code{\link{prob}}.
 #'
-#' @param by  A character code specifying 2 perspectives that split the population into subsets,
+#' @param by A character code specifying 2 perspectives that split the population into subsets,
 #' with 6 options:
 #'   \enumerate{
 #'   \item \code{"cddc"}: by condition (cd) and by decision (dc) (default);
@@ -67,21 +67,21 @@
 #'   \item \code{"acdc"}: by accuracy (ac) and by decision (dc).
 #'   }
 #'
-#' @param p_split  Primary perspective for population split,
+#' @param p_split Primary perspective for population split,
 #' with 2 options:
 #'   \enumerate{
 #'   \item \code{"v"}: vertical (default);
 #'   \item \code{"h"}: horizontal.
 #'   }
 #'
-#' @param area  A character code specifying the shape of the main area,
+#' @param area A character code specifying the shape of the main area,
 #' with 2 options:
 #'   \enumerate{
-#'   \item \code{"sq"}: main area is scaled to square (default);
+#'   \item \code{"sq"}: main area is scaled to a square (default);
 #'   \item \code{"no"}: no scaling (rectangular area fills plot size).
 #'   }
 #'
-#' @param scale  Scale probabilities and corresponding area dimensions either by
+#' @param scale Scale probabilities and corresponding area dimensions either by
 #' exact probability or by (rounded or non-rounded) frequency, with 2 options:
 #'   \enumerate{
 #'   \item \code{"p"}: scale main area dimensions by exact probability (default);
@@ -91,10 +91,15 @@
 #'  Note: \code{scale} setting matters for the display of probability values and for
 #'  area plots with small population sizes \code{\link{N}} when \code{round = TRUE}.
 #'
-#' @param round  A Boolean option specifying whether computed frequencies
+#' @param round A Boolean option specifying whether computed frequencies
 #' are rounded to integers. Default: \code{round = TRUE}.
 #'
-#' @param sum_w  Border width of 2 perspective summaries
+#' @param sample Boolean value that determines whether frequency values
+#' are sampled from \code{N}, given the probability values of
+#' \code{prev}, \code{sens}, and \code{spec}.
+#' Default: \code{sample = FALSE}.
+#'
+#' @param sum_w Border width of 2 perspective summaries
 #' (on top and left borders) of main area as a proportion of area size
 #' (i.e., in range \code{0 <= sum_w <= 1}).
 #' Default: \code{sum_w = .10}.
@@ -106,7 +111,7 @@
 #' Defaults: \code{gaps = c(.02, .00)} for \code{p_split = "v"} and
 #' \code{gaps = c(.00, .02)} for \code{p_split = "h"}.
 #'
-#' @param f_lbl  Type of label for showing frequency values in 4 main areas,
+#' @param f_lbl Type of label for showing frequency values in 4 main areas,
 #' with 6 options:
 #'   \enumerate{
 #'   \item \code{"def"}: abbreviated names and frequency values;
@@ -117,23 +122,23 @@
 #'   \item \code{"no"}: no frequency labels (same for \code{f_lbl = NA} or \code{NULL}).
 #'   }
 #'
-#' @param f_lbl_sep  Label separator for main frequencies
+#' @param f_lbl_sep Label separator for main frequencies
 #' (used for \code{f_lbl = "def" OR "namnum"}).
 #' Use \code{f_lbl_sep = ":\n"} to add a line break between name and numeric value.
 #' Default: \code{f_lbl_sep = NA} (set to \code{" = "} or \code{":\n"} based on \code{f_lbl}).
 #'
-#' @param f_lbl_sum  Type of label for showing frequency values in summary cells,
+#' @param f_lbl_sum Type of label for showing frequency values in summary cells,
 #' with same 6 options as \code{f_lbl} (above).
 #' Default: \code{f_lbl_sum = "num"}: numeric values only.
 #'
-#' @param f_lbl_hd  Type of label for showing frequency values in header,
+#' @param f_lbl_hd Type of label for showing frequency values in header,
 #' with same 6 options as \code{f_lbl} (above).
 #' Default: \code{f_lbl_hd = "nam"}: names only (as specified in \code{lbl_txt = txt}).
 #'
-#' @param f_lwd  Line width of areas.
+#' @param f_lwd Line width of areas.
 #' Default: \code{f_lwd = 0}.
 #'
-#' @param p_lbl  Type of label for showing 3 key probability links and values,
+#' @param p_lbl Type of label for showing 3 key probability links and values,
 #' with 7 options:
 #'   \enumerate{
 #'   \item \code{"def"}: show links and abbreviated names and probability values;
@@ -145,7 +150,7 @@
 #'   \item \code{NA}: show no labels or links (same for \code{p_lbl = NULL}, default).
 #'   }
 #'
-#' @param arr_c  Arrow code for symbols at ends of probability links
+#' @param arr_c Arrow code for symbols at ends of probability links
 #' (as a numeric value \code{-3 <= arr_c <= +6}),
 #' with the following options:
 #'   \itemize{
@@ -156,51 +161,62 @@
 #' }
 #' Default: \code{arr_c = -3} (points at both ends).
 #'
-#' @param col_p  Colors of probability links (as vector of 3 colors).
+#' @param col_p Colors of probability links (as vector of 3 colors).
 #' Default: \code{col_p = c(grey(.15, .99), "yellow", "yellow")}.
 #' (Also consider: "black", "cornsilk", "whitesmoke").
 #'
-#' @param brd_dis  Distance of probability links from area border
+#' @param brd_dis Distance of probability links from area border
 #' (as proportion of area width).
 #' Default: \code{brd_dis = .06}.
 #' Note: Adjust to avoid overlapping labels.
 #' Negative values show links outside of main area.
 #'
-#' @param lbl_txt  Default label set for text elements.
+#' @param lbl_txt Default label set for text elements.
 #' Default: \code{lbl_txt = \link{txt}}.
 #'
-#' @param title_lbl  Text label for current plot title.
-#' Default: \code{title_lbl = txt$scen_lbl}.
+#' @param main Text label for main plot title.
+#' Default: \code{main = txt$scen_lbl}.
 #'
-#' @param cex_lbl  Scaling factor for text labels (frequencies and headers).
+#' @param sub Text label for plot subtitle (on 2nd line).
+#' Default: \code{sub = "type"} shows information on current plot type.
+#'
+#' @param title_lbl \strong{Deprecated} text label for current plot title.
+#' Replaced by \code{main}.
+#'
+#' @param cex_lbl Scaling factor for text labels (frequencies and headers).
 #' Default: \code{cex_lbl = .90}.
 #'
-#' @param cex_p_lbl  Scaling factor for text labels (probabilities).
+#' @param cex_p_lbl Scaling factor for text labels (probabilities).
 #' Default: \code{cex_p_lbl = cex_lbl - .05}.
 #'
-#' @param col_pal  Color palette.
+#' @param col_pal Color palette.
 #' Default: \code{col_pal = \link{pal}}.
 #'
-#' @param mar_notes  Boolean option for showing margin notes.
+#' @param mar_notes Boolean option for showing margin notes.
 #' Default: \code{mar_notes = FALSE}.
 #'
-#' @param ...  Other (graphical) parameters.
+#' @param ... Other (graphical) parameters.
 #'
 #' @return Nothing (NULL).
 #'
 #' @examples
 #' ## Basics:
+#' # (1) Using global prob and freq values:
 #' plot_area()  # default area plot,
 #' # same as:
 #' # plot_area(by = "cddc", p_split = "v", area = "sq", scale = "p")
 #'
-#' # Local freq and prob values:
+#' # (2) Providing values:
 #' plot_area(prev = .5, sens = 4/5, spec = 3/5, N = 10)
 #'
-#' # Customizing text and color:
+#' # (3) Rounding and sampling:
+#' plot_area(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "hr", round = FALSE)
+#' plot_area(N = 100, prev = 1/3, sens = 2/3, spec = 6/7, area = "hr", sample = TRUE, scale = "freq")
+#'
+#' # (4) Custom colors and text:
 #' plot_area(prev = .2, sens = 4/5, spec = 3/5, N = 10,
 #'           by = "cddc", p_split = "v", scale = "p",
-#'           title_lbl = "Custom text and color:",
+#'           main = "Custom text and color:",
 #'           lbl_txt = txt_org, f_lbl = "namnum",
 #'           f_lbl_sep = ":\n", f_lwd = 2, col_pal = pal_rgb)
 #'
@@ -274,7 +290,7 @@
 #' ## Plain and suggested plot versions:
 #' plot_area(sum_w = 0, f_lbl = "abb", p_lbl = NA)  # no compound indicators (on top/left)
 #' plot_area(gap = c(0, 0), sum_w = 0, f_lbl = "num", p_lbl = "num",  # no gaps, numeric labels
-#'           f_lwd = .5, col_pal = pal_bw, title_lbl = "Black-and-white")  # b+w print version
+#'           f_lwd = .5, col_pal = pal_bw, main = "Black-and-white")  # b+w print version
 #' # plot_area(f_lbl = "nam", p_lbl = NA, col_pal = pal_mod)  # plot with freq labels
 #' plot_area(f_lbl = "num", p_lbl = NA, col_pal = pal_rgb)  # no borders around boxes
 #'
@@ -317,7 +333,8 @@ plot_area <- function(prev = num$prev,    # probabilities
                       p_split = "v",      # primary/perspective split: "v": vertical vs. "h": horizontal
                       area = "sq",        # sq" (default: correcting x-values for aspect ratio of current plot) vs. "no" (NA, NULL, "fix", "hr" )
                       scale = "p",        # "p": exact probabilities (default) vs. "f": Re-compute prob from (rounded or non-rounded) freq.
-                      round = TRUE,       # round freq to integers? (default: round = TRUE), when not rounded: n_digits = 2 (currently fixed).
+                      round = TRUE,       # round freq values to integers? (default: round = TRUE), when not rounded: n_digits = 2 (currently fixed).
+                      sample = FALSE,     # sample freq values from probabilities?
 
                       ## Freq boxes:
                       sum_w = .10,        # border width: (default: sum_w = .10), setting sum_w = NULL/NA/<=0  hides top and left panels.
@@ -340,7 +357,9 @@ plot_area <- function(prev = num$prev,    # probabilities
 
                       ## Text and color:
                       lbl_txt = txt,      # labels and text elements
-                      title_lbl = txt$scen_lbl,  # main plot title
+                      main = txt$scen_lbl,  # main title
+                      sub = "type",         # subtitle ("type" shows generic plot type info)
+                      title_lbl = NULL,     # DEPRECATED plot title, replaced by main
                       cex_lbl = .90,      # size of freq & text labels
                       cex_p_lbl = NA,     # size of prob labels (set to cex_lbl - .05 by default)
                       col_pal = pal,      # color palette
@@ -355,20 +374,21 @@ plot_area <- function(prev = num$prev,    # probabilities
   ## (A) If a valid set of probabilities was provided:
   if (is_valid_prob_set(prev = prev, sens = sens, mirt = mirt, spec = spec, fart = fart, tol = .01)) {
 
-    ## (a) Compute the complete quintet of probabilities:
+    # (a) Compute the complete quintet of probabilities:
     prob_quintet <- comp_complete_prob_set(prev = prev, sens = sens, mirt = mirt, spec = spec, fart = fart)
     sens <- prob_quintet[2]  # gets sens (if not provided)
     mirt <- prob_quintet[3]  # gets mirt (if not provided)
     spec <- prob_quintet[4]  # gets spec (if not provided)
     fart <- prob_quintet[5]  # gets fart (if not provided)
 
-    ## (b) Compute LOCAL freq and prob based on current parameters (N and probabilities):
-    freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N, round = round)  # compute freq (default: round = TRUE)
-    prob <- comp_prob_prob(prev = prev, sens = sens, spec = spec)
+    # (b) Compute LOCAL freq and prob based on current parameters (N and probabilities):
+    freq <- comp_freq(prev = prev, sens = sens, spec = spec, N = N,
+                      round = round, sample = sample)              # key freq
+    prob <- comp_prob_prob(prev = prev, sens = sens, spec = spec)  # key prob
 
     # message("Computed local freq and prob to plot prism.")
 
-    ## (c) Compute cur.popu from computed frequencies (not needed):
+    # (c) Compute cur.popu from computed frequencies (not needed):
     # cur.popu <- comp_popu(hi = freq$hi, mi = freq$mi, fa = freq$fa, cr = freq$cr)  # compute cur.popu (from 4 essential frequencies)
     # message("Generated new population (cur.popu) to plot.")
 
@@ -378,12 +398,14 @@ plot_area <- function(prev = num$prev,    # probabilities
 
   } # if (is_valid_prob_set etc.)
 
+
   ## (1) Prepare parameters: ----------
 
   ## (A) Generic:
 
   opar <- par(no.readonly = TRUE)  # copy of current settings
   on.exit(par(opar))  # par(opar)  # restore original settings
+
 
   ## (B) Interpret current user input parameters:
 
@@ -424,6 +446,7 @@ plot_area <- function(prev = num$prev,    # probabilities
     message("If 1st perspective by = 'ac', 2nd perspective must be 'cd' or 'dc'.\nUsing by = 'accd'.")
     by_bot <- "cd"  # default
   }
+
 
   ## 2. Freq boxes: ----
 
@@ -577,6 +600,7 @@ plot_area <- function(prev = num$prev,    # probabilities
     }
   }
 
+
   ## 3. Prob links: ----
 
   # No probability labels: Detect special strings:
@@ -596,10 +620,12 @@ plot_area <- function(prev = num$prev,    # probabilities
 
   ## 4. Text labels: ----
 
-  # Plot title:
-  if (is.null(title_lbl)) { title_lbl <- "" }              # adjust NULL to "" (i.e., no title)
-  if (is.na(title_lbl)) { title_lbl <- lbl_txt$scen_lbl }  # use scen_lbl as default plot title
+  # Default main and subtitle labels:
+  if (is.null(main)) { main <- txt$scen_lbl }
+  if (is.na(main))   { main <- "" }
+  if (is.null(sub) || is.na(sub)) { sub <- "" }
 
+  # Label sizes:
   if ( is.null(cex_lbl) ) { cex_lbl <- .001 }  # sensible zero
   if ( is.na(cex_lbl) ) { cex_lbl <- .90 }  # default size of cex
   if ( cex_lbl == 0 )  { cex_lbl <- .001 }  # other sensible zero
@@ -685,9 +711,9 @@ plot_area <- function(prev = num$prev,    # probabilities
 
   ## (2) Define plot and margin areas: --------
 
-  ## Define margin areas:
+  ## (A) Define margin areas:
 
-  if (nchar(title_lbl) > 0) { n_lines_top <- 2 } else { n_lines_top <- 0 }
+  if (nchar(main) > 0 | nchar(sub) > 0) { n_lines_top <- 2 } else { n_lines_top <- 0 }
   if (mar_notes) { n_lines_bot <- 3 } else { n_lines_bot <- 0 }
 
   par(mar = c(n_lines_bot, 1, n_lines_top, 1) + 0.1)  # margins; default: par("mar") = 5.1 4.1 4.1 2.1.
@@ -1930,20 +1956,36 @@ plot_area <- function(prev = num$prev,    # probabilities
 
   ## (6) Title: ------
 
-  # Define parts:
-  if (nchar(title_lbl) > 0) { title_lbl <- paste0(title_lbl, ":\n") }  # put on top (in separate line)
+  # Main title: Handle deprecated "title_lbl" argument: ----
 
-  if (title_lbl == "") {  # if title has been set to "":
-    type_lbl <- ""        # assume that no subtitle is desired either
-  } else {
-    type_lbl <- paste0(lbl["plot_area_lbl"], " (by ", as.character(by), ")")  # plot name: Area/Mosaic/Eikosogram/etc.
+  if (is.null(title_lbl) == FALSE){
+    message("Argument 'title_lbl' is deprecated. Please use 'main' instead.")
+    main <- title_lbl
   }
 
-  # Compose label:
-  cur_title_lbl <- paste0(title_lbl, type_lbl)
 
-  # Plot title:
-  title(cur_title_lbl, adj = 0, line = 0, font.main = 1, cex.main = 1.2)  # (left, not raised, normal font)
+  # Subtitle (2nd line): ----
+
+  if (sub == "type"){ # show default plot type info:
+    sub <- paste0(lbl["plot_area_lbl"], " (by ", as.character(by), ")")  # plot name: Area/Mosaic/Eikosogram/etc.
+  }
+
+
+  # Combine title + subtitle: ----
+
+  if ( (main != "") & (sub == "") ){ # only main title:
+    cur_title_lbl <- main
+  } else if ( (main == "") & (sub != "") ){ # only subtitle:
+    cur_title_lbl <- sub
+  } else { # combine both:
+    cur_title_lbl <- paste0(main, ":\n", sub)  # add ":" and line break
+  }
+
+
+  # Plot title: ----
+
+  title(cur_title_lbl, adj = 0, line = 0, font.main = 1, cex.main = 1.2)  # (left, NOT raised (by +1), normal font)
+
 
 
   ## (7) Margins: ------
@@ -1970,7 +2012,7 @@ plot_area <- function(prev = num$prev,    # probabilities
   # on.exit(par(opar))  # par(opar)  # restore original settings
   invisible()# restores par(opar)
 
-} # plot_area end.
+} # plot_area().
 
 
 ## (3) Check: ------
